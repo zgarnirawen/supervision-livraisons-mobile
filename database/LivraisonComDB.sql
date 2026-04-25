@@ -1,0 +1,4571 @@
+CREATE TABLE articles(
+    refart CHAR(4) PRIMARY KEY,
+    designation VARCHAR2(30) NOT NULL,
+    prixA NUMBER(8,2) NOT NULL,       
+    prixV NUMBER(8,2) NOT NULL,       
+    codetva NUMBER(1) NOT NULL,
+    categorie CHAR(10),
+    qtestk NUMBER(5) NOT NULL,
+    CONSTRAINT ck_articles_prix CHECK (prixV > prixA)
+);
+CREATE OR REPLACE TRIGGER trg_articles_prix
+BEFORE INSERT OR UPDATE ON articles
+FOR EACH ROW
+BEGIN
+    IF :NEW.prixV <= :NEW.prixA THEN
+        RAISE_APPLICATION_ERROR(-20001, pkg_messages.c_err_prix_vte);
+    END IF;
+END;
+/CREATE OR REPLACE TRIGGER trg_articles_prix
+BEFORE INSERT OR UPDATE ON articles
+FOR EACH ROW
+BEGIN
+    IF :NEW.prixV <= :NEW.prixA THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Le prix de vente doit être supérieur au prix d''achat');
+    END IF;
+END;
+/
+
+
+
+INSERT INTO articles (refart, designation, prixA, prixV, codetva, categorie, qtestk) VALUES ('A001','Stylo',0.5,1.0,1,'Bureau',100);
+INSERT INTO articles (refart, designation, prixA, prixV, codetva, categorie, qtestk) VALUES ('A002','Cahier',1.5,2.5,1,'Bureau',200);
+INSERT INTO articles (refart, designation, prixA, prixV, codetva, categorie, qtestk) VALUES ('A003','Gomme',0.2,0.5,1,'Bureau',150);
+INSERT INTO articles (refart, designation, prixA, prixV, codetva, categorie, qtestk) VALUES ('A004','Classeur',2.0,3.5,1,'Bureau',80);
+INSERT INTO articles (refart, designation, prixA, prixV, codetva, categorie, qtestk) VALUES ('A005','Marqueur',1.0,1.8,1,'Bureau',120);
+INSERT INTO articles (refart, designation, prixA, prixV, codetva, categorie, qtestk) VALUES ('A006','Règle',0.5,1.2,1,'Bureau',200);
+INSERT INTO articles (refart, designation, prixA, prixV, codetva, categorie, qtestk) VALUES ('A007','Feutre',0.8,1.5,1,'Bureau',180);
+INSERT INTO articles (refart, designation, prixA, prixV, codetva, categorie, qtestk) VALUES ('A008','Calculatrice',5.0,8.0,1,'Bureau',50);
+INSERT INTO articles (refart, designation, prixA, prixV, codetva, categorie, qtestk) VALUES ('A009','Agrafeuse',2.0,3.0,1,'Bureau',60);
+INSERT INTO articles (refart, designation, prixA, prixV, codetva, categorie, qtestk) VALUES ('A010','Trombones',0.3,0.7,1,'Bureau',300);
+CREATE TABLE clients(
+    noclt NUMBER(4) CONSTRAINT clients_pk PRIMARY KEY,
+    nomclt VARCHAR2(30) NOT NULL,
+    prenomclt VARCHAR2(30),
+    adrclt VARCHAR2(60) NOT NULL,
+    code_postal NUMBER(5) NOT NULL,
+    villeclt CHAR(30) NOT NULL,
+    telclt NUMBER(8) NOT NULL,
+    adrmail VARCHAR2(60),
+    
+    CONSTRAINT clients_code_postal_ck CHECK (code_postal BETWEEN 1000 AND 9999),
+    CONSTRAINT clients_tel_ck CHECK (telclt BETWEEN 10000000 AND 99999999)
+);
+INSERT INTO clients (noclt, nomclt, prenomclt, adrclt, code_postal, villeclt, telclt, adrmail)
+VALUES (seq_clients.NEXTVAL,'Société Alpha',NULL,'Rue 1',1001,'Tunis',71112222,'alpha@gmail.com');
+INSERT INTO clients (noclt, nomclt, prenomclt, adrclt, code_postal, villeclt, telclt, adrmail) 
+VALUES (seq_clients.NEXTVAL,'Ben Hassen','Mona','Rue 2',3000,'Sfax',22334455,'mona@gmail.com');
+INSERT INTO clients (noclt, nomclt, prenomclt, adrclt, code_postal, villeclt, telclt, adrmail) 
+VALUES (seq_clients.NEXTVAL,'Trabelsi','Omar','Rue 3',4000,'Sousse',53445566,'omar@gmail.com');
+INSERT INTO clients (noclt, nomclt, prenomclt, adrclt, code_postal, villeclt, telclt, adrmail) 
+VALUES (seq_clients.NEXTVAL,'Société Beta',NULL,'Rue 4',2000,'Tunis',24556677,'beta@gmail.com');
+INSERT INTO clients (noclt, nomclt, prenomclt, adrclt, code_postal, villeclt, telclt, adrmail) 
+VALUES (seq_clients.NEXTVAL,'Ben Salah','Amira','Rue 5',5000,'Sfax',55667788,'amira@gmail.com');
+INSERT INTO clients (noclt, nomclt, prenomclt, adrclt, code_postal, villeclt, telclt, adrmail) 
+VALUES (seq_clients.NEXTVAL,'Trabelsi','Hedi','Rue 6',6000,'Sousse',96778899,'hedi@gmail.com');
+INSERT INTO clients (noclt, nomclt, prenomclt, adrclt, code_postal, villeclt, telclt, adrmail) 
+VALUES (seq_clients.NEXTVAL,'Société Gamma',NULL,'Rue 7',7000,'Tunis',77889900,'gamma@gmail.com');
+INSERT INTO clients (noclt, nomclt, prenomclt, adrclt, code_postal, villeclt, telclt, adrmail) 
+VALUES (seq_clients.NEXTVAL,'Ben Ahmed','Sara','Rue 8',8000,'Sfax',98990011,'sara@gmail.com');
+INSERT INTO clients (noclt, nomclt, prenomclt, adrclt, code_postal, villeclt, telclt, adrmail) 
+VALUES (seq_clients.NEXTVAL,'Trabelsi','Ali','Rue 9',9000,'Sousse',99001122,'ali15@gmail.com');
+INSERT INTO clients (noclt, nomclt, prenomclt, adrclt, code_postal, villeclt, telclt, adrmail) 
+VALUES (seq_clients.NEXTVAL,'Société Delta',NULL,'Rue 10',4000,'Tunis',71223344,'delta@gmail.com');
+
+
+CREATE TABLE commandes(
+    nocde NUMBER(6) PRIMARY KEY,
+    noclt NUMBER(4) NOT NULL,
+    datecde DATE NOT NULL,
+    etatcde CHAR(2) NOT NULL,
+    CONSTRAINT fk_commandes_clients FOREIGN KEY(noclt)
+        REFERENCES clients(noclt),
+    CONSTRAINT ck_commandes_etat CHECK (etatcde IN ('EC','PR','LI','SO','AN','AL'))
+);
+INSERT INTO commandes (nocde, noclt, datecde, etatcde) VALUES (seq_commandes.NEXTVAL,1,SYSDATE,'EC');
+INSERT INTO commandes (nocde, noclt, datecde, etatcde) VALUES (seq_commandes.NEXTVAL,2,SYSDATE,'EC');
+INSERT INTO commandes (nocde, noclt, datecde, etatcde) VALUES (seq_commandes.NEXTVAL,3,SYSDATE,'EC');
+INSERT INTO commandes (nocde, noclt, datecde, etatcde) VALUES (seq_commandes.NEXTVAL,4,SYSDATE,'EC');
+INSERT INTO commandes (nocde, noclt, datecde, etatcde) VALUES (seq_commandes.NEXTVAL,5,SYSDATE,'EC');
+INSERT INTO commandes (nocde, noclt, datecde, etatcde) VALUES (seq_commandes.NEXTVAL,6,SYSDATE,'EC');
+INSERT INTO commandes (nocde, noclt, datecde, etatcde) VALUES (seq_commandes.NEXTVAL,7,SYSDATE,'EC');
+INSERT INTO commandes (nocde, noclt, datecde, etatcde) VALUES (seq_commandes.NEXTVAL,8,SYSDATE,'EC');
+INSERT INTO commandes (nocde, noclt, datecde, etatcde) VALUES (seq_commandes.NEXTVAL,9,SYSDATE,'EC');
+INSERT INTO commandes (nocde, noclt, datecde, etatcde) VALUES (seq_commandes.NEXTVAL,10,SYSDATE,'EC');
+
+CREATE TABLE postes(
+    codeposte VARCHAR2(10) PRIMARY KEY,
+    libelle VARCHAR2(30) NOT NULL,
+    indice NUMBER(2) NOT NULL
+);
+INSERT INTO postes (codeposte, libelle, indice) VALUES ('P001','Magasinier',3);
+INSERT INTO postes (codeposte, libelle, indice) VALUES ('P002','Administrateur',5);
+INSERT INTO postes (codeposte, libelle, indice) VALUES ('P003','ChefLivreur',40);
+CREATE TABLE personnel(
+    idpers NUMBER(4) PRIMARY KEY,
+    nompers VARCHAR2(30) NOT NULL,
+    prenompers VARCHAR2(30) NOT NULL,
+    adrpers VARCHAR2(60) NOT NULL,
+    villepers VARCHAR2(30) NOT NULL,
+    telpers NUMBER(8) NOT NULL,
+    d_embauche DATE NOT NULL,
+    login VARCHAR2(30) UNIQUE NOT NULL,
+    motP VARCHAR2(20) NOT NULL,
+    codeposte VARCHAR2(10) NOT NULL,
+    CONSTRAINT fk_personnel_poste FOREIGN KEY(codeposte)
+        REFERENCES postes(codeposte),
+    CONSTRAINT personnel_tel_ck CHECK (telpers BETWEEN 10000000 AND 99999999)
+);
+INSERT INTO personnel (idpers, nompers, prenompers, adrpers, villepers, telpers, d_embauche, login, motP, codeposte)
+VALUES (seq_personnel.NEXTVAL, 'Ben Ali','Sami','Rue A','Tunis',51112222,TO_DATE('01-01-2020','DD-MM-YYYY'),'sami.b','pass1234','P001');
+
+INSERT INTO personnel (idpers, nompers, prenompers, adrpers, villepers, telpers, d_embauche, login, motP, codeposte)
+VALUES (seq_personnel.NEXTVAL, 'Trabelsi','Leila','Rue B','Sfax',22334455,TO_DATE('15-05-2021','DD-MM-YYYY'),'leila.t','pass5678','P002');
+
+INSERT INTO personnel (idpers, nompers, prenompers, adrpers, villepers, telpers, d_embauche, login, motP, codeposte)
+VALUES (seq_personnel.NEXTVAL, 'Ben Salah','Ali','Rue C','Sousse',93445566,TO_DATE('20-03-2022','DD-MM-YYYY'),'ali.bs','pass9012','P003');
+CREATE TABLE LivraisonCom(
+    nocde NUMBER(6) NOT NULL,
+    dateliv DATE NOT NULL,
+    livreur NUMBER(4) NOT NULL,
+    modepay VARCHAR2(20) NOT NULL,
+    etatliv CHAR(2) NOT NULL,
+    PRIMARY KEY (nocde, dateliv),
+    CONSTRAINT fk_Livraison_com FOREIGN KEY (nocde)
+        REFERENCES commandes(nocde),
+    CONSTRAINT fk_livraison_pers FOREIGN KEY(livreur)
+        REFERENCES personnel(idpers),
+    CONSTRAINT ck_livraison_modep CHECK(modepay IN('avant_livraison','apres_livraison')),
+    CONSTRAINT ck_livraison_com_etat CHECK(etatliv IN ('EC','LI','AL'))
+);
+INSERT INTO LivraisonCom (nocde, dateliv, livreur, modepay, etatliv) VALUES (1,TO_DATE('21-11-2025','DD-MM-YYYY'),3,'apres_livraison','EC');
+INSERT INTO LivraisonCom (nocde, dateliv, livreur, modepay, etatliv) VALUES (2,TO_DATE('22-11-2025','DD-MM-YYYY'),3,'avant_livraison','EC');
+INSERT INTO LivraisonCom (nocde, dateliv, livreur, modepay, etatliv) VALUES (3,TO_DATE('23-11-2025','DD-MM-YYYY'),1,'apres_livraison','EC');
+INSERT INTO LivraisonCom (nocde, dateliv, livreur, modepay, etatliv) VALUES (4,TO_DATE('24-11-2025','DD-MM-YYYY'),2,'avant_livraison','EC');
+INSERT INTO LivraisonCom (nocde, dateliv, livreur, modepay, etatliv) VALUES (5,TO_DATE('25-11-2025','DD-MM-YYYY'),2,'apres_livraison','EC');
+INSERT INTO LivraisonCom (nocde, dateliv, livreur, modepay, etatliv) VALUES (6, TO_DATE('26-11-2025','DD-MM-YYYY'), 1, 'avant_livraison', 'EC');
+INSERT INTO LivraisonCom (nocde, dateliv, livreur, modepay, etatliv) VALUES (7, TO_DATE('27-11-2025','DD-MM-YYYY'), 3, 'apres_livraison', 'EC');
+INSERT INTO LivraisonCom (nocde, dateliv, livreur, modepay, etatliv) VALUES (8, TO_DATE('28-11-2025','DD-MM-YYYY'), 2, 'avant_livraison', 'EC');
+INSERT INTO LivraisonCom (nocde, dateliv, livreur, modepay, etatliv) VALUES (9, TO_DATE('29-11-2025','DD-MM-YYYY'), 1, 'apres_livraison', 'EC');
+INSERT INTO LivraisonCom (nocde, dateliv, livreur, modepay, etatliv) VALUES (10, TO_DATE('30-11-2025','DD-MM-YYYY'), 3, 'avant_livraison', 'EC');
+
+CREATE TABLE HCommandesAnnulees(
+    nocde NUMBER(6) PRIMARY KEY,
+    numclt NUMBER(4) NOT NULL,
+    nbrart NUMBER(5) NOT NULL,
+    montantc NUMBER(10,2) NOT NULL,
+    datecde DATE NOT NULL,
+    dateAnnulation DATE NOT NULL,
+    code_postal NUMBER(5),
+    AvantLiv CHAR(1) CHECK (AvantLiv IN ('O','N')),
+    CONSTRAINT fk_hcde_client FOREIGN KEY(numclt)
+        REFERENCES clients(noclt)
+);
+INSERT INTO HCommandesAnnulees (nocde,numclt,nbrart,montantc,datecde,dateAnnulation,code_postal,AvantLiv) VALUES (1,1,10,10.0,SYSDATE,SYSDATE,1001,'O');
+INSERT INTO HCommandesAnnulees (nocde,numclt,nbrart,montantc,datecde,dateAnnulation,code_postal,AvantLiv) VALUES (2,2,5,12.5,SYSDATE,SYSDATE,3000,'O');
+INSERT INTO HCommandesAnnulees (nocde,numclt,nbrart,montantc,datecde,dateAnnulation,code_postal,AvantLiv) VALUES (3,3,2,7.0,SYSDATE,SYSDATE,4000,'O');
+INSERT INTO HCommandesAnnulees (nocde,numclt,nbrart,montantc,datecde,dateAnnulation,code_postal,AvantLiv) VALUES (4,4,8,15.0,SYSDATE,SYSDATE,2000,'O');
+INSERT INTO HCommandesAnnulees (nocde,numclt,nbrart,montantc,datecde,dateAnnulation,code_postal,AvantLiv) VALUES (5,5,4,5.0,SYSDATE,SYSDATE,5000,'O');
+INSERT INTO HCommandesAnnulees(nocde, numclt, nbrart, montantc, datecde, dateAnnulation, code_postal, AvantLiv) VALUES (6, 6, 7, 14.2, SYSDATE, SYSDATE, 6000, 'N');
+INSERT INTO HCommandesAnnulees(nocde, numclt, nbrart, montantc, datecde, dateAnnulation, code_postal, AvantLiv) VALUES (7, 7, 1, 8.0, SYSDATE, SYSDATE, 7000, 'O');
+INSERT INTO HCommandesAnnulees(nocde, numclt, nbrart, montantc, datecde, dateAnnulation, code_postal, AvantLiv) VALUES (8, 8, 6, 18.0, SYSDATE, SYSDATE, 8000, 'N');
+INSERT INTO HCommandesAnnulees(nocde, numclt, nbrart, montantc, datecde, dateAnnulation, code_postal, AvantLiv) VALUES (9, 9, 3, 9.5, SYSDATE, SYSDATE, 9000, 'O');
+INSERT INTO HCommandesAnnulees(nocde, numclt, nbrart, montantc, datecde, dateAnnulation, code_postal, AvantLiv) VALUES (10, 10, 12, 20.0, SYSDATE, SYSDATE, 4000, 'N');
+
+ALTER TABLE clients DROP CONSTRAINT clients_code_postal_ck;
+
+ALTER TABLE clients
+ADD CONSTRAINT clients_code_postal_ck CHECK (code_postal BETWEEN 1000 AND 9999);
+ALTER TABLE clients DROP CONSTRAINT clients_tel_ck;
+
+ALTER TABLE clients
+ADD CONSTRAINT clients_tel_ck CHECK (telclt BETWEEN 10000000 AND 99999999);
+
+
+
+CREATE TABLE ligcdes(
+    nocde NUMBER(6) NOT NULL,
+    refart CHAR(4) NOT NULL,
+    qtecde NUMBER(5) NOT NULL,
+    PRIMARY KEY(nocde, refart),
+    CONSTRAINT fk_ligcdes_commandes FOREIGN KEY(nocde)
+        REFERENCES commandes(nocde),
+    CONSTRAINT fk_ligcdes_articles FOREIGN KEY(refart)
+        REFERENCES articles(refart)
+);
+INSERT INTO ligcdes (nocde, refart, qtecde) VALUES (1,'A001',10);
+INSERT INTO ligcdes (nocde, refart, qtecde) VALUES (1,'A002',5);
+INSERT INTO ligcdes (nocde, refart, qtecde) VALUES (2,'A003',8);
+INSERT INTO ligcdes (nocde, refart, qtecde) VALUES (3,'A004',2);
+INSERT INTO ligcdes (nocde, refart, qtecde) VALUES (4,'A005',12);
+INSERT INTO ligcdes (nocde, refart, qtecde) VALUES (5,'A006',7);
+INSERT INTO ligcdes (nocde, refart, qtecde) VALUES (6,'A007',4);
+INSERT INTO ligcdes (nocde, refart, qtecde) VALUES (7,'A008',1);
+INSERT INTO ligcdes (nocde, refart, qtecde) VALUES (8,'A009',6);
+INSERT INTO ligcdes (nocde, refart, qtecde) VALUES (9,'A010',15);
+
+CREATE SEQUENCE seq_clients
+START WITH 1
+INCREMENT BY 1 ;
+
+CREATE SEQUENCE seq_commandes
+START WITH 1
+INCREMENT BY 1;
+
+CREATE SEQUENCE seq_personnel
+START WITH 1
+INCREMENT BY 1;
+
+select * from articles ;
+CREATE INDEX idx_clients_tel ON clients(telclt);
+CREATE INDEX idx_clients_code_postal ON clients(code_postal);
+CREATE INDEX idx_commandes_client ON commandes(noclt);
+CREATE INDEX idx_livraison_livreur ON LivraisonCom(livreur);
+CREATE INDEX idx_livraison_date ON LivraisonCom(dateliv);
+CREATE INDEX idx_ligcde_refart ON LigCdes(refart);
+CREATE INDEX idx_articles_categorie ON articles(categorie);
+ALTER TABLE articles ADD supp CHAR(1) DEFAULT 'N' CHECK (supp IN ('O','N'));
+
+
+CREATE OR REPLACE PACKAGE pkg_messages AS
+    -- Messages de succès
+    FUNCTION msg_succes_ajout RETURN VARCHAR2;
+    FUNCTION msg_succes_modif RETURN VARCHAR2;
+    FUNCTION msg_succes_suppr RETURN VARCHAR2;
+    
+    -- Messages d'erreur
+    FUNCTION msg_err_existe_deja RETURN VARCHAR2;
+    FUNCTION msg_err_introuvable RETURN VARCHAR2;
+    FUNCTION msg_err_date_invalide RETURN VARCHAR2;
+    FUNCTION msg_err_etat_invalide RETURN VARCHAR2;
+    FUNCTION msg_err_limite_livraisons RETURN VARCHAR2;
+    FUNCTION msg_err_heure_maj RETURN VARCHAR2;
+    FUNCTION msg_err_prix RETURN VARCHAR2;
+    FUNCTION msg_err_telephone RETURN VARCHAR2;
+    FUNCTION msg_err_commande_non_prete RETURN VARCHAR2;
+END pkg_messages;
+/
+
+CREATE OR REPLACE PACKAGE BODY pkg_messages AS
+    FUNCTION msg_succes_ajout RETURN VARCHAR2 IS
+    BEGIN
+        RETURN 'Opération réussie : Enregistrement ajouté avec succès.';
+    END;
+    
+    FUNCTION msg_succes_modif RETURN VARCHAR2 IS
+    BEGIN
+        RETURN 'Opération réussie : Modification effectuée avec succès.';
+    END;
+    
+    FUNCTION msg_succes_suppr RETURN VARCHAR2 IS
+    BEGIN
+        RETURN 'Opération réussie : Suppression effectuée avec succès.';
+    END;
+    
+    FUNCTION msg_err_existe_deja RETURN VARCHAR2 IS
+    BEGIN
+        RETURN 'Erreur : Cet enregistrement existe déjà dans la base.';
+    END;
+    
+    FUNCTION msg_err_introuvable RETURN VARCHAR2 IS
+    BEGIN
+        RETURN 'Erreur : Enregistrement introuvable.';
+    END;
+    
+    FUNCTION msg_err_date_invalide RETURN VARCHAR2 IS
+    BEGIN
+        RETURN 'Erreur : Date invalide.';
+    END;
+    
+    FUNCTION msg_err_etat_invalide RETURN VARCHAR2 IS
+    BEGIN
+        RETURN 'Erreur : Transition d''état invalide.';
+    END;
+    
+    FUNCTION msg_err_limite_livraisons RETURN VARCHAR2 IS
+    BEGIN
+        RETURN 'Erreur : Le livreur a atteint la limite de 15 commandes par jour pour cette ville.';
+    END;
+    
+    FUNCTION msg_err_heure_maj RETURN VARCHAR2 IS
+    BEGIN
+        RETURN 'Erreur : Mise à jour hors délai (avant 9h pour matin, avant 14h pour après-midi).';
+    END;
+    
+    FUNCTION msg_err_prix RETURN VARCHAR2 IS
+    BEGIN
+        RETURN 'Erreur : Le prix de vente doit être supérieur au prix d''achat.';
+    END;
+    
+    FUNCTION msg_err_telephone RETURN VARCHAR2 IS
+    BEGIN
+        RETURN 'Erreur : Format de téléphone invalide (8 chiffres requis).';
+    END;
+    
+    FUNCTION msg_err_commande_non_prete RETURN VARCHAR2 IS
+    BEGIN
+        RETURN 'Erreur : La commande doit être à l''état PR (Prête) pour être livrée.';
+    END;
+END pkg_messages;
+/
+
+
+CREATE OR REPLACE PACKAGE pkg_gestion_livraisons AS
+    PROCEDURE ajouter_livraison(
+        p_nocde IN NUMBER,
+        p_dateliv IN DATE,
+        p_livreur IN NUMBER,
+        p_modepay IN VARCHAR2
+    );
+    
+    PROCEDURE supprimer_livraison(
+        p_nocde IN NUMBER
+    );
+    
+    PROCEDURE modifier_livraison(
+        p_nocde IN NUMBER,
+        p_nouvelle_date IN DATE DEFAULT NULL,
+        p_nouveau_livreur IN NUMBER DEFAULT NULL
+    );
+    
+    PROCEDURE chercher_livraison_par_commande(
+        p_nocde IN NUMBER
+    );
+    
+    PROCEDURE chercher_livraison_par_livreur(
+        p_livreur IN NUMBER
+    );
+    
+    PROCEDURE chercher_livraison_par_ville(
+        p_code_postal IN NUMBER
+    );
+    
+    FUNCTION verifier_limite_livraisons(
+        p_livreur IN NUMBER,
+        p_date IN DATE,
+        p_code_postal IN NUMBER
+    ) RETURN BOOLEAN;
+    
+    FUNCTION verifier_heure_maj(
+        p_dateliv IN DATE
+    ) RETURN BOOLEAN;
+END pkg_gestion_livraisons;
+/
+
+CREATE OR REPLACE PACKAGE BODY pkg_gestion_livraisons AS
+     FUNCTION verifier_limite_livraisons(
+        p_livreur IN NUMBER,
+        p_date IN DATE,
+        p_code_postal IN NUMBER
+    ) RETURN BOOLEAN IS
+        v_count NUMBER;
+    BEGIN
+        SELECT COUNT(*)
+        INTO v_count
+        FROM LivraisonCom lc
+        JOIN commandes c ON lc.nocde = c.nocde
+        JOIN clients cl ON c.noclt = cl.noclt
+        WHERE lc.livreur = p_livreur
+        AND TRUNC(lc.dateliv) = TRUNC(p_date)
+        AND cl.code_postal = p_code_postal;
+        RETURN v_count < 15;
+    END verifier_limite_livraisons;
+    FUNCTION verifier_heure_maj(
+        p_dateliv IN DATE
+    ) RETURN BOOLEAN IS
+        v_heure_actuelle NUMBER;
+        v_date_liv_trunc DATE;
+    BEGIN
+        v_heure_actuelle := TO_NUMBER(TO_CHAR(SYSDATE, 'HH24'));
+        v_date_liv_trunc := TRUNC(p_dateliv);
+        IF v_date_liv_trunc = TRUNC(SYSDATE) THEN
+            RETURN v_heure_actuelle < 9 OR v_heure_actuelle < 14;
+        END IF;
+        RETURN TRUE;
+    END verifier_heure_maj;
+    
+    PROCEDURE ajouter_livraison(
+        p_nocde IN NUMBER,
+        p_dateliv IN DATE,
+        p_livreur IN NUMBER,
+        p_modepay IN VARCHAR2
+    ) IS
+        v_etat_cde CHAR(2);
+        v_code_postal NUMBER;
+    BEGIN
+        SELECT c.etatcde, cl.code_postal
+        INTO v_etat_cde, v_code_postal
+        FROM commandes c
+        JOIN clients cl ON c.noclt = cl.noclt
+        WHERE c.nocde = p_nocde;
+        IF v_etat_cde != 'PR' THEN
+            RAISE_APPLICATION_ERROR(-20005, pkg_messages.msg_err_commande_non_prete);
+        END IF;
+        IF NOT verifier_limite_livraisons(p_livreur, p_dateliv, v_code_postal) THEN
+            RAISE_APPLICATION_ERROR(-20006, pkg_messages.msg_err_limite_livraisons);
+        END IF;
+        INSERT INTO LivraisonCom (nocde, dateliv, livreur, modepay, etatliv)
+        VALUES (p_nocde, p_dateliv, p_livreur, p_modepay, 'EC');
+        UPDATE commandes SET etatcde = 'LI' WHERE nocde = p_nocde;
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_ajout);
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RAISE_APPLICATION_ERROR(-20007, pkg_messages.msg_err_introuvable);
+        WHEN OTHERS THEN
+            ROLLBACK;
+            RAISE;
+    END ajouter_livraison;
+    PROCEDURE supprimer_livraison(
+        p_nocde IN NUMBER
+    ) IS
+        v_noclt NUMBER;
+        v_datecde DATE;
+        v_nbrart NUMBER;
+        v_montant NUMBER;
+        v_code_postal NUMBER;
+    BEGIN
+        SELECT c.noclt, c.datecde, cl.code_postal
+        INTO v_noclt, v_datecde, v_code_postal
+        FROM commandes c
+        JOIN clients cl ON c.noclt = cl.noclt
+        WHERE c.nocde = p_nocde;
+        SELECT COUNT(*), NVL(SUM(l.qtecde * a.prixV), 0)
+        INTO v_nbrart, v_montant
+        FROM ligcdes l
+        JOIN articles a ON l.refart = a.refart
+        WHERE l.nocde = p_nocde;
+        DELETE FROM LivraisonCom WHERE nocde = p_nocde;
+        UPDATE commandes SET etatcde = 'AN' WHERE nocde = p_nocde;
+        INSERT INTO HCommandesAnnulees (nocde, numclt, nbrart, montantc, datecde, dateAnnulation, code_postal, AvantLiv)
+        VALUES (p_nocde, v_noclt, v_nbrart, v_montant, v_datecde, SYSDATE, v_code_postal, 'O');
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_suppr);
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            RAISE;
+    END supprimer_livraison;
+    PROCEDURE modifier_livraison(
+        p_nocde IN NUMBER,
+        p_nouvelle_date IN DATE DEFAULT NULL,
+        p_nouveau_livreur IN NUMBER DEFAULT NULL
+    ) IS
+        v_date_actuelle DATE;
+        v_livreur_actuel NUMBER;
+        v_code_postal NUMBER;
+        v_nouvelle_date DATE;
+        v_nouveau_livreur NUMBER;
+    BEGIN
+        SELECT lc.dateliv, lc.livreur, cl.code_postal
+        INTO v_date_actuelle, v_livreur_actuel, v_code_postal
+        FROM LivraisonCom lc
+        JOIN commandes c ON lc.nocde = c.nocde
+        JOIN clients cl ON c.noclt = cl.noclt
+        WHERE lc.nocde = p_nocde;
+        v_nouvelle_date := NVL(p_nouvelle_date, v_date_actuelle);
+        v_nouveau_livreur := NVL(p_nouveau_livreur, v_livreur_actuel);
+        IF NOT verifier_heure_maj(v_nouvelle_date) THEN
+            RAISE_APPLICATION_ERROR(-20008, pkg_messages.msg_err_heure_maj);
+        END IF;
+        IF NOT verifier_limite_livraisons(v_nouveau_livreur, v_nouvelle_date, v_code_postal) THEN
+            RAISE_APPLICATION_ERROR(-20009, pkg_messages.msg_err_limite_livraisons);
+        END IF;
+        UPDATE LivraisonCom
+        SET dateliv = v_nouvelle_date,
+            livreur = v_nouveau_livreur
+        WHERE nocde = p_nocde;
+        
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_modif);
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RAISE_APPLICATION_ERROR(-20010, pkg_messages.msg_err_introuvable);
+        WHEN OTHERS THEN
+            ROLLBACK;
+            RAISE;
+    END modifier_livraison;
+    
+    PROCEDURE chercher_livraison_par_commande(
+        p_nocde IN NUMBER
+    ) IS
+        CURSOR c_livraison IS
+            SELECT lc.nocde, lc.dateliv, lc.livreur, p.nompers, p.prenompers, lc.modepay, lc.etatliv
+            FROM LivraisonCom lc
+            JOIN personnel p ON lc.livreur = p.idpers
+            WHERE lc.nocde = p_nocde;
+    BEGIN
+        FOR rec IN c_livraison LOOP
+            DBMS_OUTPUT.PUT_LINE('Livraison commande N°' || rec.nocde);
+            DBMS_OUTPUT.PUT_LINE('Date: ' || TO_CHAR(rec.dateliv, 'DD/MM/YYYY'));
+            DBMS_OUTPUT.PUT_LINE('Livreur: ' || rec.nompers || ' ' || rec.prenompers);
+            DBMS_OUTPUT.PUT_LINE('Mode paiement: ' || rec.modepay);
+            DBMS_OUTPUT.PUT_LINE('État: ' || rec.etatliv);
+        END LOOP;
+    END chercher_livraison_par_commande;
+    
+    PROCEDURE chercher_livraison_par_livreur(
+        p_livreur IN NUMBER
+    ) IS
+        CURSOR c_livraisons IS
+            SELECT lc.nocde, lc.dateliv, lc.etatliv, cl.nomclt, cl.adrclt
+            FROM LivraisonCom lc
+            JOIN commandes c ON lc.nocde = c.nocde
+            JOIN clients cl ON c.noclt = cl.noclt
+            WHERE lc.livreur = p_livreur
+            ORDER BY lc.dateliv;
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('Livraisons du livreur N°' || p_livreur || ':');
+        FOR rec IN c_livraisons LOOP
+            DBMS_OUTPUT.PUT_LINE('  Commande N°' || rec.nocde || 
+                               ' - Date: ' || TO_CHAR(rec.dateliv, 'DD/MM/YYYY') ||
+                               ' - Client: ' || rec.nomclt ||
+                               ' - État: ' || rec.etatliv);
+        END LOOP;
+    END chercher_livraison_par_livreur;
+    
+    PROCEDURE chercher_livraison_par_ville(
+        p_code_postal IN NUMBER
+    ) IS
+        CURSOR c_livraisons IS
+            SELECT lc.nocde, lc.dateliv, p.nompers, cl.nomclt, lc.etatliv
+            FROM LivraisonCom lc
+            JOIN commandes c ON lc.nocde = c.nocde
+            JOIN clients cl ON c.noclt = cl.noclt
+            JOIN personnel p ON lc.livreur = p.idpers
+            WHERE cl.code_postal = p_code_postal
+            ORDER BY lc.dateliv;
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('Livraisons pour le code postal ' || p_code_postal || ':');
+        FOR rec IN c_livraisons LOOP
+            DBMS_OUTPUT.PUT_LINE('  Commande N°' || rec.nocde ||
+                               ' - Date: ' || TO_CHAR(rec.dateliv, 'DD/MM/YYYY') ||
+                               ' - Livreur: ' || rec.nompers ||
+                               ' - Client: ' || rec.nomclt);
+        END LOOP;
+    END chercher_livraison_par_ville;
+    
+END pkg_gestion_livraisons;
+/
+
+CREATE OR REPLACE PACKAGE pkg_gestion_utilisateurs AS
+    PROCEDURE creer_utilisateur(
+        p_username IN VARCHAR2,
+        p_password IN VARCHAR2,
+        p_role IN VARCHAR2
+    );
+    
+    PROCEDURE modifier_utilisateur(
+        p_username IN VARCHAR2,
+        p_nouveau_password IN VARCHAR2
+    );
+    
+    PROCEDURE supprimer_utilisateur(
+        p_username IN VARCHAR2
+    );
+    
+    PROCEDURE lister_utilisateurs;
+END pkg_gestion_utilisateurs;
+/
+
+CREATE OR REPLACE PACKAGE BODY pkg_gestion_utilisateurs AS
+    
+    PROCEDURE creer_utilisateur(
+        p_username IN VARCHAR2,
+        p_password IN VARCHAR2,
+        p_role IN VARCHAR2
+    ) IS
+        v_sql VARCHAR2(1000);
+    BEGIN
+        -- Créer l'utilisateur
+        v_sql := 'CREATE USER ' || p_username || 
+                 ' IDENTIFIED BY ' || p_password;
+        EXECUTE IMMEDIATE v_sql;
+        
+        -- Accorder les privilèges de base
+        v_sql := 'GRANT CONNECT TO ' || p_username;
+        EXECUTE IMMEDIATE v_sql;
+        
+        -- Accorder les privilèges selon le rôle
+        IF p_role = 'ADMINISTRATEUR' THEN
+            v_sql := 'GRANT RESOURCE, DBA TO ' || p_username;
+            EXECUTE IMMEDIATE v_sql;
+        ELSIF p_role = 'MAGASINIER' THEN
+            v_sql := 'GRANT SELECT, INSERT, UPDATE ON articles TO ' || p_username;
+            EXECUTE IMMEDIATE v_sql;
+            v_sql := 'GRANT SELECT, INSERT, UPDATE ON commandes TO ' || p_username;
+            EXECUTE IMMEDIATE v_sql;
+        ELSIF p_role = 'CHEFLIVREUR' THEN
+            v_sql := 'GRANT SELECT, INSERT, UPDATE, DELETE ON LivraisonCom TO ' || p_username;
+            EXECUTE IMMEDIATE v_sql;
+            v_sql := 'GRANT SELECT ON commandes TO ' || p_username;
+            EXECUTE IMMEDIATE v_sql;
+        END IF;
+        
+        DBMS_OUTPUT.PUT_LINE('Utilisateur créé avec succès: ' || p_username);
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END creer_utilisateur;
+    
+    PROCEDURE modifier_utilisateur(
+        p_username IN VARCHAR2,
+        p_nouveau_password IN VARCHAR2
+    ) IS
+        v_sql VARCHAR2(500);
+    BEGIN
+        v_sql := 'ALTER USER ' || p_username || 
+                 ' IDENTIFIED BY ' || p_nouveau_password;
+        EXECUTE IMMEDIATE v_sql;
+        
+        DBMS_OUTPUT.PUT_LINE('Mot de passe modifié pour: ' || p_username);
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END modifier_utilisateur;
+    
+    PROCEDURE supprimer_utilisateur(
+        p_username IN VARCHAR2
+    ) IS
+        v_sql VARCHAR2(500);
+    BEGIN
+        v_sql := 'DROP USER ' || p_username || ' CASCADE';
+        EXECUTE IMMEDIATE v_sql;
+        
+        DBMS_OUTPUT.PUT_LINE('Utilisateur supprimé: ' || p_username);
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END supprimer_utilisateur;
+    
+    PROCEDURE lister_utilisateurs IS
+        CURSOR c_users IS
+            SELECT username, created FROM dba_users
+            WHERE username NOT IN ('SYS', 'SYSTEM', 'DBSNMP', 'SYSMAN')
+            ORDER BY username;
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('Liste des utilisateurs:');
+        FOR rec IN c_users LOOP
+            DBMS_OUTPUT.PUT_LINE('  ' || rec.username || 
+                               ' - Créé le: ' || TO_CHAR(rec.created, 'DD/MM/YYYY'));
+        END LOOP;
+    END lister_utilisateurs;
+    
+END pkg_gestion_utilisateurs;
+/
+
+
+
+CREATE OR REPLACE PACKAGE BODY pkg_gestion_livraisons AS
+    
+    -- Vérifie si un livreur a moins de 15 livraisons dans la même ville le même jour
+    FUNCTION verifier_limite_livraisons(
+        p_livreur IN NUMBER,
+        p_date IN DATE,
+        p_code_postal IN NUMBER
+    ) RETURN BOOLEAN IS
+        v_count NUMBER;
+    BEGIN
+        SELECT COUNT(*)
+        INTO v_count
+        FROM LivraisonCom lc
+        JOIN commandes c ON lc.nocde = c.nocde
+        JOIN clients cl ON c.noclt = cl.noclt
+        WHERE lc.livreur = p_livreur
+        AND TRUNC(lc.dateliv) = TRUNC(p_date)
+        AND cl.code_postal = p_code_postal;
+        
+        RETURN v_count < 15;
+    END verifier_limite_livraisons;
+    
+    
+    -- Vérifie si la modification est faite dans les heures autorisées
+    FUNCTION verifier_heure_maj(
+        p_dateliv IN DATE
+    ) RETURN BOOLEAN IS
+        v_heure NUMBER;
+    BEGIN
+        v_heure := TO_NUMBER(TO_CHAR(SYSDATE,'HH24'));
+
+        -- Si la livraison est aujourd’hui, vérifier les limitations
+        IF TRUNC(p_dateliv) = TRUNC(SYSDATE) THEN
+            IF v_heure < 9 THEN
+                RETURN TRUE;
+            ELSIF v_heure < 14 THEN
+                RETURN TRUE;
+            ELSE
+                RETURN FALSE;
+            END IF;
+        END IF;
+        
+        RETURN TRUE;
+    END verifier_heure_maj;
+    
+
+    -----------------------------------------------------------------------
+    -- PROCÉDURE : Ajouter une livraison
+    -----------------------------------------------------------------------
+    PROCEDURE ajouter_livraison(
+        p_nocde IN NUMBER,
+        p_dateliv IN DATE,
+        p_livreur IN NUMBER,
+        p_modepay IN VARCHAR2
+    ) IS
+        v_code_postal NUMBER;
+        v_etat_cmd commandes.etatcde%TYPE;
+    BEGIN
+        -- Vérifier si la commande existe et récupérer son état + code postal client
+        SELECT c.etatcde, cl.code_postal
+        INTO v_etat_cmd, v_code_postal
+        FROM commandes c
+        JOIN clients cl ON cl.noclt = c.noclt
+        WHERE c.nocde = p_nocde;
+
+        -- Vérifier si la commande est prête
+        IF v_etat_cmd <> 'PR' THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_commande_non_prete);
+            RETURN;
+        END IF;
+
+        -- Vérifier limite 15 livraisons
+        IF NOT verifier_limite_livraisons(p_livreur, p_dateliv, v_code_postal) THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_limite_livraisons);
+            RETURN;
+        END IF;
+
+        -- Insérer la livraison
+        INSERT INTO LivraisonCom (nocde, dateliv, livreur, modepay, etatliv)
+        VALUES (p_nocde, p_dateliv, p_livreur, p_modepay, 'EC');
+
+        DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_ajout);
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_introuvable);
+        WHEN DUP_VAL_ON_INDEX THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_existe_deja);
+    END ajouter_livraison;
+
+
+    -----------------------------------------------------------------------
+    -- PROCÉDURE : Supprimer livraison
+    -----------------------------------------------------------------------
+    PROCEDURE supprimer_livraison(
+        p_nocde IN NUMBER
+    ) IS
+    BEGIN
+        DELETE FROM LivraisonCom WHERE nocde = p_nocde;
+        
+        IF SQL%ROWCOUNT = 0 THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_introuvable);
+        ELSE
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_suppr);
+        END IF;
+    END supprimer_livraison;
+
+
+    -----------------------------------------------------------------------
+    -- PROCÉDURE : Modifier livraison (date ou livreur)
+    -----------------------------------------------------------------------
+    PROCEDURE modifier_livraison(
+        p_nocde IN NUMBER,
+        p_nouvelle_date IN DATE DEFAULT NULL,
+        p_nouveau_livreur IN NUMBER DEFAULT NULL
+    ) IS
+        v_code_postal NUMBER;
+    BEGIN
+        -- Vérifier heures autorisées
+        IF p_nouvelle_date IS NOT NULL THEN
+            IF NOT verifier_heure_maj(p_nouvelle_date) THEN
+                DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_heure_maj);
+                RETURN;
+            END IF;
+        END IF;
+
+        -- Récupérer code postal pour vérifier la limite des livraisons
+        SELECT cl.code_postal
+        INTO v_code_postal
+        FROM commandes c
+        JOIN clients cl ON cl.noclt = c.noclt
+        WHERE c.nocde = p_nocde;
+
+        -- Vérifier limite si changement livreur ou date
+        IF p_nouveau_livreur IS NOT NULL AND p_nouvelle_date IS NOT NULL THEN
+            IF NOT verifier_limite_livraisons(p_nouveau_livreur, p_nouvelle_date, v_code_postal) THEN
+                DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_limite_livraisons);
+                RETURN;
+            END IF;
+        END IF;
+
+        UPDATE LivraisonCom
+        SET dateliv = NVL(p_nouvelle_date, dateliv),
+            livreur = NVL(p_nouveau_livreur, livreur)
+        WHERE nocde = p_nocde;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_introuvable);
+        ELSE
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_modif);
+        END IF;
+    END modifier_livraison;
+
+
+    -----------------------------------------------------------------------
+    -- RECHERCHES
+    -----------------------------------------------------------------------
+
+    PROCEDURE chercher_livraison_par_commande(
+        p_nocde IN NUMBER
+    ) IS
+    BEGIN
+        FOR rec IN (
+            SELECT * FROM LivraisonCom WHERE nocde = p_nocde
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE(
+                'Commande=' || rec.nocde || 
+                ' | Date=' || TO_CHAR(rec.dateliv,'DD-MM-YYYY') ||
+                ' | Livreur=' || rec.livreur ||
+                ' | ModePay=' || rec.modepay ||
+                ' | Etat=' || rec.etatliv
+            );
+        END LOOP;
+    END chercher_livraison_par_commande;
+
+
+    PROCEDURE chercher_livraison_par_livreur(
+        p_livreur IN NUMBER
+    ) IS
+    BEGIN
+        FOR rec IN (
+            SELECT * FROM LivraisonCom WHERE livreur = p_livreur
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE(
+                'Commande=' || rec.nocde ||
+                ' | Date=' || TO_CHAR(rec.dateliv,'DD-MM-YYYY') ||
+                ' | ModePay=' || rec.modepay
+            );
+        END LOOP;
+    END chercher_livraison_par_livreur;
+
+
+    PROCEDURE chercher_livraison_par_ville(
+        p_code_postal IN NUMBER
+    ) IS
+    BEGIN
+        FOR rec IN (
+            SELECT lc.*
+            FROM LivraisonCom lc
+            JOIN commandes c ON lc.nocde = c.nocde
+            JOIN clients cl ON cl.noclt = c.noclt
+            WHERE cl.code_postal = p_code_postal
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE(
+                'Commande=' || rec.nocde || 
+                ' | Date=' || TO_CHAR(rec.dateliv,'DD-MM-YYYY') ||
+                ' | Livreur=' || rec.livreur
+            );
+        END LOOP;
+    END chercher_livraison_par_ville;
+
+END pkg_gestion_livraisons;
+/
+
+
+
+CREATE OR REPLACE TRIGGER trg_verif_article_unique
+BEFORE INSERT ON articles
+FOR EACH ROW
+DECLARE
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v_count FROM articles WHERE refart = :NEW.refart;
+    IF v_count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20016, 'Article déjà existant');
+    END IF;
+END;
+/
+
+-- Trigger: Vérification client unique
+CREATE OR REPLACE TRIGGER trg_verif_client_unique
+BEFORE INSERT ON clients
+FOR EACH ROW
+DECLARE
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v_count 
+    FROM clients 
+    WHERE nomclt = :NEW.nomclt 
+    AND prenomclt = :NEW.prenomclt
+    AND telclt = :NEW.telclt;
+    
+    IF v_count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20017, 'Client déjà existant');
+    END IF;
+END;
+/
+
+-- Trigger: Date commande = date système
+CREATE OR REPLACE TRIGGER trg_date_commande
+BEFORE INSERT ON commandes
+FOR EACH ROW
+BEGIN
+    :NEW.datecde := SYSDATE;
+    :NEW.etatcde := 'EC';
+END;
+/
+
+-- Trigger: Audit des modifications de commandes
+CREATE OR REPLACE TRIGGER trg_audit_commandes
+AFTER UPDATE ON commandes
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_commandes (nocde, ancien_etat, nouvel_etat, date_modif)
+    VALUES (:OLD.nocde, :OLD.etatcde, :NEW.etatcde, SYSDATE);
+EXCEPTION
+    WHEN OTHERS THEN
+        NULL; -- Table audit optionnelle
+END;
+/
+
+-- Trigger: Mise à jour stock après commande
+CREATE OR REPLACE TRIGGER trg_maj_stock
+AFTER INSERT ON ligcdes
+FOR EACH ROW
+BEGIN
+    UPDATE articles
+    SET qtestk = qtestk - :NEW.qtecde
+    WHERE refart = :NEW.refart;
+    
+    IF SQL%ROWCOUNT = 0 THEN
+        RAISE_APPLICATION_ERROR(-20018, 'Article introuvable');
+    END IF;
+END;
+/
+CREATE OR REPLACE PACKAGE BODY pkg_gestion_livraisons AS
+    
+    -- Vérifie si le livreur n’a pas dépassé 15 livraisons dans la même ville et le même jour
+    FUNCTION verifier_limite_livraisons(
+        p_livreur IN NUMBER,
+        p_date IN DATE,
+        p_code_postal IN NUMBER
+    ) RETURN BOOLEAN IS
+        v_count NUMBER;
+    BEGIN
+        SELECT COUNT(*)
+        INTO v_count
+        FROM LivraisonCom lc
+        JOIN commandes c ON lc.nocde = c.nocde
+        JOIN clients cl ON c.noclt = cl.noclt
+        WHERE lc.livreur = p_livreur
+          AND TRUNC(lc.dateliv) = TRUNC(p_date)
+          AND cl.code_postal = p_code_postal;
+
+        RETURN v_count < 15;
+    END verifier_limite_livraisons;
+
+
+    -- Vérifie si la modification est dans les délais
+    FUNCTION verifier_heure_maj(
+        p_dateliv IN DATE
+    ) RETURN BOOLEAN IS
+        v_heure_actuelle NUMBER;
+    BEGIN
+        v_heure_actuelle := TO_NUMBER(TO_CHAR(SYSDATE, 'HH24'));
+
+        IF TRUNC(p_dateliv) = TRUNC(SYSDATE) THEN
+            IF v_heure_actuelle >= 14 THEN
+                RETURN FALSE;
+            END IF;
+        END IF;
+
+        RETURN TRUE;
+    END verifier_heure_maj;
+
+
+    -- Ajouter livraison
+    PROCEDURE ajouter_livraison(
+        p_nocde IN NUMBER,
+        p_dateliv IN DATE,
+        p_livreur IN NUMBER,
+        p_modepay IN VARCHAR2
+    ) IS
+        v_code_postal NUMBER;
+        v_etatcde commandes.etatcde%TYPE;
+    BEGIN
+        -- Vérifier que la commande existe et est prête (PR)
+        SELECT etatcde, cl.code_postal
+        INTO v_etatcde, v_code_postal
+        FROM commandes c
+        JOIN clients cl ON c.noclt = cl.noclt
+        WHERE nocde = p_nocde;
+
+        IF v_etatcde <> 'PR' THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_commande_non_prete);
+            RETURN;
+        END IF;
+
+        -- Vérification limite livraisons
+        IF NOT verifier_limite_livraisons(p_livreur, p_dateliv, v_code_postal) THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_limite_livraisons);
+            RETURN;
+        END IF;
+
+        -- Ajout
+        INSERT INTO LivraisonCom(nocde, dateliv, livreur, modepay, etatliv)
+        VALUES (p_nocde, p_dateliv, p_livreur, p_modepay, 'EC');
+
+        DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_ajout);
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_introuvable);
+        WHEN DUP_VAL_ON_INDEX THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_existe_deja);
+    END ajouter_livraison;
+
+
+    -- Supprimer livraison
+    PROCEDURE supprimer_livraison(
+        p_nocde IN NUMBER
+    ) IS
+        v_count NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO v_count
+        FROM LivraisonCom
+        WHERE nocde = p_nocde;
+
+        IF v_count = 0 THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_introuvable);
+            RETURN;
+        END IF;
+
+        DELETE FROM LivraisonCom
+        WHERE nocde = p_nocde;
+
+        DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_suppr);
+    END supprimer_livraison;
+
+
+    -- Modifier livraison
+    PROCEDURE modifier_livraison(
+        p_nocde IN NUMBER,
+        p_nouvelle_date IN DATE DEFAULT NULL,
+        p_nouveau_livreur IN NUMBER DEFAULT NULL
+    ) IS
+        v_old_date DATE;
+        v_old_livreur NUMBER;
+        v_code_postal NUMBER;
+    BEGIN
+        SELECT lc.dateliv, lc.livreur, cl.code_postal
+        INTO v_old_date, v_old_livreur, v_code_postal
+        FROM LivraisonCom lc
+        JOIN commandes c ON lc.nocde = c.nocde
+        JOIN clients cl ON c.noclt = cl.noclt
+        WHERE lc.nocde = p_nocde;
+
+        -- Vérifier délai modification
+        IF NOT verifier_heure_maj(v_old_date) THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_heure_maj);
+            RETURN;
+        END IF;
+
+        -- Vérifier limite si modification du livreur ou date
+        IF p_nouveau_livreur IS NOT NULL OR p_nouvelle_date IS NOT NULL THEN
+            IF NOT verifier_limite_livraisons(
+                    NVL(p_nouveau_livreur, v_old_livreur),
+                    NVL(p_nouvelle_date, v_old_date),
+                    v_code_postal
+            ) THEN
+                DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_limite_livraisons);
+                RETURN;
+            END IF;
+        END IF;
+
+        UPDATE LivraisonCom
+        SET dateliv = NVL(p_nouvelle_date, dateliv),
+            livreur = NVL(p_nouveau_livreur, livreur)
+        WHERE nocde = p_nocde;
+
+        DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_modif);
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_introuvable);
+    END modifier_livraison;
+
+
+    -- Rechercher livraison par commande
+    PROCEDURE chercher_livraison_par_commande(
+        p_nocde IN NUMBER
+    ) IS
+    BEGIN
+        FOR rec IN (
+            SELECT * FROM LivraisonCom
+            WHERE nocde = p_nocde
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE(
+                'Commande ' || rec.nocde ||
+                ' - Date: ' || rec.dateliv ||
+                ' - Livreur: ' || rec.livreur ||
+                ' - Mode: ' || rec.modepay ||
+                ' - État: ' || rec.etatliv
+            );
+        END LOOP;
+    END chercher_livraison_par_commande;
+
+
+    -- Rechercher livraison par livreur
+    PROCEDURE chercher_livraison_par_livreur(
+        p_livreur IN NUMBER
+    ) IS
+    BEGIN
+        FOR rec IN (
+            SELECT * FROM LivraisonCom WHERE livreur = p_livreur
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE(
+                'Commande ' || rec.nocde ||
+                ' - Date: ' || rec.dateliv ||
+                ' - Mode: ' || rec.modepay ||
+                ' - État: ' || rec.etatliv
+            );
+        END LOOP;
+    END chercher_livraison_par_livreur;
+
+
+    -- Rechercher livraison par ville
+    PROCEDURE chercher_livraison_par_ville(
+        p_code_postal IN NUMBER
+    ) IS
+    BEGIN
+        FOR rec IN (
+            SELECT lc.*
+            FROM LivraisonCom lc
+            JOIN commandes c ON lc.nocde = c.nocde
+            JOIN clients cl ON c.noclt = cl.noclt
+            WHERE cl.code_postal = p_code_postal
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE(
+                'Commande ' || rec.nocde ||
+                ' - Date: ' || rec.dateliv ||
+                ' - Livreur: ' || rec.livreur
+            );
+        END LOOP;
+    END chercher_livraison_par_ville;
+
+END pkg_gestion_livraisons;
+/
+
+
+
+-- Vue pour les clients
+CREATE OR REPLACE VIEW vue_clients_commandes AS
+SELECT c.nocde, c.datecde, c.etatcde,
+       cl.nomclt, cl.prenomclt, cl.telclt, cl.adrmail,
+       lc.dateliv, lc.modepay, lc.etatliv
+FROM commandes c
+JOIN clients cl ON c.noclt = cl.noclt
+LEFT JOIN LivraisonCom lc ON c.nocde = lc.nocde;
+
+-- Vue pour le personnel
+CREATE OR REPLACE VIEW vue_personnel_info AS
+SELECT p.idpers, p.nompers, p.prenompers, p.villepers, p.telpers,
+       po.libelle AS poste, p.d_embauche
+FROM personnel p
+JOIN postes po ON p.codeposte = po.codeposte;
+
+-- Vue pour les statistiques des livraisons
+CREATE OR REPLACE VIEW vue_stats_livraisons AS
+SELECT p.idpers, p.nompers, p.prenompers,
+       COUNT(*) AS nb_livraisons,
+       cl.code_postal, cl.villeclt
+FROM LivraisonCom lc
+JOIN personnel p ON lc.livreur = p.idpers
+JOIN commandes c ON lc.nocde = c.nocde
+JOIN clients cl ON c.noclt = cl.noclt
+WHERE TRUNC(lc.dateliv) = TRUNC(SYSDATE)
+GROUP BY p.idpers, p.nompers, p.prenompers, cl.code_postal, cl.villeclt;
+
+
+
+CREATE OR REPLACE PACKAGE pkg_gestion_commandes AS
+    -- Ajouter une nouvelle commande
+    PROCEDURE ajouter_commande(
+        p_noclt IN NUMBER,
+        p_refart IN CHAR,
+        p_qtecde IN NUMBER
+    );
+    
+    -- Modifier l'état d'une commande (transitions autorisées)
+    PROCEDURE modifier_etat_commande(
+        p_nocde IN NUMBER,
+        p_nouvel_etat IN CHAR
+    );
+    
+    -- Annuler une commande (suppression logique)
+    PROCEDURE annuler_commande(
+        p_nocde IN NUMBER
+    );
+    
+    -- Chercher commandes par numéro
+    PROCEDURE chercher_commande_par_numero(
+        p_nocde IN NUMBER
+    );
+    
+    -- Chercher commandes par client
+    PROCEDURE chercher_commande_par_client(
+        p_noclt IN NUMBER
+    );
+    
+    -- Chercher commandes par date
+    PROCEDURE chercher_commande_par_date(
+        p_date IN DATE
+    );
+    
+    -- Vérifier si la transition d'état est valide
+    FUNCTION transition_etat_valide(
+        p_etat_actuel IN CHAR,
+        p_nouvel_etat IN CHAR
+    ) RETURN BOOLEAN;
+END pkg_gestion_commandes;
+/
+
+CREATE OR REPLACE PACKAGE BODY pkg_gestion_commandes AS
+    
+    -- ========================================================================
+    -- FONCTION: Vérifier si la transition d'état est valide
+    -- Transitions autorisées:
+    --   EC -> PR -> LI -> SO
+    --   EC -> AN
+    --   EC -> PR -> AN
+    --   EC -> PR -> AL
+    -- ========================================================================
+    FUNCTION transition_etat_valide(
+        p_etat_actuel IN CHAR,
+        p_nouvel_etat IN CHAR
+    ) RETURN BOOLEAN IS
+    BEGIN
+        -- De EC (En Cours)
+        IF p_etat_actuel = 'EC' THEN
+            RETURN p_nouvel_etat IN ('PR', 'AN');
+        
+        -- De PR (Prêt)
+        ELSIF p_etat_actuel = 'PR' THEN
+            RETURN p_nouvel_etat IN ('LI', 'AN', 'AL');
+        
+        -- De LI (Livré)
+        ELSIF p_etat_actuel = 'LI' THEN
+            RETURN p_nouvel_etat = 'SO';
+        
+        -- De SO (Soldé), AN (Annulé), AL (Annulé Livraison) : pas de transition
+        ELSE
+            RETURN FALSE;
+        END IF;
+    END transition_etat_valide;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Ajouter une nouvelle commande
+    -- ========================================================================
+    PROCEDURE ajouter_commande(
+        p_noclt IN NUMBER,
+        p_refart IN CHAR,
+        p_qtecde IN NUMBER
+    ) IS
+        v_nocde NUMBER;
+        v_qtestk NUMBER;
+        v_client_existe NUMBER;
+        v_article_existe NUMBER;
+    BEGIN
+        -- Vérifier que le client existe
+        SELECT COUNT(*) INTO v_client_existe
+        FROM clients
+        WHERE noclt = p_noclt;
+        
+        IF v_client_existe = 0 THEN
+            RAISE_APPLICATION_ERROR(-20020, 'Erreur : Client introuvable.');
+            RETURN;
+        END IF;
+        
+        -- Vérifier que l'article existe et récupérer le stock
+        BEGIN
+            SELECT qtestk INTO v_qtestk
+            FROM articles
+            WHERE refart = p_refart AND supp = 'N';
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                RAISE_APPLICATION_ERROR(-20021, 'Erreur : Article introuvable ou supprimé.');
+                RETURN;
+        END;
+        
+        -- Vérifier le stock disponible
+        IF v_qtestk < p_qtecde THEN
+            RAISE_APPLICATION_ERROR(-20022, 'Erreur : Stock insuffisant. Disponible: ' || v_qtestk);
+            RETURN;
+        END IF;
+        
+        -- Créer la commande
+        INSERT INTO commandes (nocde, noclt, datecde, etatcde)
+        VALUES (seq_commandes.NEXTVAL, p_noclt, SYSDATE, 'EC')
+        RETURNING nocde INTO v_nocde;
+        
+        -- Ajouter la ligne de commande
+        INSERT INTO ligcdes (nocde, refart, qtecde)
+        VALUES (v_nocde, p_refart, p_qtecde);
+        
+        -- Mettre à jour le stock
+        UPDATE articles
+        SET qtestk = qtestk - p_qtecde
+        WHERE refart = p_refart;
+        
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_ajout || ' Commande N°' || v_nocde);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            DBMS_OUTPUT.PUT_LINE('Erreur lors de l''ajout: ' || SQLERRM);
+            RAISE;
+    END ajouter_commande;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Modifier l'état d'une commande
+    -- ========================================================================
+    PROCEDURE modifier_etat_commande(
+        p_nocde IN NUMBER,
+        p_nouvel_etat IN CHAR
+    ) IS
+        v_etat_actuel commandes.etatcde%TYPE;
+        v_existe NUMBER;
+    BEGIN
+        -- Vérifier que la commande existe et récupérer son état actuel
+        BEGIN
+            SELECT etatcde INTO v_etat_actuel
+            FROM commandes
+            WHERE nocde = p_nocde;
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_introuvable);
+                RETURN;
+        END;
+        
+        -- Vérifier si la transition est valide
+        IF NOT transition_etat_valide(v_etat_actuel, p_nouvel_etat) THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_etat_invalide || 
+                               ' (Transition ' || v_etat_actuel || ' -> ' || p_nouvel_etat || ' non autorisée)');
+            RETURN;
+        END IF;
+        
+        -- Mettre à jour l'état
+        UPDATE commandes
+        SET etatcde = p_nouvel_etat
+        WHERE nocde = p_nocde;
+        
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_modif || 
+                           ' État modifié: ' || v_etat_actuel || ' -> ' || p_nouvel_etat);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END modifier_etat_commande;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Annuler une commande (suppression logique)
+    -- ========================================================================
+    PROCEDURE annuler_commande(
+        p_nocde IN NUMBER
+    ) IS
+        v_noclt NUMBER;
+        v_datecde DATE;
+        v_etatcde CHAR(2);
+        v_nbrart NUMBER;
+        v_montant NUMBER(10,2);
+        v_code_postal NUMBER;
+        v_avantliv CHAR(1);
+    BEGIN
+        -- Récupérer les informations de la commande
+        BEGIN
+            SELECT c.noclt, c.datecde, c.etatcde, cl.code_postal
+            INTO v_noclt, v_datecde, v_etatcde, v_code_postal
+            FROM commandes c
+            JOIN clients cl ON c.noclt = cl.noclt
+            WHERE c.nocde = p_nocde;
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_introuvable);
+                RETURN;
+        END;
+        
+        -- Vérifier si la commande peut être annulée (pas déjà soldée)
+        IF v_etatcde = 'SO' THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur : Impossible d''annuler une commande déjà soldée.');
+            RETURN;
+        END IF;
+        
+        -- Déterminer si l'annulation est avant livraison
+        IF v_etatcde IN ('EC', 'PR') THEN
+            v_avantliv := 'O';  -- Avant livraison
+        ELSE
+            v_avantliv := 'N';  -- Après livraison ou en cours
+        END IF;
+        
+        -- Calculer le nombre d'articles et le montant
+        SELECT COUNT(DISTINCT refart), NVL(SUM(l.qtecde * a.prixV), 0)
+        INTO v_nbrart, v_montant
+        FROM ligcdes l
+        JOIN articles a ON l.refart = a.refart
+        WHERE l.nocde = p_nocde;
+        
+        -- Remettre le stock si annulation avant livraison
+        IF v_avantliv = 'O' THEN
+            FOR rec IN (SELECT refart, qtecde FROM ligcdes WHERE nocde = p_nocde) LOOP
+                UPDATE articles
+                SET qtestk = qtestk + rec.qtecde
+                WHERE refart = rec.refart;
+            END LOOP;
+        END IF;
+        
+        -- Mettre à jour l'état de la commande
+        UPDATE commandes
+        SET etatcde = 'AN'
+        WHERE nocde = p_nocde;
+        
+        -- Ajouter à l'historique des commandes annulées
+        INSERT INTO HCommandesAnnulees (
+            nocde, numclt, nbrart, montantc, datecde, 
+            dateAnnulation, code_postal, AvantLiv
+        )
+        VALUES (
+            p_nocde, v_noclt, v_nbrart, v_montant, v_datecde,
+            SYSDATE, v_code_postal, v_avantliv
+        );
+        
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE('Commande N°' || p_nocde || ' annulée avec succès. Avant livraison: ' || v_avantliv);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            DBMS_OUTPUT.PUT_LINE('Erreur lors de l''annulation: ' || SQLERRM);
+            RAISE;
+    END annuler_commande;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Chercher commande par numéro
+    -- ========================================================================
+    PROCEDURE chercher_commande_par_numero(
+        p_nocde IN NUMBER
+    ) IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('=== Recherche commande N°' || p_nocde || ' ===');
+        
+        FOR rec IN (
+            SELECT c.nocde, c.datecde, c.etatcde,
+                   cl.nomclt, cl.prenomclt, cl.telclt,
+                   l.refart, a.designation, l.qtecde, a.prixV,
+                   (l.qtecde * a.prixV) AS montant_ligne
+            FROM commandes c
+            JOIN clients cl ON c.noclt = cl.noclt
+            LEFT JOIN ligcdes l ON c.nocde = l.nocde
+            LEFT JOIN articles a ON l.refart = a.refart
+            WHERE c.nocde = p_nocde
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE('Date: ' || TO_CHAR(rec.datecde, 'DD/MM/YYYY') || 
+                               ' | État: ' || rec.etatcde);
+            DBMS_OUTPUT.PUT_LINE('Client: ' || rec.nomclt || ' ' || 
+                               NVL(rec.prenomclt, '') || ' | Tél: ' || rec.telclt);
+            DBMS_OUTPUT.PUT_LINE('Article: ' || rec.refart || ' - ' || rec.designation ||
+                               ' | Qté: ' || rec.qtecde || 
+                               ' | Prix unitaire: ' || rec.prixV ||
+                               ' | Total: ' || rec.montant_ligne);
+            DBMS_OUTPUT.PUT_LINE('---');
+        END LOOP;
+    END chercher_commande_par_numero;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Chercher commandes par client
+    -- ========================================================================
+    PROCEDURE chercher_commande_par_client(
+        p_noclt IN NUMBER
+    ) IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('=== Commandes du client N°' || p_noclt || ' ===');
+        
+        FOR rec IN (
+            SELECT c.nocde, c.datecde, c.etatcde,
+                   COUNT(l.refart) AS nb_articles,
+                   NVL(SUM(l.qtecde * a.prixV), 0) AS montant_total
+            FROM commandes c
+            LEFT JOIN ligcdes l ON c.nocde = l.nocde
+            LEFT JOIN articles a ON l.refart = a.refart
+            WHERE c.noclt = p_noclt
+            GROUP BY c.nocde, c.datecde, c.etatcde
+            ORDER BY c.datecde DESC
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE('Commande N°' || rec.nocde || 
+                               ' | Date: ' || TO_CHAR(rec.datecde, 'DD/MM/YYYY') ||
+                               ' | État: ' || rec.etatcde ||
+                               ' | Articles: ' || rec.nb_articles ||
+                               ' | Montant: ' || rec.montant_total || ' TND');
+        END LOOP;
+    END chercher_commande_par_client;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Chercher commandes par date
+    -- ========================================================================
+    PROCEDURE chercher_commande_par_date(
+        p_date IN DATE
+    ) IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('=== Commandes du ' || TO_CHAR(p_date, 'DD/MM/YYYY') || ' ===');
+        
+        FOR rec IN (
+            SELECT c.nocde, c.noclt, cl.nomclt, c.etatcde,
+                   NVL(SUM(l.qtecde * a.prixV), 0) AS montant_total
+            FROM commandes c
+            JOIN clients cl ON c.noclt = cl.noclt
+            LEFT JOIN ligcdes l ON c.nocde = l.nocde
+            LEFT JOIN articles a ON l.refart = a.refart
+            WHERE TRUNC(c.datecde) = TRUNC(p_date)
+            GROUP BY c.nocde, c.noclt, cl.nomclt, c.etatcde
+            ORDER BY c.nocde
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE('Commande N°' || rec.nocde ||
+                               ' | Client: ' || rec.nomclt ||
+                               ' | État: ' || rec.etatcde ||
+                               ' | Montant: ' || rec.montant_total || ' TND');
+        END LOOP;
+    END chercher_commande_par_date;
+    
+END pkg_gestion_commandes;
+/
+
+
+
+-- ============================================================================
+-- PACKAGE: pkg_gestion_utilisateurs (REFONTE COMPLÈTE)
+-- Description: Gestion des utilisateurs de l'application (table personnel)
+--              + Gestion des utilisateurs Oracle (optionnel)
+-- ============================================================================
+
+CREATE OR REPLACE PACKAGE pkg_gestion_utilisateurs AS
+    -- ========== GESTION DES UTILISATEURS APPLICATION ==========
+    
+    -- Authentifier un utilisateur
+    FUNCTION authentifier(
+        p_login IN VARCHAR2,
+        p_motP IN VARCHAR2
+    ) RETURN NUMBER;  -- Retourne idpers si succès, 0 sinon
+    
+    -- Ajouter un utilisateur (personnel)
+    PROCEDURE ajouter_utilisateur(
+        p_nompers IN VARCHAR2,
+        p_prenompers IN VARCHAR2,
+        p_adrpers IN VARCHAR2,
+        p_villepers IN VARCHAR2,
+        p_telpers IN NUMBER,
+        p_login IN VARCHAR2,
+        p_motP IN VARCHAR2,
+        p_codeposte IN VARCHAR2
+    );
+    
+    -- Modifier un utilisateur
+    PROCEDURE modifier_utilisateur(
+        p_idpers IN NUMBER,
+        p_nompers IN VARCHAR2 DEFAULT NULL,
+        p_prenompers IN VARCHAR2 DEFAULT NULL,
+        p_adrpers IN VARCHAR2 DEFAULT NULL,
+        p_villepers IN VARCHAR2 DEFAULT NULL,
+        p_telpers IN NUMBER DEFAULT NULL,
+        p_motP IN VARCHAR2 DEFAULT NULL,
+        p_codeposte IN VARCHAR2 DEFAULT NULL
+    );
+    
+    -- Supprimer un utilisateur (logique)
+    PROCEDURE supprimer_utilisateur(
+        p_idpers IN NUMBER
+    );
+    
+    -- Changer le mot de passe
+    PROCEDURE changer_mot_de_passe(
+        p_login IN VARCHAR2,
+        p_ancien_motP IN VARCHAR2,
+        p_nouveau_motP IN VARCHAR2
+    );
+    
+    -- Rechercher un utilisateur
+    PROCEDURE chercher_utilisateur(
+        p_critere IN VARCHAR2,  -- 'ID', 'LOGIN', 'NOM', 'POSTE'
+        p_valeur IN VARCHAR2
+    );
+    
+    -- Lister tous les utilisateurs
+    PROCEDURE lister_utilisateurs;
+    
+    -- Obtenir le rôle d'un utilisateur
+    FUNCTION obtenir_role(p_idpers IN NUMBER) RETURN VARCHAR2;
+    
+    
+    -- ========== GESTION UTILISATEURS ORACLE (OPTIONNEL) ==========
+    
+    -- Créer utilisateur Oracle et l'associer au personnel
+    PROCEDURE creer_utilisateur_oracle(
+        p_idpers IN NUMBER,
+        p_username IN VARCHAR2,
+        p_password IN VARCHAR2
+    );
+    
+    -- Supprimer utilisateur Oracle
+    PROCEDURE supprimer_utilisateur_oracle(
+        p_username IN VARCHAR2
+    );
+    
+    -- Lister utilisateurs Oracle
+    PROCEDURE lister_utilisateurs_oracle;
+END pkg_gestion_utilisateurs;
+/
+
+CREATE OR REPLACE PACKAGE BODY pkg_gestion_utilisateurs AS
+    
+    -- ========================================================================
+    -- FONCTION: Authentifier un utilisateur
+    -- ========================================================================
+    FUNCTION authentifier(
+        p_login IN VARCHAR2,
+        p_motP IN VARCHAR2
+    ) RETURN NUMBER IS
+        v_idpers NUMBER;
+        v_motP_stocke VARCHAR2(20);
+    BEGIN
+        -- Récupérer l'id et le mot de passe
+        BEGIN
+            SELECT idpers, motP
+            INTO v_idpers, v_motP_stocke
+            FROM personnel
+            WHERE login = p_login;
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                RETURN 0;  -- Login inexistant
+        END;
+        
+        -- Vérifier le mot de passe
+        IF v_motP_stocke = p_motP THEN
+            DBMS_OUTPUT.PUT_LINE('Authentification réussie pour: ' || p_login);
+            RETURN v_idpers;
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('Mot de passe incorrect pour: ' || p_login);
+            RETURN 0;
+        END IF;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur authentification: ' || SQLERRM);
+            RETURN 0;
+    END authentifier;
+    
+    
+    
+    PROCEDURE ajouter_utilisateur(
+        p_nompers IN VARCHAR2,
+        p_prenompers IN VARCHAR2,
+        p_adrpers IN VARCHAR2,
+        p_villepers IN VARCHAR2,
+        p_telpers IN NUMBER,
+        p_login IN VARCHAR2,
+        p_motP IN VARCHAR2,
+        p_codeposte IN VARCHAR2
+    ) IS
+        v_login_existe NUMBER;
+        v_poste_existe NUMBER;
+        v_idpers NUMBER;
+    BEGIN
+        -- Vérifier que le login n'existe pas déjà
+        SELECT COUNT(*) INTO v_login_existe
+        FROM personnel
+        WHERE login = p_login;
+        
+        IF v_login_existe > 0 THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: Ce login existe déjà.');
+            RETURN;
+        END IF;
+        
+        -- Vérifier que le poste existe
+        SELECT COUNT(*) INTO v_poste_existe
+        FROM postes
+        WHERE codeposte = p_codeposte;
+        
+        IF v_poste_existe = 0 THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: Code poste inexistant.');
+            RETURN;
+        END IF;
+        
+        -- Vérifier format téléphone (8 chiffres)
+        IF LENGTH(TO_CHAR(p_telpers)) != 8 THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_telephone);
+            RETURN;
+        END IF;
+        
+        -- Insérer le nouvel utilisateur
+        INSERT INTO personnel (
+            idpers, nompers, prenompers, adrpers, villepers, 
+            telpers, d_embauche, login, motP, codeposte
+        )
+        VALUES (
+            seq_personnel.NEXTVAL, p_nompers, p_prenompers, p_adrpers, p_villepers,
+            p_telpers, SYSDATE, p_login, p_motP, p_codeposte
+        )
+        RETURNING idpers INTO v_idpers;
+        
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_ajout || ' ID: ' || v_idpers);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END ajouter_utilisateur;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Modifier un utilisateur
+    -- ========================================================================
+    PROCEDURE modifier_utilisateur(
+        p_idpers IN NUMBER,
+        p_nompers IN VARCHAR2 DEFAULT NULL,
+        p_prenompers IN VARCHAR2 DEFAULT NULL,
+        p_adrpers IN VARCHAR2 DEFAULT NULL,
+        p_villepers IN VARCHAR2 DEFAULT NULL,
+        p_telpers IN NUMBER DEFAULT NULL,
+        p_motP IN VARCHAR2 DEFAULT NULL,
+        p_codeposte IN VARCHAR2 DEFAULT NULL
+    ) IS
+        v_existe NUMBER;
+    BEGIN
+        -- Vérifier que l'utilisateur existe
+        SELECT COUNT(*) INTO v_existe
+        FROM personnel
+        WHERE idpers = p_idpers;
+        
+        IF v_existe = 0 THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_introuvable);
+            RETURN;
+        END IF;
+        
+        -- Vérifier téléphone si fourni
+        IF p_telpers IS NOT NULL AND LENGTH(TO_CHAR(p_telpers)) != 8 THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_telephone);
+            RETURN;
+        END IF;
+        
+        -- Mettre à jour les champs fournis
+        UPDATE personnel
+        SET nompers = NVL(p_nompers, nompers),
+            prenompers = NVL(p_prenompers, prenompers),
+            adrpers = NVL(p_adrpers, adrpers),
+            villepers = NVL(p_villepers, villepers),
+            telpers = NVL(p_telpers, telpers),
+            motP = NVL(p_motP, motP),
+            codeposte = NVL(p_codeposte, codeposte)
+        WHERE idpers = p_idpers;
+        
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_modif);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END modifier_utilisateur;
+    
+    
+    PROCEDURE supprimer_utilisateur(
+        p_idpers IN NUMBER
+    ) IS
+        v_existe NUMBER;
+    BEGIN
+        -- Vérifier que l'utilisateur existe
+        SELECT COUNT(*) INTO v_existe
+        FROM personnel
+        WHERE idpers = p_idpers;
+        
+        IF v_existe = 0 THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_introuvable);
+            RETURN;
+        END IF;
+        
+        -- Suppression logique: changer le login pour désactiver
+        UPDATE personnel
+        SET login = login || '_INACTIF_' || TO_CHAR(SYSDATE, 'YYYYMMDD')
+        WHERE idpers = p_idpers
+        AND login NOT LIKE '%_INACTIF_%';
+        
+        IF SQL%ROWCOUNT = 0 THEN
+            DBMS_OUTPUT.PUT_LINE('Utilisateur déjà désactivé.');
+        ELSE
+            COMMIT;
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_suppr);
+        END IF;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END supprimer_utilisateur;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Changer le mot de passe
+    -- ========================================================================
+    PROCEDURE changer_mot_de_passe(
+        p_login IN VARCHAR2,
+        p_ancien_motP IN VARCHAR2,
+        p_nouveau_motP IN VARCHAR2
+    ) IS
+        v_idpers NUMBER;
+    BEGIN
+        -- Authentifier d'abord avec l'ancien mot de passe
+        v_idpers := authentifier(p_login, p_ancien_motP);
+        
+        IF v_idpers = 0 THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: Login ou mot de passe incorrect.');
+            RETURN;
+        END IF;
+        
+        -- Changer le mot de passe
+        UPDATE personnel
+        SET motP = p_nouveau_motP
+        WHERE idpers = v_idpers;
+        
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE('Mot de passe modifié avec succès.');
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END changer_mot_de_passe;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Chercher un utilisateur
+    -- ========================================================================
+    PROCEDURE chercher_utilisateur(
+        p_critere IN VARCHAR2,
+        p_valeur IN VARCHAR2
+    ) IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('=== Recherche utilisateur (' || p_critere || ': ' || p_valeur || ') ===');
+        
+        IF p_critere = 'ID' THEN
+            FOR rec IN (
+                SELECT p.*, po.libelle
+                FROM personnel p
+                JOIN postes po ON p.codeposte = po.codeposte
+                WHERE p.idpers = TO_NUMBER(p_valeur)
+            ) LOOP
+                DBMS_OUTPUT.PUT_LINE('ID: ' || rec.idpers || ' | ' || 
+                                   rec.nompers || ' ' || rec.prenompers ||
+                                   ' | Login: ' || rec.login ||
+                                   ' | Poste: ' || rec.libelle);
+            END LOOP;
+            
+        ELSIF p_critere = 'LOGIN' THEN
+            FOR rec IN (
+                SELECT p.*, po.libelle
+                FROM personnel p
+                JOIN postes po ON p.codeposte = po.codeposte
+                WHERE p.login = p_valeur
+            ) LOOP
+                DBMS_OUTPUT.PUT_LINE('ID: ' || rec.idpers || ' | ' || 
+                                   rec.nompers || ' ' || rec.prenompers ||
+                                   ' | Tel: ' || rec.telpers ||
+                                   ' | Poste: ' || rec.libelle);
+            END LOOP;
+            
+        ELSIF p_critere = 'NOM' THEN
+            FOR rec IN (
+                SELECT p.*, po.libelle
+                FROM personnel p
+                JOIN postes po ON p.codeposte = po.codeposte
+                WHERE UPPER(p.nompers) LIKE '%' || UPPER(p_valeur) || '%'
+            ) LOOP
+                DBMS_OUTPUT.PUT_LINE('ID: ' || rec.idpers || ' | ' || 
+                                   rec.nompers || ' ' || rec.prenompers ||
+                                   ' | Login: ' || rec.login);
+            END LOOP;
+            
+        ELSIF p_critere = 'POSTE' THEN
+            FOR rec IN (
+                SELECT p.*, po.libelle
+                FROM personnel p
+                JOIN postes po ON p.codeposte = po.codeposte
+                WHERE p.codeposte = p_valeur
+            ) LOOP
+                DBMS_OUTPUT.PUT_LINE('ID: ' || rec.idpers || ' | ' || 
+                                   rec.nompers || ' ' || rec.prenompers ||
+                                   ' | Login: ' || rec.login);
+            END LOOP;
+        END IF;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+    END chercher_utilisateur;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Lister tous les utilisateurs
+    -- ========================================================================
+    PROCEDURE lister_utilisateurs IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('=== Liste des utilisateurs ===');
+        
+        FOR rec IN (
+            SELECT p.idpers, p.nompers, p.prenompers, p.login, 
+                   po.libelle, p.d_embauche
+            FROM personnel p
+            JOIN postes po ON p.codeposte = po.codeposte
+            WHERE p.login NOT LIKE '%_INACTIF_%'
+            ORDER BY po.libelle, p.nompers
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE('ID: ' || rec.idpers || ' | ' || 
+                               rec.nompers || ' ' || rec.prenompers ||
+                               ' | Login: ' || rec.login ||
+                               ' | Poste: ' || rec.libelle ||
+                               ' | Embauche: ' || TO_CHAR(rec.d_embauche, 'DD/MM/YYYY'));
+        END LOOP;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+    END lister_utilisateurs;
+    
+    
+    -- ========================================================================
+    -- FONCTION: Obtenir le rôle d'un utilisateur
+    -- ========================================================================
+    FUNCTION obtenir_role(p_idpers IN NUMBER) RETURN VARCHAR2 IS
+        v_libelle VARCHAR2(30);
+    BEGIN
+        SELECT po.libelle
+        INTO v_libelle
+        FROM personnel p
+        JOIN postes po ON p.codeposte = po.codeposte
+        WHERE p.idpers = p_idpers;
+        
+        RETURN v_libelle;
+        
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RETURN NULL;
+        WHEN OTHERS THEN
+            RETURN NULL;
+    END obtenir_role;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Créer utilisateur Oracle
+    -- ========================================================================
+    PROCEDURE creer_utilisateur_oracle(
+        p_idpers IN NUMBER,
+        p_username IN VARCHAR2,
+        p_password IN VARCHAR2
+    ) IS
+        v_codeposte VARCHAR2(10);
+        v_sql VARCHAR2(1000);
+    BEGIN
+        -- Récupérer le code poste
+        SELECT codeposte INTO v_codeposte
+        FROM personnel
+        WHERE idpers = p_idpers;
+        
+        -- Créer l'utilisateur Oracle
+        v_sql := 'CREATE USER ' || p_username || 
+                 ' IDENTIFIED BY ' || p_password;
+        EXECUTE IMMEDIATE v_sql;
+        
+        -- Accorder les privilèges selon le poste
+        EXECUTE IMMEDIATE 'GRANT CONNECT TO ' || p_username;
+        
+        -- Utiliser le package de gestion des privilèges
+        pkg_gestion_privileges.gerer_privileges_par_poste(p_username, v_codeposte);
+        
+        DBMS_OUTPUT.PUT_LINE('Utilisateur Oracle créé: ' || p_username);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END creer_utilisateur_oracle;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Supprimer utilisateur Oracle
+    -- ========================================================================
+    PROCEDURE supprimer_utilisateur_oracle(
+        p_username IN VARCHAR2
+    ) IS
+        v_sql VARCHAR2(500);
+    BEGIN
+        v_sql := 'DROP USER ' || p_username || ' CASCADE';
+        EXECUTE IMMEDIATE v_sql;
+        
+        DBMS_OUTPUT.PUT_LINE('Utilisateur Oracle supprimé: ' || p_username);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+    END supprimer_utilisateur_oracle;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Lister utilisateurs Oracle
+    -- ========================================================================
+    PROCEDURE lister_utilisateurs_oracle IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('=== Utilisateurs Oracle ===');
+        
+        FOR rec IN (
+            SELECT username, created, account_status
+            FROM dba_users
+            WHERE username NOT IN ('SYS', 'SYSTEM', 'DBSNMP', 'SYSMAN', 
+                                  'XDB', 'APEX_PUBLIC_USER', 'FLOWS_FILES',
+                                  'MDSYS', 'OUTLN', 'ORACLE_OCM')
+            ORDER BY username
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE(rec.username || 
+                               ' | Créé: ' || TO_CHAR(rec.created, 'DD/MM/YYYY') ||
+                               ' | Statut: ' || rec.account_status);
+        END LOOP;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+    END lister_utilisateurs_oracle;
+    
+END pkg_gestion_utilisateurs;
+/
+
+
+CREATE OR REPLACE PACKAGE pkg_gestion_privileges AS
+    -- Créer les vues (schémas externes)
+    PROCEDURE creer_schemas_externes;
+    
+    -- Accorder privilèges selon le rôle
+    PROCEDURE accorder_privileges_administrateur(p_username IN VARCHAR2);
+    PROCEDURE accorder_privileges_magasinier(p_username IN VARCHAR2);
+    PROCEDURE accorder_privileges_cheflivreur(p_username IN VARCHAR2);
+    
+    -- Révoquer tous les privilèges
+    PROCEDURE revoquer_tous_privileges(p_username IN VARCHAR2);
+    
+    -- Afficher les privilèges d'un utilisateur
+    PROCEDURE afficher_privileges(p_username IN VARCHAR2);
+    
+    -- Gestion globale des privilèges par poste
+    PROCEDURE gerer_privileges_par_poste(
+        p_username IN VARCHAR2,
+        p_codeposte IN VARCHAR2
+    );
+END pkg_gestion_privileges;
+/
+
+CREATE OR REPLACE PACKAGE BODY pkg_gestion_privileges AS
+    
+    -- ========================================================================
+    -- PROCÉDURE: Créer les schémas externes (vues)
+    -- ========================================================================
+    PROCEDURE creer_schemas_externes IS
+    BEGIN
+        -- Vue pour les clients (consultation commandes)
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP VIEW vue_client_commandes';
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+        
+        EXECUTE IMMEDIATE '
+        CREATE VIEW vue_client_commandes AS
+        SELECT c.nocde, c.datecde, c.etatcde,
+               cl.noclt, cl.nomclt, cl.prenomclt,
+               l.refart, a.designation, l.qtecde, a.prixV,
+               (l.qtecde * a.prixV) AS montant_ligne,
+               lv.dateliv, lv.etatliv, lv.modepay
+        FROM commandes c
+        JOIN clients cl ON c.noclt = cl.noclt
+        LEFT JOIN ligcdes l ON c.nocde = l.nocde
+        LEFT JOIN articles a ON l.refart = a.refart
+        LEFT JOIN LivraisonCom lv ON c.nocde = lv.nocde';
+        
+        -- Vue pour le personnel
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP VIEW vue_personnel_complet';
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+        
+        EXECUTE IMMEDIATE '
+        CREATE VIEW vue_personnel_complet AS
+        SELECT p.idpers, p.nompers, p.prenompers, 
+               p.villepers, p.telpers, p.d_embauche,
+               po.libelle AS poste, po.indice,
+               COUNT(lv.nocde) AS nb_livraisons_total
+        FROM personnel p
+        JOIN postes po ON p.codeposte = po.codeposte
+        LEFT JOIN LivraisonCom lv ON p.idpers = lv.livreur
+        GROUP BY p.idpers, p.nompers, p.prenompers, 
+                 p.villepers, p.telpers, p.d_embauche,
+                 po.libelle, po.indice';
+        
+        -- Vue pour les statistiques articles
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP VIEW vue_stats_articles';
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+        
+        EXECUTE IMMEDIATE '
+        CREATE VIEW vue_stats_articles AS
+        SELECT a.refart, a.designation, a.categorie,
+               a.prixA, a.prixV, a.qtestk,
+               (a.prixV - a.prixA) AS marge,
+               NVL(SUM(l.qtecde), 0) AS qte_vendue,
+               COUNT(DISTINCT l.nocde) AS nb_commandes
+        FROM articles a
+        LEFT JOIN ligcdes l ON a.refart = l.refart
+        WHERE a.supp = ''N''
+        GROUP BY a.refart, a.designation, a.categorie,
+                 a.prixA, a.prixV, a.qtestk';
+        
+        -- Vue pour les livraisons en cours
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP VIEW vue_livraisons_en_cours';
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+        
+        EXECUTE IMMEDIATE '
+        CREATE VIEW vue_livraisons_en_cours AS
+        SELECT lv.nocde, lv.dateliv, lv.modepay, lv.etatliv,
+               p.nompers, p.prenompers, p.telpers,
+               cl.nomclt, cl.adrclt, cl.villeclt, cl.telclt,
+               c.etatcde
+        FROM LivraisonCom lv
+        JOIN personnel p ON lv.livreur = p.idpers
+        JOIN commandes c ON lv.nocde = c.nocde
+        JOIN clients cl ON c.noclt = cl.noclt
+        WHERE lv.etatliv IN (''EC'', ''LI'')';
+        
+        DBMS_OUTPUT.PUT_LINE('Schémas externes créés avec succès.');
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur création vues: ' || SQLERRM);
+            RAISE;
+    END creer_schemas_externes;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Privilèges Administrateur (tous les droits)
+    -- ========================================================================
+    PROCEDURE accorder_privileges_administrateur(p_username IN VARCHAR2) IS
+        v_sql VARCHAR2(2000);
+    BEGIN
+        -- Privilèges système
+        EXECUTE IMMEDIATE 'GRANT CONNECT, RESOURCE TO ' || p_username;
+        
+        -- Tous les droits sur toutes les tables
+        FOR rec IN (
+            SELECT table_name FROM user_tables
+            WHERE table_name NOT LIKE 'BIN$%'
+        ) LOOP
+            v_sql := 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' || 
+                     rec.table_name || ' TO ' || p_username;
+            EXECUTE IMMEDIATE v_sql;
+        END LOOP;
+        
+        -- Tous les droits sur les vues
+        FOR rec IN (
+            SELECT view_name FROM user_views
+        ) LOOP
+            v_sql := 'GRANT SELECT ON ' || rec.view_name || ' TO ' || p_username;
+            EXECUTE IMMEDIATE v_sql;
+        END LOOP;
+        
+        -- Droits sur les séquences
+        EXECUTE IMMEDIATE 'GRANT SELECT ON seq_clients TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON seq_commandes TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON seq_personnel TO ' || p_username;
+        
+        -- Droits sur les packages
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_gestion_commandes TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_gestion_livraisons TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_gestion_utilisateurs TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_gestion_privileges TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_messages TO ' || p_username;
+        
+        DBMS_OUTPUT.PUT_LINE('Privilèges ADMINISTRATEUR accordés à ' || p_username);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END accorder_privileges_administrateur;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Privilèges Magasinier
+    -- ========================================================================
+    PROCEDURE accorder_privileges_magasinier(p_username IN VARCHAR2) IS
+    BEGIN
+        -- Connexion
+        EXECUTE IMMEDIATE 'GRANT CONNECT TO ' || p_username;
+        
+        -- Articles: SELECT, INSERT, UPDATE (pas DELETE)
+        EXECUTE IMMEDIATE 'GRANT SELECT, INSERT, UPDATE ON articles TO ' || p_username;
+        
+        -- Commandes: SELECT, INSERT, UPDATE
+        EXECUTE IMMEDIATE 'GRANT SELECT, INSERT, UPDATE ON commandes TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT, INSERT, UPDATE ON ligcdes TO ' || p_username;
+        
+        -- Clients: SELECT seulement
+        EXECUTE IMMEDIATE 'GRANT SELECT ON clients TO ' || p_username;
+        
+        -- Vues
+        EXECUTE IMMEDIATE 'GRANT SELECT ON vue_stats_articles TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON vue_client_commandes TO ' || p_username;
+        
+        -- Séquences nécessaires
+        EXECUTE IMMEDIATE 'GRANT SELECT ON seq_commandes TO ' || p_username;
+        
+        -- Packages
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_gestion_commandes TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_messages TO ' || p_username;
+        
+        DBMS_OUTPUT.PUT_LINE('Privilèges MAGASINIER accordés à ' || p_username);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END accorder_privileges_magasinier;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Privilèges Chef Livreur
+    -- ========================================================================
+    PROCEDURE accorder_privileges_cheflivreur(p_username IN VARCHAR2) IS
+    BEGIN
+        -- Connexion
+        EXECUTE IMMEDIATE 'GRANT CONNECT TO ' || p_username;
+        
+        -- Livraisons: tous les droits
+        EXECUTE IMMEDIATE 'GRANT SELECT, INSERT, UPDATE, DELETE ON LivraisonCom TO ' || p_username;
+        
+        -- Commandes: SELECT, UPDATE (pour changer état)
+        EXECUTE IMMEDIATE 'GRANT SELECT, UPDATE ON commandes TO ' || p_username;
+        
+        -- Clients: SELECT seulement
+        EXECUTE IMMEDIATE 'GRANT SELECT ON clients TO ' || p_username;
+        
+        -- Personnel: SELECT seulement
+        EXECUTE IMMEDIATE 'GRANT SELECT ON personnel TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON postes TO ' || p_username;
+        
+        -- Historique: INSERT seulement
+        EXECUTE IMMEDIATE 'GRANT INSERT ON HCommandesAnnulees TO ' || p_username;
+        
+        -- Vues
+        EXECUTE IMMEDIATE 'GRANT SELECT ON vue_livraisons_en_cours TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON vue_personnel_complet TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON vue_stats_livraisons TO ' || p_username;
+        
+        -- Packages
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_gestion_livraisons TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_messages TO ' || p_username;
+        
+        DBMS_OUTPUT.PUT_LINE('Privilèges CHEF LIVREUR accordés à ' || p_username);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END accorder_privileges_cheflivreur;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Révoquer tous les privilèges
+    -- ========================================================================
+    PROCEDURE revoquer_tous_privileges(p_username IN VARCHAR2) IS
+        v_sql VARCHAR2(2000);
+    BEGIN
+        -- Révoquer privilèges sur tables
+        FOR rec IN (
+            SELECT table_name FROM user_tables
+            WHERE table_name NOT LIKE 'BIN$%'
+        ) LOOP
+            BEGIN
+                v_sql := 'REVOKE ALL ON ' || rec.table_name || ' FROM ' || p_username;
+                EXECUTE IMMEDIATE v_sql;
+            EXCEPTION
+                WHEN OTHERS THEN NULL;
+            END;
+        END LOOP;
+        
+        -- Révoquer privilèges sur vues
+        FOR rec IN (SELECT view_name FROM user_views) LOOP
+            BEGIN
+                v_sql := 'REVOKE ALL ON ' || rec.view_name || ' FROM ' || p_username;
+                EXECUTE IMMEDIATE v_sql;
+            EXCEPTION
+                WHEN OTHERS THEN NULL;
+            END;
+        END LOOP;
+        
+        DBMS_OUTPUT.PUT_LINE('Privilèges révoqués pour ' || p_username);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+    END revoquer_tous_privileges;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Afficher les privilèges d'un utilisateur
+    -- ========================================================================
+    PROCEDURE afficher_privileges(p_username IN VARCHAR2) IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('=== Privilèges de ' || p_username || ' ===');
+        
+        FOR rec IN (
+            SELECT table_name, privilege
+            FROM user_tab_privs
+            WHERE grantee = UPPER(p_username)
+            ORDER BY table_name, privilege
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE(rec.privilege || ' sur ' || rec.table_name);
+        END LOOP;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+    END afficher_privileges;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Gérer privilèges selon le poste
+    -- ========================================================================
+    PROCEDURE gerer_privileges_par_poste(
+        p_username IN VARCHAR2,
+        p_codeposte IN VARCHAR2
+    ) IS
+    BEGIN
+        -- Révoquer d'abord tous les privilèges
+        revoquer_tous_privileges(p_username);
+        
+        -- Accorder selon le poste
+        IF p_codeposte = 'P002' THEN  -- Administrateur
+            accorder_privileges_administrateur(p_username);
+        ELSIF p_codeposte = 'P001' THEN  -- Magasinier
+            accorder_privileges_magasinier(p_username);
+        ELSIF p_codeposte = 'P003' THEN  -- ChefLivreur
+            accorder_privileges_cheflivreur(p_username);
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('Erreur: Code poste inconnu');
+        END IF;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END gerer_privileges_par_poste;
+    
+END pkg_gestion_privileges;
+/
+
+
+
+CREATE OR REPLACE PACKAGE pkg_gestion_utilisateurs AS
+    -- ========== GESTION DES UTILISATEURS APPLICATION ==========
+    
+    -- Authentifier un utilisateur
+    FUNCTION authentifier(
+        p_login IN VARCHAR2,
+        p_motP IN VARCHAR2
+    ) RETURN NUMBER;  -- Retourne idpers si succès, 0 sinon
+    
+    -- Ajouter un utilisateur (personnel)
+    PROCEDURE ajouter_utilisateur(
+        p_nompers IN VARCHAR2,
+        p_prenompers IN VARCHAR2,
+        p_adrpers IN VARCHAR2,
+        p_villepers IN VARCHAR2,
+        p_telpers IN NUMBER,
+        p_login IN VARCHAR2,
+        p_motP IN VARCHAR2,
+        p_codeposte IN VARCHAR2
+    );
+    
+    -- Modifier un utilisateur
+    PROCEDURE modifier_utilisateur(
+        p_idpers IN NUMBER,
+        p_nompers IN VARCHAR2 DEFAULT NULL,
+        p_prenompers IN VARCHAR2 DEFAULT NULL,
+        p_adrpers IN VARCHAR2 DEFAULT NULL,
+        p_villepers IN VARCHAR2 DEFAULT NULL,
+        p_telpers IN NUMBER DEFAULT NULL,
+        p_motP IN VARCHAR2 DEFAULT NULL,
+        p_codeposte IN VARCHAR2 DEFAULT NULL
+    );
+    
+    -- Supprimer un utilisateur (logique)
+    PROCEDURE supprimer_utilisateur(
+        p_idpers IN NUMBER
+    );
+    
+    -- Changer le mot de passe
+    PROCEDURE changer_mot_de_passe(
+        p_login IN VARCHAR2,
+        p_ancien_motP IN VARCHAR2,
+        p_nouveau_motP IN VARCHAR2
+    );
+    
+    -- Rechercher un utilisateur
+    PROCEDURE chercher_utilisateur(
+        p_critere IN VARCHAR2,  -- 'ID', 'LOGIN', 'NOM', 'POSTE'
+        p_valeur IN VARCHAR2
+    );
+    
+    -- Lister tous les utilisateurs
+    PROCEDURE lister_utilisateurs;
+    
+    -- Obtenir le rôle d'un utilisateur
+    FUNCTION obtenir_role(p_idpers IN NUMBER) RETURN VARCHAR2;
+    
+    
+    -- ========== GESTION UTILISATEURS ORACLE (OPTIONNEL) ==========
+    
+    -- Créer utilisateur Oracle et l'associer au personnel
+    PROCEDURE creer_utilisateur_oracle(
+        p_idpers IN NUMBER,
+        p_username IN VARCHAR2,
+        p_password IN VARCHAR2
+    );
+    
+    -- Supprimer utilisateur Oracle
+    PROCEDURE supprimer_utilisateur_oracle(
+        p_username IN VARCHAR2
+    );
+    
+    -- Lister utilisateurs Oracle
+    PROCEDURE lister_utilisateurs_oracle;
+END pkg_gestion_utilisateurs;
+/
+
+CREATE OR REPLACE PACKAGE BODY pkg_gestion_utilisateurs AS
+    
+    -- ========================================================================
+    -- FONCTION: Authentifier un utilisateur
+    -- ========================================================================
+    FUNCTION authentifier(
+        p_login IN VARCHAR2,
+        p_motP IN VARCHAR2
+    ) RETURN NUMBER IS
+        v_idpers NUMBER;
+        v_motP_stocke VARCHAR2(20);
+    BEGIN
+        -- Récupérer l'id et le mot de passe
+        BEGIN
+            SELECT idpers, motP
+            INTO v_idpers, v_motP_stocke
+            FROM personnel
+            WHERE login = p_login;
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                RETURN 0;  -- Login inexistant
+        END;
+        
+        -- Vérifier le mot de passe
+        IF v_motP_stocke = p_motP THEN
+            DBMS_OUTPUT.PUT_LINE('Authentification réussie pour: ' || p_login);
+            RETURN v_idpers;
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('Mot de passe incorrect pour: ' || p_login);
+            RETURN 0;
+        END IF;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur authentification: ' || SQLERRM);
+            RETURN 0;
+    END authentifier;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Ajouter un utilisateur
+    -- ========================================================================
+    PROCEDURE ajouter_utilisateur(
+        p_nompers IN VARCHAR2,
+        p_prenompers IN VARCHAR2,
+        p_adrpers IN VARCHAR2,
+        p_villepers IN VARCHAR2,
+        p_telpers IN NUMBER,
+        p_login IN VARCHAR2,
+        p_motP IN VARCHAR2,
+        p_codeposte IN VARCHAR2
+    ) IS
+        v_login_existe NUMBER;
+        v_poste_existe NUMBER;
+        v_idpers NUMBER;
+    BEGIN
+        -- Vérifier que le login n'existe pas déjà
+        SELECT COUNT(*) INTO v_login_existe
+        FROM personnel
+        WHERE login = p_login;
+        
+        IF v_login_existe > 0 THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: Ce login existe déjà.');
+            RETURN;
+        END IF;
+        
+        -- Vérifier que le poste existe
+        SELECT COUNT(*) INTO v_poste_existe
+        FROM postes
+        WHERE codeposte = p_codeposte;
+        
+        IF v_poste_existe = 0 THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: Code poste inexistant.');
+            RETURN;
+        END IF;
+        
+        -- Vérifier format téléphone (8 chiffres)
+        IF LENGTH(TO_CHAR(p_telpers)) != 8 THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_telephone);
+            RETURN;
+        END IF;
+        
+        -- Insérer le nouvel utilisateur
+        INSERT INTO personnel (
+            idpers, nompers, prenompers, adrpers, villepers, 
+            telpers, d_embauche, login, motP, codeposte
+        )
+        VALUES (
+            seq_personnel.NEXTVAL, p_nompers, p_prenompers, p_adrpers, p_villepers,
+            p_telpers, SYSDATE, p_login, p_motP, p_codeposte
+        )
+        RETURNING idpers INTO v_idpers;
+        
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_ajout || ' ID: ' || v_idpers);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END ajouter_utilisateur;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Modifier un utilisateur
+    -- ========================================================================
+    PROCEDURE modifier_utilisateur(
+        p_idpers IN NUMBER,
+        p_nompers IN VARCHAR2 DEFAULT NULL,
+        p_prenompers IN VARCHAR2 DEFAULT NULL,
+        p_adrpers IN VARCHAR2 DEFAULT NULL,
+        p_villepers IN VARCHAR2 DEFAULT NULL,
+        p_telpers IN NUMBER DEFAULT NULL,
+        p_motP IN VARCHAR2 DEFAULT NULL,
+        p_codeposte IN VARCHAR2 DEFAULT NULL
+    ) IS
+        v_existe NUMBER;
+    BEGIN
+        -- Vérifier que l'utilisateur existe
+        SELECT COUNT(*) INTO v_existe
+        FROM personnel
+        WHERE idpers = p_idpers;
+        
+        IF v_existe = 0 THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_introuvable);
+            RETURN;
+        END IF;
+        
+        -- Vérifier téléphone si fourni
+        IF p_telpers IS NOT NULL AND LENGTH(TO_CHAR(p_telpers)) != 8 THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_telephone);
+            RETURN;
+        END IF;
+        
+        -- Mettre à jour les champs fournis
+        UPDATE personnel
+        SET nompers = NVL(p_nompers, nompers),
+            prenompers = NVL(p_prenompers, prenompers),
+            adrpers = NVL(p_adrpers, adrpers),
+            villepers = NVL(p_villepers, villepers),
+            telpers = NVL(p_telpers, telpers),
+            motP = NVL(p_motP, motP),
+            codeposte = NVL(p_codeposte, codeposte)
+        WHERE idpers = p_idpers;
+        
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_modif);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END modifier_utilisateur;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Supprimer un utilisateur (logique - désactivation)
+    -- ========================================================================
+    PROCEDURE supprimer_utilisateur(
+        p_idpers IN NUMBER
+    ) IS
+        v_existe NUMBER;
+    BEGIN
+        -- Vérifier que l'utilisateur existe
+        SELECT COUNT(*) INTO v_existe
+        FROM personnel
+        WHERE idpers = p_idpers;
+        
+        IF v_existe = 0 THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_introuvable);
+            RETURN;
+        END IF;
+        
+        -- Suppression logique: changer le login pour désactiver
+        UPDATE personnel
+        SET login = login || '_INACTIF_' || TO_CHAR(SYSDATE, 'YYYYMMDD')
+        WHERE idpers = p_idpers
+        AND login NOT LIKE '%_INACTIF_%';
+        
+        IF SQL%ROWCOUNT = 0 THEN
+            DBMS_OUTPUT.PUT_LINE('Utilisateur déjà désactivé.');
+        ELSE
+            COMMIT;
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_suppr);
+        END IF;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END supprimer_utilisateur;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Changer le mot de passe
+    -- ========================================================================
+    PROCEDURE changer_mot_de_passe(
+        p_login IN VARCHAR2,
+        p_ancien_motP IN VARCHAR2,
+        p_nouveau_motP IN VARCHAR2
+    ) IS
+        v_idpers NUMBER;
+    BEGIN
+        -- Authentifier d'abord avec l'ancien mot de passe
+        v_idpers := authentifier(p_login, p_ancien_motP);
+        
+        IF v_idpers = 0 THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: Login ou mot de passe incorrect.');
+            RETURN;
+        END IF;
+        
+        -- Changer le mot de passe
+        UPDATE personnel
+        SET motP = p_nouveau_motP
+        WHERE idpers = v_idpers;
+        
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE('Mot de passe modifié avec succès.');
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END changer_mot_de_passe;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Chercher un utilisateur
+    -- ========================================================================
+    PROCEDURE chercher_utilisateur(
+        p_critere IN VARCHAR2,
+        p_valeur IN VARCHAR2
+    ) IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('=== Recherche utilisateur (' || p_critere || ': ' || p_valeur || ') ===');
+        
+        IF p_critere = 'ID' THEN
+            FOR rec IN (
+                SELECT p.*, po.libelle
+                FROM personnel p
+                JOIN postes po ON p.codeposte = po.codeposte
+                WHERE p.idpers = TO_NUMBER(p_valeur)
+            ) LOOP
+                DBMS_OUTPUT.PUT_LINE('ID: ' || rec.idpers || ' | ' || 
+                                   rec.nompers || ' ' || rec.prenompers ||
+                                   ' | Login: ' || rec.login ||
+                                   ' | Poste: ' || rec.libelle);
+            END LOOP;
+            
+        ELSIF p_critere = 'LOGIN' THEN
+            FOR rec IN (
+                SELECT p.*, po.libelle
+                FROM personnel p
+                JOIN postes po ON p.codeposte = po.codeposte
+                WHERE p.login = p_valeur
+            ) LOOP
+                DBMS_OUTPUT.PUT_LINE('ID: ' || rec.idpers || ' | ' || 
+                                   rec.nompers || ' ' || rec.prenompers ||
+                                   ' | Tel: ' || rec.telpers ||
+                                   ' | Poste: ' || rec.libelle);
+            END LOOP;
+            
+        ELSIF p_critere = 'NOM' THEN
+            FOR rec IN (
+                SELECT p.*, po.libelle
+                FROM personnel p
+                JOIN postes po ON p.codeposte = po.codeposte
+                WHERE UPPER(p.nompers) LIKE '%' || UPPER(p_valeur) || '%'
+            ) LOOP
+                DBMS_OUTPUT.PUT_LINE('ID: ' || rec.idpers || ' | ' || 
+                                   rec.nompers || ' ' || rec.prenompers ||
+                                   ' | Login: ' || rec.login);
+            END LOOP;
+            
+        ELSIF p_critere = 'POSTE' THEN
+            FOR rec IN (
+                SELECT p.*, po.libelle
+                FROM personnel p
+                JOIN postes po ON p.codeposte = po.codeposte
+                WHERE p.codeposte = p_valeur
+            ) LOOP
+                DBMS_OUTPUT.PUT_LINE('ID: ' || rec.idpers || ' | ' || 
+                                   rec.nompers || ' ' || rec.prenompers ||
+                                   ' | Login: ' || rec.login);
+            END LOOP;
+        END IF;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+    END chercher_utilisateur;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Lister tous les utilisateurs
+    -- ========================================================================
+    PROCEDURE lister_utilisateurs IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('=== Liste des utilisateurs ===');
+        
+        FOR rec IN (
+            SELECT p.idpers, p.nompers, p.prenompers, p.login, 
+                   po.libelle, p.d_embauche
+            FROM personnel p
+            JOIN postes po ON p.codeposte = po.codeposte
+            WHERE p.login NOT LIKE '%_INACTIF_%'
+            ORDER BY po.libelle, p.nompers
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE('ID: ' || rec.idpers || ' | ' || 
+                               rec.nompers || ' ' || rec.prenompers ||
+                               ' | Login: ' || rec.login ||
+                               ' | Poste: ' || rec.libelle ||
+                               ' | Embauche: ' || TO_CHAR(rec.d_embauche, 'DD/MM/YYYY'));
+        END LOOP;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+    END lister_utilisateurs;
+    
+    
+    -- ========================================================================
+    -- FONCTION: Obtenir le rôle d'un utilisateur
+    -- ========================================================================
+    FUNCTION obtenir_role(p_idpers IN NUMBER) RETURN VARCHAR2 IS
+        v_libelle VARCHAR2(30);
+    BEGIN
+        SELECT po.libelle
+        INTO v_libelle
+        FROM personnel p
+        JOIN postes po ON p.codeposte = po.codeposte
+        WHERE p.idpers = p_idpers;
+        
+        RETURN v_libelle;
+        
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RETURN NULL;
+        WHEN OTHERS THEN
+            RETURN NULL;
+    END obtenir_role;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Créer utilisateur Oracle
+    -- ========================================================================
+    PROCEDURE creer_utilisateur_oracle(
+        p_idpers IN NUMBER,
+        p_username IN VARCHAR2,
+        p_password IN VARCHAR2
+    ) IS
+        v_codeposte VARCHAR2(10);
+        v_sql VARCHAR2(1000);
+    BEGIN
+        -- Récupérer le code poste
+        SELECT codeposte INTO v_codeposte
+        FROM personnel
+        WHERE idpers = p_idpers;
+        
+        -- Créer l'utilisateur Oracle
+        v_sql := 'CREATE USER ' || p_username || 
+                 ' IDENTIFIED BY ' || p_password;
+        EXECUTE IMMEDIATE v_sql;
+        
+        -- Accorder les privilèges selon le poste
+        EXECUTE IMMEDIATE 'GRANT CONNECT TO ' || p_username;
+        
+        -- Utiliser le package de gestion des privilèges
+        pkg_gestion_privileges.gerer_privileges_par_poste(p_username, v_codeposte);
+        
+        DBMS_OUTPUT.PUT_LINE('Utilisateur Oracle créé: ' || p_username);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END creer_utilisateur_oracle;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Supprimer utilisateur Oracle
+    -- ========================================================================
+    PROCEDURE supprimer_utilisateur_oracle(
+        p_username IN VARCHAR2
+    ) IS
+        v_sql VARCHAR2(500);
+    BEGIN
+        v_sql := 'DROP USER ' || p_username || ' CASCADE';
+        EXECUTE IMMEDIATE v_sql;
+        
+        DBMS_OUTPUT.PUT_LINE('Utilisateur Oracle supprimé: ' || p_username);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+    END supprimer_utilisateur_oracle;
+    
+    
+    -- ========================================================================
+    -- PROCÉDURE: Lister utilisateurs Oracle
+    -- ========================================================================
+    PROCEDURE lister_utilisateurs_oracle IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('=== Utilisateurs Oracle ===');
+        
+        FOR rec IN (
+            SELECT username, created, account_status
+            FROM dba_users
+            WHERE username NOT IN ('SYS', 'SYSTEM', 'DBSNMP', 'SYSMAN', 
+                                  'XDB', 'APEX_PUBLIC_USER', 'FLOWS_FILES',
+                                  'MDSYS', 'OUTLN', 'ORACLE_OCM')
+            ORDER BY username
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE(rec.username || 
+                               ' | Créé: ' || TO_CHAR(rec.created, 'DD/MM/YYYY') ||
+                               ' | Statut: ' || rec.account_status);
+        END LOOP;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+    END lister_utilisateurs_oracle;
+    
+END pkg_gestion_utilisateurs;
+/
+
+
+
+
+
+
+CREATE OR REPLACE PACKAGE BODY pkg_gestion_commandes AS
+    
+    FUNCTION transition_etat_valide(
+        p_etat_actuel IN CHAR,
+        p_nouvel_etat IN CHAR
+    ) RETURN BOOLEAN IS
+    BEGIN
+        IF p_etat_actuel = 'EC' THEN
+            RETURN p_nouvel_etat IN ('PR', 'AN');
+        ELSIF p_etat_actuel = 'PR' THEN
+            RETURN p_nouvel_etat IN ('LI', 'AN', 'AL');
+        ELSIF p_etat_actuel = 'LI' THEN
+            RETURN p_nouvel_etat = 'SO';
+        ELSE
+            RETURN FALSE;
+        END IF;
+    END transition_etat_valide;
+    
+    PROCEDURE ajouter_commande(
+        p_noclt IN NUMBER,
+        p_refart IN CHAR,
+        p_qtecde IN NUMBER
+    ) IS
+        v_nocde NUMBER;
+        v_qtestk NUMBER;
+        v_client_existe NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO v_client_existe
+        FROM clients
+        WHERE noclt = p_noclt;
+        
+        IF v_client_existe = 0 THEN
+            RAISE_APPLICATION_ERROR(-20020, 'Erreur : Client introuvable.');
+        END IF;
+        
+        BEGIN
+            SELECT qtestk INTO v_qtestk
+            FROM articles
+            WHERE refart = p_refart AND supp = 'N';
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                RAISE_APPLICATION_ERROR(-20021, 'Erreur : Article introuvable ou supprimé.');
+        END;
+        
+        IF v_qtestk < p_qtecde THEN
+            RAISE_APPLICATION_ERROR(-20022, 'Erreur : Stock insuffisant. Disponible: ' || v_qtestk);
+        END IF;
+        
+        INSERT INTO commandes (nocde, noclt, datecde, etatcde)
+        VALUES (seq_commandes.NEXTVAL, p_noclt, SYSDATE, 'EC')
+        RETURNING nocde INTO v_nocde;
+        
+        INSERT INTO ligcdes (nocde, refart, qtecde)
+        VALUES (v_nocde, p_refart, p_qtecde);
+        
+        UPDATE articles
+        SET qtestk = qtestk - p_qtecde
+        WHERE refart = p_refart;
+        
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_ajout || ' Commande N°' || v_nocde);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            DBMS_OUTPUT.PUT_LINE('Erreur lors de l''ajout: ' || SQLERRM);
+            RAISE;
+    END ajouter_commande;
+    
+    PROCEDURE modifier_etat_commande(
+        p_nocde IN NUMBER,
+        p_nouvel_etat IN CHAR
+    ) IS
+        v_etat_actuel commandes.etatcde%TYPE;
+    BEGIN
+        BEGIN
+            SELECT etatcde INTO v_etat_actuel
+            FROM commandes
+            WHERE nocde = p_nocde;
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_introuvable);
+                RETURN;
+        END;
+        
+        IF NOT transition_etat_valide(v_etat_actuel, p_nouvel_etat) THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_etat_invalide || 
+                               ' (Transition ' || v_etat_actuel || ' -> ' || p_nouvel_etat || ' non autorisée)');
+            RETURN;
+        END IF;
+        
+        UPDATE commandes
+        SET etatcde = p_nouvel_etat
+        WHERE nocde = p_nocde;
+        
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_modif || 
+                           ' État modifié: ' || v_etat_actuel || ' -> ' || p_nouvel_etat);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END modifier_etat_commande;
+    
+    PROCEDURE annuler_commande(
+        p_nocde IN NUMBER
+    ) IS
+        v_noclt NUMBER;
+        v_datecde DATE;
+        v_etatcde CHAR(2);
+        v_nbrart NUMBER;
+        v_montant NUMBER(10,2);
+        v_code_postal NUMBER;
+        v_avantliv CHAR(1);
+    BEGIN
+        BEGIN
+            SELECT c.noclt, c.datecde, c.etatcde, cl.code_postal
+            INTO v_noclt, v_datecde, v_etatcde, v_code_postal
+            FROM commandes c
+            JOIN clients cl ON c.noclt = cl.noclt
+            WHERE c.nocde = p_nocde;
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_introuvable);
+                RETURN;
+        END;
+        
+        IF v_etatcde = 'SO' THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur : Impossible d''annuler une commande déjà soldée.');
+            RETURN;
+        END IF;
+        
+        IF v_etatcde IN ('EC', 'PR') THEN
+            v_avantliv := 'O';
+        ELSE
+            v_avantliv := 'N';
+        END IF;
+        
+        SELECT COUNT(DISTINCT refart), NVL(SUM(l.qtecde * a.prixV), 0)
+        INTO v_nbrart, v_montant
+        FROM ligcdes l
+        JOIN articles a ON l.refart = a.refart
+        WHERE l.nocde = p_nocde;
+        
+        IF v_avantliv = 'O' THEN
+            FOR rec IN (SELECT refart, qtecde FROM ligcdes WHERE nocde = p_nocde) LOOP
+                UPDATE articles
+                SET qtestk = qtestk + rec.qtecde
+                WHERE refart = rec.refart;
+            END LOOP;
+        END IF;
+        
+        UPDATE commandes
+        SET etatcde = 'AN'
+        WHERE nocde = p_nocde;
+        
+        INSERT INTO HCommandesAnnulees (
+            nocde, numclt, nbrart, montantc, datecde, 
+            dateAnnulation, code_postal, AvantLiv
+        )
+        VALUES (
+            p_nocde, v_noclt, v_nbrart, v_montant, v_datecde,
+            SYSDATE, v_code_postal, v_avantliv
+        );
+        
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE('Commande N°' || p_nocde || ' annulée avec succès. Avant livraison: ' || v_avantliv);
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            DBMS_OUTPUT.PUT_LINE('Erreur lors de l''annulation: ' || SQLERRM);
+            RAISE;
+    END annuler_commande;
+    
+    PROCEDURE chercher_commande_par_numero(
+        p_nocde IN NUMBER
+    ) IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('=== Recherche commande N°' || p_nocde || ' ===');
+        
+        FOR rec IN (
+            SELECT c.nocde, c.datecde, c.etatcde,
+                   cl.nomclt, cl.prenomclt, cl.telclt,
+                   l.refart, a.designation, l.qtecde, a.prixV,
+                   (l.qtecde * a.prixV) AS montant_ligne
+            FROM commandes c
+            JOIN clients cl ON c.noclt = cl.noclt
+            LEFT JOIN ligcdes l ON c.nocde = l.nocde
+            LEFT JOIN articles a ON l.refart = a.refart
+            WHERE c.nocde = p_nocde
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE('Date: ' || TO_CHAR(rec.datecde, 'DD/MM/YYYY') || 
+                               ' | État: ' || rec.etatcde);
+            DBMS_OUTPUT.PUT_LINE('Client: ' || rec.nomclt || ' ' || 
+                               NVL(rec.prenomclt, '') || ' | Tél: ' || rec.telclt);
+            DBMS_OUTPUT.PUT_LINE('Article: ' || rec.refart || ' - ' || rec.designation ||
+                               ' | Qté: ' || rec.qtecde || 
+                               ' | Prix unitaire: ' || rec.prixV ||
+                               ' | Total: ' || rec.montant_ligne);
+            DBMS_OUTPUT.PUT_LINE('---');
+        END LOOP;
+    END chercher_commande_par_numero;
+    
+    PROCEDURE chercher_commande_par_client(
+        p_noclt IN NUMBER
+    ) IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('=== Commandes du client N°' || p_noclt || ' ===');
+        
+        FOR rec IN (
+            SELECT c.nocde, c.datecde, c.etatcde,
+                   COUNT(l.refart) AS nb_articles,
+                   NVL(SUM(l.qtecde * a.prixV), 0) AS montant_total
+            FROM commandes c
+            LEFT JOIN ligcdes l ON c.nocde = l.nocde
+            LEFT JOIN articles a ON l.refart = a.refart
+            WHERE c.noclt = p_noclt
+            GROUP BY c.nocde, c.datecde, c.etatcde
+            ORDER BY c.datecde DESC
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE('Commande N°' || rec.nocde || 
+                               ' | Date: ' || TO_CHAR(rec.datecde, 'DD/MM/YYYY') ||
+                               ' | État: ' || rec.etatcde ||
+                               ' | Articles: ' || rec.nb_articles ||
+                               ' | Montant: ' || rec.montant_total || ' TND');
+        END LOOP;
+    END chercher_commande_par_client;
+    
+    PROCEDURE chercher_commande_par_date(
+        p_date IN DATE
+    ) IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('=== Commandes du ' || TO_CHAR(p_date, 'DD/MM/YYYY') || ' ===');
+        
+        FOR rec IN (
+            SELECT c.nocde, c.noclt, cl.nomclt, c.etatcde,
+                   NVL(SUM(l.qtecde * a.prixV), 0) AS montant_total
+            FROM commandes c
+            JOIN clients cl ON c.noclt = cl.noclt
+            LEFT JOIN ligcdes l ON c.nocde = l.nocde
+            LEFT JOIN articles a ON l.refart = a.refart
+            WHERE TRUNC(c.datecde) = TRUNC(p_date)
+            GROUP BY c.nocde, c.noclt, cl.nomclt, c.etatcde
+            ORDER BY c.nocde
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE('Commande N°' || rec.nocde ||
+                               ' | Client: ' || rec.nomclt ||
+                               ' | État: ' || rec.etatcde ||
+                               ' | Montant: ' || rec.montant_total || ' TND');
+        END LOOP;
+    END chercher_commande_par_date;
+    
+END pkg_gestion_commandes;
+/
+
+
+
+
+
+CREATE OR REPLACE PACKAGE BODY pkg_gestion_utilisateurs AS
+    
+    FUNCTION authentifier(p_login IN VARCHAR2, p_motP IN VARCHAR2) RETURN NUMBER IS
+        v_idpers NUMBER;
+        v_motP_stocke VARCHAR2(20);
+    BEGIN
+        BEGIN
+            SELECT idpers, motP INTO v_idpers, v_motP_stocke
+            FROM personnel WHERE login = p_login;
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN RETURN 0;
+        END;
+        
+        IF v_motP_stocke = p_motP THEN
+            DBMS_OUTPUT.PUT_LINE('Authentification réussie pour: ' || p_login);
+            RETURN v_idpers;
+        ELSE
+            RETURN 0;
+        END IF;
+    EXCEPTION
+        WHEN OTHERS THEN RETURN 0;
+    END authentifier;
+    
+    PROCEDURE ajouter_utilisateur(
+        p_nompers IN VARCHAR2, p_prenompers IN VARCHAR2, p_adrpers IN VARCHAR2,
+        p_villepers IN VARCHAR2, p_telpers IN NUMBER, p_login IN VARCHAR2,
+        p_motP IN VARCHAR2, p_codeposte IN VARCHAR2
+    ) IS
+        v_login_existe NUMBER;
+        v_poste_existe NUMBER;
+        v_idpers NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO v_login_existe FROM personnel WHERE login = p_login;
+        IF v_login_existe > 0 THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: Ce login existe déjà.');
+            RETURN;
+        END IF;
+        
+        SELECT COUNT(*) INTO v_poste_existe FROM postes WHERE codeposte = p_codeposte;
+        IF v_poste_existe = 0 THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: Code poste inexistant.');
+            RETURN;
+        END IF;
+        
+        IF LENGTH(TO_CHAR(p_telpers)) != 8 THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_telephone);
+            RETURN;
+        END IF;
+        
+        INSERT INTO personnel (idpers, nompers, prenompers, adrpers, villepers, 
+                             telpers, d_embauche, login, motP, codeposte)
+        VALUES (seq_personnel.NEXTVAL, p_nompers, p_prenompers, p_adrpers, p_villepers,
+                p_telpers, SYSDATE, p_login, p_motP, p_codeposte)
+        RETURNING idpers INTO v_idpers;
+        
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_ajout || ' ID: ' || v_idpers);
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            RAISE;
+    END ajouter_utilisateur;
+    
+    PROCEDURE modifier_utilisateur(
+        p_idpers IN NUMBER, p_nompers IN VARCHAR2 DEFAULT NULL,
+        p_prenompers IN VARCHAR2 DEFAULT NULL, p_adrpers IN VARCHAR2 DEFAULT NULL,
+        p_villepers IN VARCHAR2 DEFAULT NULL, p_telpers IN NUMBER DEFAULT NULL,
+        p_motP IN VARCHAR2 DEFAULT NULL, p_codeposte IN VARCHAR2 DEFAULT NULL
+    ) IS
+        v_existe NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO v_existe FROM personnel WHERE idpers = p_idpers;
+        IF v_existe = 0 THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_introuvable);
+            RETURN;
+        END IF;
+        
+        IF p_telpers IS NOT NULL AND LENGTH(TO_CHAR(p_telpers)) != 8 THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_telephone);
+            RETURN;
+        END IF;
+        
+        UPDATE personnel
+        SET nompers = NVL(p_nompers, nompers),
+            prenompers = NVL(p_prenompers, prenompers),
+            adrpers = NVL(p_adrpers, adrpers),
+            villepers = NVL(p_villepers, villepers),
+            telpers = NVL(p_telpers, telpers),
+            motP = NVL(p_motP, motP),
+            codeposte = NVL(p_codeposte, codeposte)
+        WHERE idpers = p_idpers;
+        
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_modif);
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            RAISE;
+    END modifier_utilisateur;
+    
+    PROCEDURE supprimer_utilisateur(p_idpers IN NUMBER) IS
+        v_existe NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO v_existe FROM personnel WHERE idpers = p_idpers;
+        IF v_existe = 0 THEN
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_err_introuvable);
+            RETURN;
+        END IF;
+        
+        UPDATE personnel
+        SET login = login || '_INACTIF_' || TO_CHAR(SYSDATE, 'YYYYMMDD')
+        WHERE idpers = p_idpers AND login NOT LIKE '%_INACTIF_%';
+        
+        IF SQL%ROWCOUNT = 0 THEN
+            DBMS_OUTPUT.PUT_LINE('Utilisateur déjà désactivé.');
+        ELSE
+            COMMIT;
+            DBMS_OUTPUT.PUT_LINE(pkg_messages.msg_succes_suppr);
+        END IF;
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            RAISE;
+    END supprimer_utilisateur;
+    
+    PROCEDURE changer_mot_de_passe(
+        p_login IN VARCHAR2, p_ancien_motP IN VARCHAR2, p_nouveau_motP IN VARCHAR2
+    ) IS
+        v_idpers NUMBER;
+    BEGIN
+        v_idpers := authentifier(p_login, p_ancien_motP);
+        IF v_idpers = 0 THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: Login ou mot de passe incorrect.');
+            RETURN;
+        END IF;
+        
+        UPDATE personnel SET motP = p_nouveau_motP WHERE idpers = v_idpers;
+        COMMIT;
+        DBMS_OUTPUT.PUT_LINE('Mot de passe modifié avec succès.');
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            RAISE;
+    END changer_mot_de_passe;
+    
+    PROCEDURE chercher_utilisateur(p_critere IN VARCHAR2, p_valeur IN VARCHAR2) IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('=== Recherche utilisateur (' || p_critere || ': ' || p_valeur || ') ===');
+        
+        IF p_critere = 'ID' THEN
+            FOR rec IN (
+                SELECT p.*, po.libelle
+                FROM personnel p JOIN postes po ON p.codeposte = po.codeposte
+                WHERE p.idpers = TO_NUMBER(p_valeur)
+            ) LOOP
+                DBMS_OUTPUT.PUT_LINE('ID: ' || rec.idpers || ' | ' || rec.nompers || ' ' || rec.prenompers);
+            END LOOP;
+        ELSIF p_critere = 'LOGIN' THEN
+            FOR rec IN (
+                SELECT p.*, po.libelle
+                FROM personnel p JOIN postes po ON p.codeposte = po.codeposte
+                WHERE p.login = p_valeur
+            ) LOOP
+                DBMS_OUTPUT.PUT_LINE('ID: ' || rec.idpers || ' | ' || rec.nompers || ' | Poste: ' || rec.libelle);
+            END LOOP;
+        ELSIF p_critere = 'NOM' THEN
+            FOR rec IN (
+                SELECT p.*, po.libelle
+                FROM personnel p JOIN postes po ON p.codeposte = po.codeposte
+                WHERE UPPER(p.nompers) LIKE '%' || UPPER(p_valeur) || '%'
+            ) LOOP
+                DBMS_OUTPUT.PUT_LINE('ID: ' || rec.idpers || ' | ' || rec.nompers || ' | Login: ' || rec.login);
+            END LOOP;
+        ELSIF p_critere = 'POSTE' THEN
+            FOR rec IN (
+                SELECT p.*, po.libelle
+                FROM personnel p JOIN postes po ON p.codeposte = po.codeposte
+                WHERE p.codeposte = p_valeur
+            ) LOOP
+                DBMS_OUTPUT.PUT_LINE('ID: ' || rec.idpers || ' | ' || rec.nompers || ' | Login: ' || rec.login);
+            END LOOP;
+        END IF;
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+    END chercher_utilisateur;
+    
+    PROCEDURE lister_utilisateurs IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('=== Liste des utilisateurs ===');
+        FOR rec IN (
+            SELECT p.idpers, p.nompers, p.prenompers, p.login, po.libelle, p.d_embauche
+            FROM personnel p JOIN postes po ON p.codeposte = po.codeposte
+            WHERE p.login NOT LIKE '%_INACTIF_%'
+            ORDER BY po.libelle, p.nompers
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE('ID: ' || rec.idpers || ' | ' || rec.nompers || ' ' || rec.prenompers ||
+                               ' | Login: ' || rec.login || ' | Poste: ' || rec.libelle);
+        END LOOP;
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+    END lister_utilisateurs;
+    
+    FUNCTION obtenir_role(p_idpers IN NUMBER) RETURN VARCHAR2 IS
+        v_libelle VARCHAR2(30);
+    BEGIN
+        SELECT po.libelle INTO v_libelle
+        FROM personnel p JOIN postes po ON p.codeposte = po.codeposte
+        WHERE p.idpers = p_idpers;
+        RETURN v_libelle;
+    EXCEPTION
+        WHEN OTHERS THEN RETURN NULL;
+    END obtenir_role;
+    
+    PROCEDURE creer_utilisateur_oracle(
+        p_idpers IN NUMBER, p_username IN VARCHAR2, p_password IN VARCHAR2
+    ) IS
+        v_codeposte VARCHAR2(10);
+    BEGIN
+        SELECT codeposte INTO v_codeposte FROM personnel WHERE idpers = p_idpers;
+        EXECUTE IMMEDIATE 'CREATE USER ' || p_username || ' IDENTIFIED BY ' || p_password;
+        EXECUTE IMMEDIATE 'GRANT CONNECT TO ' || p_username;
+        pkg_gestion_privileges.gerer_privileges_par_poste(p_username, v_codeposte);
+        DBMS_OUTPUT.PUT_LINE('Utilisateur Oracle créé: ' || p_username);
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END creer_utilisateur_oracle;
+    
+    PROCEDURE supprimer_utilisateur_oracle(p_username IN VARCHAR2) IS
+    BEGIN
+        EXECUTE IMMEDIATE 'DROP USER ' || p_username || ' CASCADE';
+        DBMS_OUTPUT.PUT_LINE('Utilisateur Oracle supprimé: ' || p_username);
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+    END supprimer_utilisateur_oracle;
+    
+    -- CORRECTION ICI: all_users au lieu de dba_users
+    PROCEDURE lister_utilisateurs_oracle IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('=== Utilisateurs Oracle ===');
+        BEGIN
+            FOR rec IN (
+                SELECT username, created
+                FROM all_users
+                WHERE username NOT IN ('SYS', 'SYSTEM', 'DBSNMP', 'SYSMAN')
+                ORDER BY username
+            ) LOOP
+                DBMS_OUTPUT.PUT_LINE(rec.username || ' | Créé: ' || TO_CHAR(rec.created, 'DD/MM/YYYY'));
+            END LOOP;
+        EXCEPTION
+            WHEN OTHERS THEN
+                DBMS_OUTPUT.PUT_LINE('Privilèges insuffisants pour lister les utilisateurs.');
+        END;
+    END lister_utilisateurs_oracle;
+    
+END pkg_gestion_utilisateurs;
+/
+
+
+CREATE OR REPLACE TRIGGER trg_verif_article_unique
+BEFORE INSERT ON articles
+FOR EACH ROW
+DECLARE
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v_count FROM articles WHERE refart = :NEW.refart;
+    IF v_count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20016, 'Article déjà existant');
+    END IF;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER trg_date_commande
+BEFORE INSERT ON commandes
+FOR EACH ROW
+BEGIN
+    :NEW.datecde := SYSDATE;
+    :NEW.etatcde := 'EC';
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_audit_commandes
+AFTER UPDATE ON commandes
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_commandes (nocde, ancien_etat, nouvel_etat, date_modif)
+    VALUES (:OLD.nocde, :OLD.etatcde, :NEW.etatcde, SYSDATE);
+EXCEPTION
+    WHEN OTHERS THEN
+        NULL; 
+END;
+/
+
+
+
+CREATE OR REPLACE TRIGGER trg_maj_stock
+AFTER INSERT ON ligcdes
+FOR EACH ROW
+BEGIN
+    UPDATE articles
+    SET qtestk = qtestk - :NEW.qtecde
+    WHERE refart = :NEW.refart;
+    
+    IF SQL%ROWCOUNT = 0 THEN
+        RAISE_APPLICATION_ERROR(-20018, 'Article introuvable');
+    END IF;
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_limite_livraisons
+BEFORE INSERT OR UPDATE ON LivraisonCom
+FOR EACH ROW
+DECLARE
+    v_count NUMBER;
+    v_code_postal NUMBER;
+BEGIN
+    SELECT cl.code_postal INTO v_code_postal
+    FROM commandes c
+    JOIN clients cl ON c.noclt = cl.noclt
+    WHERE c.nocde = :NEW.nocde;
+    
+ 
+    SELECT COUNT(*) INTO v_count
+    FROM LivraisonCom lc
+    JOIN commandes c ON lc.nocde = c.nocde
+    JOIN clients cl ON c.noclt = cl.noclt
+    WHERE lc.livreur = :NEW.livreur
+    AND TRUNC(lc.dateliv) = TRUNC(:NEW.dateliv)
+    AND cl.code_postal = v_code_postal
+    AND lc.nocde != NVL(:OLD.nocde, -1); 
+    
+    IF v_count >= 15 THEN
+        RAISE_APPLICATION_ERROR(-20001, 
+            'Limite de 15 livraisons par jour/ville atteinte pour ce livreur');
+    END IF;
+END;
+/
+
+
+
+
+CREATE OR REPLACE TRIGGER trg_heure_maj_livraison
+BEFORE UPDATE ON LivraisonCom
+FOR EACH ROW
+DECLARE
+    v_heure_actuelle NUMBER;
+BEGIN
+    v_heure_actuelle := TO_NUMBER(TO_CHAR(SYSDATE, 'HH24'));
+    
+    IF TRUNC(:NEW.dateliv) = TRUNC(SYSDATE) THEN
+        IF :NEW.dateliv < TRUNC(SYSDATE) + 9/24 THEN
+            IF v_heure_actuelle >= 9 THEN
+                RAISE_APPLICATION_ERROR(-20002, 
+                    'Modification impossible après 9h pour livraison matinale');
+            END IF;
+        ELSIF :NEW.dateliv < TRUNC(SYSDATE) + 14/24 THEN
+            IF v_heure_actuelle >= 14 THEN
+                RAISE_APPLICATION_ERROR(-20003, 
+                    'Modification impossible après 14h pour livraison après-midi');
+            END IF;
+        END IF;
+    END IF;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER trg_suppression_logique_article
+BEFORE DELETE ON articles
+FOR EACH ROW
+DECLARE
+    v_count_commandes NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v_count_commandes
+    FROM ligcdes
+    WHERE refart = :OLD.refart;
+    
+    IF v_count_commandes > 0 THEN
+        
+        UPDATE articles
+        SET supp = 'O'
+        WHERE refart = :OLD.refart;
+        
+        RAISE_APPLICATION_ERROR(-20004,
+            'Article présent dans des commandes - Suppression logique effectuée');
+    END IF;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER trg_historique_annulations
+AFTER UPDATE OF etatcde ON commandes
+FOR EACH ROW
+WHEN (NEW.etatcde = 'AN' AND OLD.etatcde != 'AN')
+DECLARE
+    v_nbrart NUMBER;
+    v_montant NUMBER(10,2);
+    v_avantliv CHAR(1);
+BEGIN
+    SELECT COUNT(DISTINCT refart), NVL(SUM(l.qtecde * a.prixV), 0)
+    INTO v_nbrart, v_montant
+    FROM ligcdes l
+    JOIN articles a ON l.refart = a.refart
+    WHERE l.nocde = :OLD.nocde;
+        IF :OLD.etatcde IN ('EC', 'PR') THEN
+        v_avantliv := 'O';
+    ELSE
+        v_avantliv := 'N';
+    END IF;
+        INSERT INTO HCommandesAnnulees (
+        nocde, numclt, nbrart, montantc, datecde, 
+        dateAnnulation, code_postal, AvantLiv
+    )
+    VALUES (
+        :OLD.nocde, :OLD.noclt, v_nbrart, v_montant, :OLD.datecde,
+        SYSDATE, 
+        (SELECT code_postal FROM clients WHERE noclt = :OLD.noclt),
+        v_avantliv
+    );
+END;
+/
+
+CREATE OR REPLACE VIEW vue_clients_commandes AS
+SELECT c.nocde, c.datecde, c.etatcde,
+       cl.nomclt, cl.prenomclt, cl.telclt, cl.adrmail,
+       lc.dateliv, lc.modepay, lc.etatliv
+FROM commandes c
+JOIN clients cl ON c.noclt = cl.noclt
+LEFT JOIN LivraisonCom lc ON c.nocde = lc.nocde;
+
+
+CREATE OR REPLACE VIEW vue_stats_livraisons AS
+SELECT p.idpers, p.nompers, p.prenompers,
+       COUNT(*) AS nb_livraisons,
+       cl.code_postal, cl.villeclt
+FROM LivraisonCom lc
+JOIN personnel p ON lc.livreur = p.idpers
+JOIN commandes c ON lc.nocde = c.nocde
+JOIN clients cl ON c.noclt = cl.noclt
+WHERE TRUNC(lc.dateliv) = TRUNC(SYSDATE)
+GROUP BY p.idpers, p.nompers, p.prenompers, cl.code_postal, cl.villeclt;
+
+CREATE VIEW vue_client_commandes AS
+SELECT c.nocde, c.datecde, c.etatcde,
+       cl.noclt, cl.nomclt, cl.prenomclt,
+       l.refart, a.designation, l.qtecde, a.prixV,
+       (l.qtecde * a.prixV) AS montant_ligne,
+       lv.dateliv, lv.etatliv, lv.modepay
+FROM commandes c
+JOIN clients cl ON c.noclt = cl.noclt
+LEFT JOIN ligcdes l ON c.nocde = l.nocde
+LEFT JOIN articles a ON l.refart = a.refart
+LEFT JOIN LivraisonCom lv ON c.nocde = lv.nocde;
+select *  from commandes ;
+sqlplus SYSTEM/rawen123@localhost:1521/orcl @DISABLE_TRIGGER.sql
+ALTER TRIGGER trg_audit_commandes DISABLE;
+COMMIT;
+BEGIN
+  DECLARE v_count NUMBER;
+  BEGIN
+    SELECT COUNT(*) INTO v_count 
+    FROM personnel 
+    WHERE login = 'admin';
+
+    IF v_count = 0 THEN
+      INSERT INTO personnel (
+        idpers, nompers, prenompers, adrpers, villepers,
+        telpers, d_embauche, login, codeposte
+      )
+      VALUES (
+        1, 'Admin', 'Système', '123 rue Admin',
+        'Tunis', '21600000', SYSDATE, 'admin', 'P002'
+      );
+    END IF;
+  END;
+END;
+/
+select * from personnel ;
+select * from commandes ;
+select * from livraisoncom ;
+select * from hcommandesannulees;
+select * from clients ;
+UPDATE commandes
+SET noclt = 13
+WHERE noclt = 17;
+
+UPDATE clients
+SET noclt = 13
+WHERE noclt = 17;
+
+COMMIT;
+SELECT trigger_name, status
+FROM user_triggers
+WHERE trigger_name = 'TRG_HISTORIQUE_ANNULATIONS';
+ALTER TRIGGER TRG_HISTORIQUE_ANNULATIONS enable ;
+UPDATE clients
+SET noclt = 13
+WHERE noclt = 17;
+
+COMMIT;
+
+INSERT INTO clients(noclt, nomclt, prenomclt, adr)
+SELECT 13, nomclt, prenomclt, adr
+FROM clients
+WHERE noclt = 17;
+INSERT INTO clients(noclt, nomclt, prenomclt, adrclt, code_postal, telclt, adrmail)
+SELECT 13, nomclt, prenomclt, adrclt, code_postal, telclt, adrmail
+FROM clients
+WHERE noclt = 17;
+ALTER TRIGGER TRG_VERIF_CLIENT_UNIQUE enable ;
+
+
+
+
+
+
+CREATE OR REPLACE PACKAGE pkg_gestion_privileges AS
+    ROLE_ADMIN CONSTANT VARCHAR2(15) := 'ADMINISTRATEUR';
+    ROLE_MAG CONSTANT VARCHAR2(10) := 'MAGASINIER';
+    ROLE_CHEF_LIV CONSTANT VARCHAR2(15) := 'CHEF_LIVREUR';
+    
+    SUCCESS CONSTANT NUMBER := 0;
+    ERROR_GENERAL CONSTANT NUMBER := -1;
+    ERROR_VALIDATION CONSTANT NUMBER := -2;
+    ERROR_NOT_FOUND CONSTANT NUMBER := -3;
+    ERROR_DUPLICATE CONSTANT NUMBER := -4;
+    ERROR_FOREIGN_KEY CONSTANT NUMBER := -5;
+    ERROR_BUSINESS_RULE CONSTANT NUMBER := -6;
+    
+    PROCEDURE creer_utilisateur_db(
+        p_nom_util IN VARCHAR2,
+        p_mot_passe IN VARCHAR2,
+        p_role IN VARCHAR2,
+        p_result OUT NUMBER,
+        p_message OUT VARCHAR2
+    );
+    
+    PROCEDURE attribuer_role(
+        p_nom_util IN VARCHAR2,
+        p_role IN VARCHAR2,
+        p_result OUT NUMBER,
+        p_message OUT VARCHAR2
+    );
+    
+    PROCEDURE retirer_role(
+        p_nom_util IN VARCHAR2,
+        p_role IN VARCHAR2,
+        p_result OUT NUMBER,
+        p_message OUT VARCHAR2
+    );
+    
+    PROCEDURE creer_vue_magasinier;
+    PROCEDURE creer_vue_chef_livreur;
+    PROCEDURE creer_vue_admin;
+    PROCEDURE creer_schema_clients;
+    PROCEDURE creer_schema_personnel;
+    
+    FUNCTION verifier_privilege(
+        p_nom_util IN VARCHAR2,
+        p_priv IN VARCHAR2
+    ) RETURN BOOLEAN;
+    
+    FUNCTION get_roles_utilisateur(
+        p_nom_util IN VARCHAR2
+    ) RETURN VARCHAR2;
+    
+    PROCEDURE init_roles_defaut;
+    
+    PROCEDURE audit_changement_priv(
+        p_nom_util IN VARCHAR2,
+        p_operation IN VARCHAR2,
+        p_details IN VARCHAR2
+    );
+    
+    PROCEDURE creer_schemas_externes;
+    PROCEDURE accorder_privileges_administrateur(p_username IN VARCHAR2);
+    PROCEDURE accorder_privileges_magasinier(p_username IN VARCHAR2);
+    PROCEDURE accorder_privileges_cheflivreur(p_username IN VARCHAR2);
+    PROCEDURE revoquer_tous_privileges(p_username IN VARCHAR2);
+    PROCEDURE afficher_privileges(p_username IN VARCHAR2);
+    
+    PROCEDURE gerer_privileges_par_poste(
+        p_username IN VARCHAR2,
+        p_codeposte IN VARCHAR2
+    );
+     PROCEDURE lister_roles_disponibles(
+        p_cursor OUT SYS_REFCURSOR
+    );
+    
+    -- Lister tous les utilisateurs Oracle
+    PROCEDURE lister_utilisateurs_db(
+        p_cursor OUT SYS_REFCURSOR
+    );
+    
+    -- Obtenir les privilèges d'un utilisateur (pour affichage)
+    PROCEDURE obtenir_privileges_utilisateur(
+        p_nom_util IN VARCHAR2,
+        p_cursor OUT SYS_REFCURSOR
+    );
+    
+    -- Vérifier si un utilisateur existe
+    FUNCTION utilisateur_existe(
+        p_nom_util IN VARCHAR2
+    ) RETURN BOOLEAN;
+    
+    -- Obtenir le nombre de rôles d'un utilisateur
+    FUNCTION compter_roles_utilisateur(
+        p_nom_util IN VARCHAR2
+    ) RETURN NUMBER;
+    
+    -- Lister les privilèges par type (SELECT, INSERT, UPDATE, DELETE)
+    PROCEDURE lister_privileges_par_type(
+        p_nom_util IN VARCHAR2,
+        p_type_priv IN VARCHAR2, -- 'SELECT', 'INSERT', 'UPDATE', 'DELETE'
+        p_cursor OUT SYS_REFCURSOR
+    );
+END pkg_gestion_privileges;
+/
+
+CREATE OR REPLACE PACKAGE BODY pkg_gestion_privileges AS
+    PROCEDURE lister_roles_disponibles(
+        p_cursor OUT SYS_REFCURSOR
+    ) IS
+    BEGIN
+        OPEN p_cursor FOR
+        SELECT codeposte AS code_role,
+               libelle AS nom_role,
+               indice,
+               CASE codeposte
+                   WHEN 'P002' THEN 'Accès complet à toutes les tables et packages'
+                   WHEN 'P001' THEN 'Gestion des articles et commandes'
+                   WHEN 'P003' THEN 'Gestion des livraisons et livreurs'
+                   ELSE 'Rôle personnalisé'
+               END AS description
+        FROM postes
+        ORDER BY indice DESC;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur listage rôles: ' || SQLERRM);
+            OPEN p_cursor FOR SELECT NULL FROM DUAL WHERE 1=0;
+    END lister_roles_disponibles;
+    
+    PROCEDURE lister_utilisateurs_db(
+        p_cursor OUT SYS_REFCURSOR
+    ) IS
+    BEGIN
+        OPEN p_cursor FOR
+        SELECT u.username AS nom_utilisateur,
+               u.created AS date_creation,
+               u.account_status AS statut,
+               NVL(p.login, 'N/A') AS login_application,
+               NVL(po.libelle, 'Aucun') AS role_application
+        FROM all_users u
+        LEFT JOIN personnel p ON UPPER(p.login) = u.username
+        LEFT JOIN postes po ON p.codeposte = po.codeposte
+        WHERE u.username NOT IN ('SYS', 'SYSTEM', 'DBSNMP', 'SYSMAN', 
+                                  'XDB', 'APEX_PUBLIC_USER', 'FLOWS_FILES',
+                                  'MDSYS', 'OUTLN', 'ORACLE_OCM')
+        ORDER BY u.created DESC;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur listage utilisateurs: ' || SQLERRM);
+            OPEN p_cursor FOR SELECT NULL FROM DUAL WHERE 1=0;
+    END lister_utilisateurs_db;
+    
+    
+    PROCEDURE obtenir_privileges_utilisateur(
+        p_nom_util IN VARCHAR2,
+        p_cursor OUT SYS_REFCURSOR
+    ) IS
+    BEGIN
+        OPEN p_cursor FOR
+        SELECT table_name AS objet,
+               privilege AS type_privilege,
+               grantable AS peut_deleguer,
+               grantor AS accorde_par
+        FROM user_tab_privs
+        WHERE grantee = UPPER(p_nom_util)
+        ORDER BY table_name, privilege;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur obtention privilèges: ' || SQLERRM);
+            OPEN p_cursor FOR SELECT NULL FROM DUAL WHERE 1=0;
+    END obtenir_privileges_utilisateur;
+    
+    
+    FUNCTION utilisateur_existe(
+        p_nom_util IN VARCHAR2
+    ) RETURN BOOLEAN IS
+        v_count NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO v_count
+        FROM all_users
+        WHERE username = UPPER(p_nom_util);
+        
+        RETURN v_count > 0;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            RETURN FALSE;
+    END utilisateur_existe;
+    
+  
+    FUNCTION compter_roles_utilisateur(
+        p_nom_util IN VARCHAR2
+    ) RETURN NUMBER IS
+        v_count NUMBER;
+    BEGIN
+        SELECT COUNT(DISTINCT table_name) INTO v_count
+        FROM user_tab_privs
+        WHERE grantee = UPPER(p_nom_util);
+        
+        RETURN v_count;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            RETURN 0;
+    END compter_roles_utilisateur;
+    PROCEDURE lister_privileges_par_type(
+        p_nom_util IN VARCHAR2,
+        p_type_priv IN VARCHAR2,
+        p_cursor OUT SYS_REFCURSOR
+    ) IS
+    BEGIN
+        OPEN p_cursor FOR
+        SELECT table_name AS objet,
+               privilege AS privilege,
+               grantable AS delegable
+        FROM user_tab_privs
+        WHERE grantee = UPPER(p_nom_util)
+        AND privilege = UPPER(p_type_priv)
+        ORDER BY table_name;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur listage privilèges par type: ' || SQLERRM);
+            OPEN p_cursor FOR SELECT NULL FROM DUAL WHERE 1=0;
+    END lister_privileges_par_type;
+    PROCEDURE creer_utilisateur_db(
+        p_nom_util IN VARCHAR2,
+        p_mot_passe IN VARCHAR2,
+        p_role IN VARCHAR2,
+        p_result OUT NUMBER,
+        p_message OUT VARCHAR2
+    ) IS
+        v_sql VARCHAR2(2000);
+        v_user_exists NUMBER;
+    BEGIN
+        BEGIN
+            SELECT COUNT(*) INTO v_user_exists
+            FROM all_users
+            WHERE username = UPPER(p_nom_util);
+            
+            IF v_user_exists > 0 THEN
+                p_result := ERROR_DUPLICATE;
+                p_message := 'Erreur: L''utilisateur existe déjà dans la base de données.';
+                RETURN;
+            END IF;
+        EXCEPTION
+            WHEN OTHERS THEN
+                p_result := ERROR_GENERAL;
+                p_message := 'Erreur lors de la vérification: ' || SQLERRM;
+                RETURN;
+        END;
+        
+        BEGIN
+            v_sql := 'CREATE USER ' || p_nom_util || 
+                     ' IDENTIFIED BY "' || p_mot_passe || '"' ||
+                     ' DEFAULT TABLESPACE USERS' ||
+                     ' TEMPORARY TABLESPACE TEMP' ||
+                     ' QUOTA UNLIMITED ON USERS';
+            EXECUTE IMMEDIATE v_sql;
+            
+            EXECUTE IMMEDIATE 'GRANT CONNECT TO ' || p_nom_util;
+            
+            IF UPPER(p_role) = ROLE_ADMIN THEN
+                attribuer_role(p_nom_util, ROLE_ADMIN, p_result, p_message);
+            ELSIF UPPER(p_role) = ROLE_MAG THEN
+                attribuer_role(p_nom_util, ROLE_MAG, p_result, p_message);
+            ELSIF UPPER(p_role) = ROLE_CHEF_LIV THEN
+                attribuer_role(p_nom_util, ROLE_CHEF_LIV, p_result, p_message);
+            END IF;
+            
+            audit_changement_priv(p_nom_util, 'CREATE_USER', 'Rôle: ' || p_role);
+            
+            p_result := SUCCESS;
+            p_message := 'Utilisateur créé avec succès dans la base de données.';
+            
+        EXCEPTION
+            WHEN OTHERS THEN
+                p_result := ERROR_GENERAL;
+                p_message := 'Erreur lors de la création: ' || SQLERRM;
+                ROLLBACK;
+        END;
+    END creer_utilisateur_db;
+    
+    PROCEDURE attribuer_role(
+        p_nom_util IN VARCHAR2,
+        p_role IN VARCHAR2,
+        p_result OUT NUMBER,
+        p_message OUT VARCHAR2
+    ) IS
+        v_codeposte VARCHAR2(10);
+    BEGIN
+        IF UPPER(p_role) = ROLE_ADMIN THEN
+            v_codeposte := 'P002';
+            accorder_privileges_administrateur(p_nom_util);
+        ELSIF UPPER(p_role) = ROLE_MAG THEN
+            v_codeposte := 'P001';
+            accorder_privileges_magasinier(p_nom_util);
+        ELSIF UPPER(p_role) = ROLE_CHEF_LIV THEN
+            v_codeposte := 'P003';
+            accorder_privileges_cheflivreur(p_nom_util);
+        ELSE
+            p_result := ERROR_VALIDATION;
+            p_message := 'Erreur: Rôle invalide. Utilisez: ' || 
+                        ROLE_ADMIN || ', ' || ROLE_MAG || ', ou ' || ROLE_CHEF_LIV;
+            RETURN;
+        END IF;
+        
+        audit_changement_priv(p_nom_util, 'GRANT_ROLE', 'Rôle attribué: ' || p_role);
+        
+        p_result := SUCCESS;
+        p_message := 'Rôle ' || p_role || ' attribué avec succès à ' || p_nom_util;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            p_result := ERROR_GENERAL;
+            p_message := 'Erreur lors de l''attribution du rôle: ' || SQLERRM;
+            ROLLBACK;
+    END attribuer_role;
+    
+    PROCEDURE retirer_role(
+        p_nom_util IN VARCHAR2,
+        p_role IN VARCHAR2,
+        p_result OUT NUMBER,
+        p_message OUT VARCHAR2
+    ) IS
+    BEGIN
+        revoquer_tous_privileges(p_nom_util);
+        audit_changement_priv(p_nom_util, 'REVOKE_ROLE', 'Rôle retiré: ' || p_role);
+        
+        p_result := SUCCESS;
+        p_message := 'Rôle ' || p_role || ' retiré avec succès de ' || p_nom_util;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            p_result := ERROR_GENERAL;
+            p_message := 'Erreur lors du retrait du rôle: ' || SQLERRM;
+    END retirer_role;
+    
+    PROCEDURE creer_vue_magasinier IS
+    BEGIN
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP VIEW vue_articles_magasinier';
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+        
+        EXECUTE IMMEDIATE '
+        CREATE VIEW vue_articles_magasinier AS
+        SELECT refart, designation, prixA, prixV, categorie, qtestk,
+               (prixV - prixA) AS marge,
+               CASE 
+                   WHEN qtestk < 50 THEN ''STOCK_BAS''
+                   WHEN qtestk < 100 THEN ''STOCK_MOYEN''
+                   ELSE ''STOCK_OK''
+               END AS statut_stock
+        FROM articles
+        WHERE supp = ''N''';
+        
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP VIEW vue_commandes_magasinier';
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+        
+        EXECUTE IMMEDIATE '
+        CREATE VIEW vue_commandes_magasinier AS
+        SELECT c.nocde, c.datecde, c.etatcde,
+               cl.nomclt, cl.prenomclt, cl.villeclt,
+               COUNT(l.refart) AS nb_articles,
+               SUM(l.qtecde * a.prixV) AS montant_total
+        FROM commandes c
+        JOIN clients cl ON c.noclt = cl.noclt
+        LEFT JOIN ligcdes l ON c.nocde = l.nocde
+        LEFT JOIN articles a ON l.refart = a.refart
+        GROUP BY c.nocde, c.datecde, c.etatcde, cl.nomclt, cl.prenomclt, cl.villeclt';
+        
+        DBMS_OUTPUT.PUT_LINE('Vues magasinier créées avec succès.');
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur création vues magasinier: ' || SQLERRM);
+    END creer_vue_magasinier;
+    
+    PROCEDURE creer_vue_chef_livreur IS
+    BEGIN
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP VIEW vue_livraisons_chef';
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+        
+        EXECUTE IMMEDIATE '
+        CREATE VIEW vue_livraisons_chef AS
+        SELECT lc.nocde, lc.dateliv, lc.modepay, lc.etatliv,
+               p.nompers || '' '' || p.prenompers AS nom_livreur,
+               p.telpers AS tel_livreur,
+               cl.nomclt, cl.adrclt, cl.villeclt, cl.code_postal, cl.telclt,
+               c.etatcde,
+               COUNT(*) OVER (PARTITION BY lc.livreur, TRUNC(lc.dateliv), cl.code_postal) AS nb_liv_jour_ville
+        FROM LivraisonCom lc
+        JOIN personnel p ON lc.livreur = p.idpers
+        JOIN commandes c ON lc.nocde = c.nocde
+        JOIN clients cl ON c.noclt = cl.noclt
+        WHERE lc.etatliv IN (''EC'', ''LI'')';
+        
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP VIEW vue_stats_livreurs';
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+        
+        EXECUTE IMMEDIATE '
+        CREATE VIEW vue_stats_livreurs AS
+        SELECT p.idpers, p.nompers, p.prenompers,
+               COUNT(DISTINCT lc.nocde) AS total_livraisons,
+               COUNT(DISTINCT TRUNC(lc.dateliv)) AS jours_travailles,
+               ROUND(COUNT(DISTINCT lc.nocde) / NULLIF(COUNT(DISTINCT TRUNC(lc.dateliv)), 0), 2) AS moy_liv_jour
+        FROM personnel p
+        LEFT JOIN LivraisonCom lc ON p.idpers = lc.livreur
+        WHERE p.codeposte = ''P003''
+        GROUP BY p.idpers, p.nompers, p.prenompers';
+        
+        DBMS_OUTPUT.PUT_LINE('Vues chef livreur créées avec succès.');
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur création vues chef livreur: ' || SQLERRM);
+    END creer_vue_chef_livreur;
+    
+    PROCEDURE creer_vue_admin IS
+    BEGIN
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP VIEW vue_dashboard_admin';
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+        
+        EXECUTE IMMEDIATE '
+        CREATE VIEW vue_dashboard_admin AS
+        SELECT 
+            (SELECT COUNT(*) FROM commandes WHERE etatcde = ''EC'') AS cmd_en_cours,
+            (SELECT COUNT(*) FROM commandes WHERE etatcde = ''PR'') AS cmd_pretes,
+            (SELECT COUNT(*) FROM LivraisonCom WHERE etatliv = ''EC'') AS liv_en_cours,
+            (SELECT COUNT(*) FROM articles WHERE qtestk < 50 AND supp = ''N'') AS articles_stock_bas,
+            (SELECT COUNT(*) FROM personnel WHERE login NOT LIKE ''%_INACTIF_%'') AS personnel_actif,
+            (SELECT SUM(montantc) FROM HCommandesAnnulees WHERE TRUNC(dateAnnulation) = TRUNC(SYSDATE)) AS ca_perdu_jour
+        FROM DUAL';
+        
+        DBMS_OUTPUT.PUT_LINE('Vues administrateur créées avec succès.');
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur création vues admin: ' || SQLERRM);
+    END creer_vue_admin;
+    
+    PROCEDURE creer_schema_clients IS
+    BEGIN
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP VIEW vue_client_mes_commandes';
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+        
+        EXECUTE IMMEDIATE '
+        CREATE VIEW vue_client_mes_commandes AS
+        SELECT c.nocde, c.datecde, c.etatcde,
+               l.refart, a.designation, l.qtecde, a.prixV,
+               (l.qtecde * a.prixV) AS montant_ligne,
+               lv.dateliv, lv.etatliv, lv.modepay
+        FROM commandes c
+        JOIN ligcdes l ON c.nocde = l.nocde
+        JOIN articles a ON l.refart = a.refart
+        LEFT JOIN LivraisonCom lv ON c.nocde = lv.nocde
+        JOIN clients cl ON c.noclt = cl.noclt';
+        
+        DBMS_OUTPUT.PUT_LINE('Schéma externe clients créé avec succès.');
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur création schéma clients: ' || SQLERRM);
+    END creer_schema_clients;
+    
+    PROCEDURE creer_schema_personnel IS
+    BEGIN
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP VIEW vue_personnel_info';
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+        
+        EXECUTE IMMEDIATE '
+        CREATE VIEW vue_personnel_info AS
+        SELECT p.idpers, p.nompers, p.prenompers, p.villepers, p.telpers,
+               po.libelle AS poste, po.indice, p.d_embauche,
+               TRUNC(MONTHS_BETWEEN(SYSDATE, p.d_embauche)/12) AS anciennete_annees
+        FROM personnel p
+        JOIN postes po ON p.codeposte = po.codeposte
+        WHERE p.login NOT LIKE ''%_INACTIF_%''';
+        
+        DBMS_OUTPUT.PUT_LINE('Schéma externe personnel créé avec succès.');
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur création schéma personnel: ' || SQLERRM);
+    END creer_schema_personnel;
+    
+    FUNCTION verifier_privilege(
+        p_nom_util IN VARCHAR2,
+        p_priv IN VARCHAR2
+    ) RETURN BOOLEAN IS
+        v_count NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO v_count
+        FROM user_tab_privs
+        WHERE grantee = UPPER(p_nom_util)
+        AND privilege = UPPER(p_priv);
+        
+        RETURN v_count > 0;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            RETURN FALSE;
+    END verifier_privilege;
+    
+    FUNCTION get_roles_utilisateur(
+        p_nom_util IN VARCHAR2
+    ) RETURN VARCHAR2 IS
+        v_roles VARCHAR2(4000);
+    BEGIN
+        SELECT LISTAGG(po.libelle, ', ') WITHIN GROUP (ORDER BY po.libelle)
+        INTO v_roles
+        FROM personnel p
+        JOIN postes po ON p.codeposte = po.codeposte
+        WHERE p.login = p_nom_util;
+        
+        RETURN NVL(v_roles, 'Aucun rôle');
+        
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RETURN 'Utilisateur non trouvé';
+        WHEN OTHERS THEN
+            RETURN 'Erreur';
+    END get_roles_utilisateur;
+    
+    PROCEDURE init_roles_defaut IS
+    BEGIN
+        creer_vue_magasinier;
+        creer_vue_chef_livreur;
+        creer_vue_admin;
+        creer_schema_clients;
+        creer_schema_personnel;
+        
+        DBMS_OUTPUT.PUT_LINE('Initialisation des rôles par défaut terminée.');
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur initialisation rôles: ' || SQLERRM);
+    END init_roles_defaut;
+    
+    PROCEDURE audit_changement_priv(
+        p_nom_util IN VARCHAR2,
+        p_operation IN VARCHAR2,
+        p_details IN VARCHAR2
+    ) IS
+        PRAGMA AUTONOMOUS_TRANSACTION;
+    BEGIN
+        BEGIN
+            EXECUTE IMMEDIATE '
+            CREATE TABLE audit_privileges (
+                id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                nom_utilisateur VARCHAR2(30),
+                operation VARCHAR2(50),
+                details VARCHAR2(500),
+                date_operation DATE DEFAULT SYSDATE,
+                user_oracle VARCHAR2(30) DEFAULT USER
+            )';
+        EXCEPTION
+            WHEN OTHERS THEN
+                IF SQLCODE != -955 THEN
+                    RAISE;
+                END IF;
+        END;
+        
+        INSERT INTO audit_privileges (nom_utilisateur, operation, details)
+        VALUES (p_nom_util, p_operation, p_details);
+        
+        COMMIT;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            DBMS_OUTPUT.PUT_LINE('Erreur audit: ' || SQLERRM);
+    END audit_changement_priv;
+    
+    PROCEDURE creer_schemas_externes IS
+    BEGIN
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP VIEW vue_client_commandes';
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+
+        EXECUTE IMMEDIATE '
+        CREATE VIEW vue_client_commandes AS
+        SELECT c.nocde, c.datecde, c.etatcde,
+               cl.noclt, cl.nomclt, cl.prenomclt,
+               l.refart, a.designation, l.qtecde, a.prixV,
+               (l.qtecde * a.prixV) AS montant_ligne,
+               lv.dateliv, lv.etatliv, lv.modepay
+        FROM commandes c
+        JOIN clients cl ON c.noclt = cl.noclt
+        LEFT JOIN ligcdes l ON c.nocde = l.nocde
+        LEFT JOIN articles a ON l.refart = a.refart
+        LEFT JOIN LivraisonCom lv ON c.nocde = lv.nocde';
+
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP VIEW vue_personnel_complet';
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+
+        EXECUTE IMMEDIATE '
+        CREATE VIEW vue_personnel_complet AS
+        SELECT p.idpers, p.nompers, p.prenompers, 
+               p.villepers, p.telpers, p.d_embauche,
+               po.libelle AS poste, po.indice,
+               COUNT(lv.nocde) AS nb_livraisons_total
+        FROM personnel p
+        JOIN postes po ON p.codeposte = po.codeposte
+        LEFT JOIN LivraisonCom lv ON p.idpers = lv.livreur
+        GROUP BY p.idpers, p.nompers, p.prenompers, 
+                 p.villepers, p.telpers, p.d_embauche,
+                 po.libelle, po.indice';
+
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP VIEW vue_stats_articles';
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+
+        EXECUTE IMMEDIATE '
+        CREATE VIEW vue_stats_articles AS
+        SELECT a.refart, a.designation, a.categorie,
+               a.prixA, a.prixV, a.qtestk,
+               (a.prixV - a.prixA) AS marge,
+               NVL(SUM(l.qtecde), 0) AS qte_vendue,
+               COUNT(DISTINCT l.nocde) AS nb_commandes
+        FROM articles a
+        LEFT JOIN ligcdes l ON a.refart = l.refart
+        WHERE a.supp = ''N''
+        GROUP BY a.refart, a.designation, a.categorie,
+                 a.prixA, a.prixV, a.qtestk';
+      BEGIN
+    EXECUTE IMMEDIATE 'DROP VIEW vue_stats_livraisons';
+EXCEPTION
+    WHEN OTHERS THEN NULL;
+END;
+
+EXECUTE IMMEDIATE '
+CREATE VIEW vue_stats_livraisons AS
+SELECT 
+    p.idpers,
+    p.nompers || '' '' || p.prenompers AS nom_livreur,
+    COUNT(lv.nocde) AS total_livraisons,
+    COUNT(CASE WHEN lv.etatliv = ''LI'' THEN 1 END) AS livraisons_terminees,
+    COUNT(CASE WHEN lv.etatliv = ''EC'' THEN 1 END) AS livraisons_en_cours,
+    TRUNC(lv.dateliv) AS date_livraison
+FROM personnel p
+LEFT JOIN LivraisonCom lv ON p.idpers = lv.livreur
+WHERE p.codeposte = ''P003''
+GROUP BY p.idpers, p.nompers, p.prenompers, TRUNC(lv.dateliv)';
+
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP VIEW vue_livraisons_en_cours';
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+
+        EXECUTE IMMEDIATE '
+        CREATE VIEW vue_livraisons_en_cours AS
+        SELECT lv.nocde, lv.dateliv, lv.modepay, lv.etatliv,
+               p.nompers, p.prenompers, p.telpers,
+               cl.nomclt, cl.adrclt, cl.villeclt, cl.telclt,
+               c.etatcde
+        FROM LivraisonCom lv
+        JOIN personnel p ON lv.livreur = p.idpers
+        JOIN commandes c ON lv.nocde = c.nocde
+        JOIN clients cl ON c.noclt = cl.noclt
+        WHERE lv.etatliv IN (''EC'', ''LI'')';
+
+        DBMS_OUTPUT.PUT_LINE('Schémas externes créés avec succès.');
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur création vues: ' || SQLERRM);
+            RAISE;
+    END creer_schemas_externes;
+    
+    PROCEDURE accorder_privileges_administrateur(p_username IN VARCHAR2) IS
+        v_sql VARCHAR2(2000);
+    BEGIN
+        EXECUTE IMMEDIATE 'GRANT CONNECT, RESOURCE TO ' || p_username;
+
+        FOR rec IN (SELECT table_name FROM user_tables WHERE table_name NOT LIKE 'BIN$%') LOOP
+            v_sql := 'GRANT SELECT, INSERT, UPDATE, DELETE ON ' || rec.table_name || ' TO ' || p_username;
+            EXECUTE IMMEDIATE v_sql;
+        END LOOP;
+
+        FOR rec IN (SELECT view_name FROM user_views) LOOP
+            v_sql := 'GRANT SELECT ON ' || rec.view_name || ' TO ' || p_username;
+            EXECUTE IMMEDIATE v_sql;
+        END LOOP;
+
+        EXECUTE IMMEDIATE 'GRANT SELECT ON seq_clients TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON seq_commandes TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON seq_personnel TO ' || p_username;
+
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_gestion_commandes TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_gestion_livraisons TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_gestion_utilisateurs TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_gestion_privileges TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_messages TO ' || p_username;
+
+        DBMS_OUTPUT.PUT_LINE('Privilèges ADMINISTRATEUR accordés à ' || p_username);
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END accorder_privileges_administrateur;
+    
+    PROCEDURE accorder_privileges_magasinier(p_username IN VARCHAR2) IS
+    BEGIN
+        EXECUTE IMMEDIATE 'GRANT CONNECT TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT, INSERT, UPDATE ON articles TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT, INSERT, UPDATE ON commandes TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT, INSERT, UPDATE ON ligcdes TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON clients TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON vue_stats_articles TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON vue_client_commandes TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON seq_commandes TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_gestion_commandes TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_messages TO ' || p_username;
+
+        DBMS_OUTPUT.PUT_LINE('Privilèges MAGASINIER accordés à ' || p_username);
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END accorder_privileges_magasinier;
+    
+    PROCEDURE accorder_privileges_cheflivreur(p_username IN VARCHAR2) IS
+    BEGIN
+        EXECUTE IMMEDIATE 'GRANT CONNECT TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT, INSERT, UPDATE, DELETE ON LivraisonCom TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT, UPDATE ON commandes TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON clients TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON personnel TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON postes TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT INSERT ON HCommandesAnnulees TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON vue_livraisons_en_cours TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON vue_personnel_complet TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT SELECT ON vue_stats_livraisons TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_gestion_livraisons TO ' || p_username;
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON pkg_messages TO ' || p_username;
+
+        DBMS_OUTPUT.PUT_LINE('Privilèges CHEF LIVREUR accordés à ' || p_username);
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END accorder_privileges_cheflivreur;
+    
+    PROCEDURE revoquer_tous_privileges(p_username IN VARCHAR2) IS
+        v_sql VARCHAR2(2000);
+    BEGIN
+        FOR rec IN (SELECT table_name FROM user_tables WHERE table_name NOT LIKE 'BIN$%') LOOP
+            BEGIN
+                v_sql := 'REVOKE ALL ON ' || rec.table_name || ' FROM ' || p_username;
+                EXECUTE IMMEDIATE v_sql;
+            EXCEPTION
+                WHEN OTHERS THEN NULL;
+            END;
+        END LOOP;
+
+        FOR rec IN (SELECT view_name FROM user_views) LOOP
+            BEGIN
+                v_sql := 'REVOKE ALL ON ' || rec.view_name || ' FROM ' || p_username;
+                EXECUTE IMMEDIATE v_sql;
+            EXCEPTION
+                WHEN OTHERS THEN NULL;
+            END;
+        END LOOP;
+
+        DBMS_OUTPUT.PUT_LINE('Privilèges révoqués pour ' || p_username);
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+    END revoquer_tous_privileges;
+    
+    PROCEDURE afficher_privileges(p_username IN VARCHAR2) IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('=== Privilèges de ' || p_username || ' ===');
+
+        FOR rec IN (
+            SELECT table_name, privilege
+            FROM user_tab_privs
+            WHERE grantee = UPPER(p_username)
+            ORDER BY table_name, privilege
+        ) LOOP
+            DBMS_OUTPUT.PUT_LINE(rec.privilege || ' sur ' || rec.table_name);
+        END LOOP;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+    END afficher_privileges;
+    
+    PROCEDURE gerer_privileges_par_poste(
+        p_username IN VARCHAR2,
+        p_codeposte IN VARCHAR2
+    ) IS
+    BEGIN
+        revoquer_tous_privileges(p_username);
+
+        IF p_codeposte = 'P002' THEN
+            accorder_privileges_administrateur(p_username);
+        ELSIF p_codeposte = 'P001' THEN
+            accorder_privileges_magasinier(p_username);
+        ELSIF p_codeposte = 'P003' THEN
+            accorder_privileges_cheflivreur(p_username);
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('Erreur: Code poste inconnu');
+        END IF;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Erreur: ' || SQLERRM);
+            RAISE;
+    END gerer_privileges_par_poste;
+
+END pkg_gestion_privileges;
+/
+select * from hcommandesannulees ;
+select * from ligcdes ;
+CREATE OR REPLACE PACKAGE pkg_gestion_privileges AS
+
+    PROCEDURE creer_schemas_externes;
+
+    PROCEDURE accorder_privileges_administrateur(
+        p_username IN VARCHAR2
+    );
+
+    PROCEDURE accorder_privileges_magasinier(
+        p_username IN VARCHAR2
+    );
+
+    PROCEDURE accorder_privileges_cheflivreur(
+        p_username IN VARCHAR2
+    );
+
+    PROCEDURE revoquer_tous_privileges(
+        p_username IN VARCHAR2
+    );
+
+    PROCEDURE afficher_privileges(
+        p_username IN VARCHAR2
+    );
+
+    PROCEDURE gerer_privileges_par_poste(
+        p_username IN VARCHAR2,
+        p_codeposte IN VARCHAR2
+    );
+
+END pkg_gestion_privileges;
+/

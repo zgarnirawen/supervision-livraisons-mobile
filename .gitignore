@@ -1,0 +1,21 @@
+.idea/
+*.iml
+
+# Android
+**/build/
+**/.gradle/
+local.properties
+
+# Java / Maven
+target/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Secrets
+.env
+.env.*
+!.env.example

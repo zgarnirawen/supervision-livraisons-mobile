@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Supervision Livraisons</string>
+
+    <!-- Auth -->
+    <string name="login_title">Supervision\nLivraisons</string>
+    <string name="login_subtitle">Connexion à votre espace</string>
+    <string name="hint_login">Identifiant</string>
+    <string name="hint_password">Mot de passe</string>
+    <string name="btn_login">Se connecter</string>
+    <string name="error_login_empty">Veuillez remplir tous les champs</string>
+    <string name="error_login_failed">Identifiants incorrects</string>
+    <string name="error_network">Erreur réseau. Vérifiez votre connexion.</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Accueil</string>
+    <string name="nav_livraisons">Livraisons</string>
+    <string name="nav_stats">Statistiques</string>
+    <string name="nav_logout">Déconnexion</string>
+
+    <!-- Liste Livraisons -->
+    <string name="title_mes_livraisons">Mes livraisons</string>
+    <string name="title_toutes_livraisons">Toutes les livraisons</string>
+    <string name="label_livraisons_du_jour">Livraisons du %1$s</string>
+    <string name="empty_livraisons">Aucune livraison pour aujourd\'hui</string>
+    <string name="label_commande_no">Commande N°%1$d</string>
+    <string name="label_client">Client : %1$s</string>
+    <string name="label_adresse">%1$s, %2$s</string>
+    <string name="label_livreur">Livreur : %1$s</string>
+
+    <!-- Statuts -->
+    <string name="statut_ec">En Cours</string>
+    <string name="statut_li">Livré</string>
+    <string name="statut_al">Ajourné</string>
+
+    <!-- Détail Livraison -->
+    <string name="title_detail_livraison">Détail Livraison</string>
+    <string name="label_mode_paiement">Mode de paiement</string>
+    <string name="label_avant_livraison">Avant livraison</string>
+    <string name="label_apres_livraison">Après livraison</string>
+    <string name="label_remarque">Remarque</string>
+    <string name="label_cause_ajournement">Cause d\'ajournement</string>
+    <string name="label_date_rappel">Tentative de rappel</string>
+    <string name="label_articles">Articles de la commande</string>
+    <string name="label_montant_total">Total : %1$.2f DT</string>
+    <string name="label_quantite">Qté : %1$d</string>
+    <string name="label_prix_unitaire">%1$.2f DT/u</string>
+
+    <!-- Changer statut -->
+    <string name="title_changer_statut">Changer le statut</string>
+    <string name="btn_marquer_livre">Marquer comme Livré</string>
+    <string name="btn_marquer_ajourne">Marquer comme Ajourné</string>
+    <string name="hint_remarque">Ajouter une remarque (optionnel)…</string>
+    <string name="hint_cause_ajournement">Cause de l\'ajournement (obligatoire)…</string>
+    <string name="error_cause_required">La cause d\'ajournement est obligatoire</string>
+    <string name="success_statut_changed">Statut mis à jour avec succès</string>
+
+    <!-- Rappel (Contrôleur) -->
+    <string name="title_enregistrer_rappel">Tentative de rappel</string>
+    <string name="btn_enregistrer_rappel">Enregistrer le rappel</string>
+    <string name="success_rappel_saved">Tentative de rappel enregistrée</string>
+
+    <!-- Stats (Contrôleur) -->
+    <string name="title_stats">Tableau de bord</string>
+    <string name="label_total">Total</string>
+    <string name="label_livrees">Livrées</string>
+    <string name="label_en_cours">En cours</string>
+    <string name="label_ajournees">Ajournées</string>
+    <string name="label_taux_succes">Taux de succès</string>
+
+    <!-- Commun -->
+    <string name="btn_confirmer">Confirmer</string>
+    <string name="btn_annuler">Annuler</string>
+    <string name="btn_retour">Retour</string>
+    <string name="label_chargement">Chargement…</string>
+    <string name="label_aucun_article">Aucun article</string>
+    <string name="dialog_logout_title">Déconnexion</string>
+    <string name="dialog_logout_message">Voulez-vous vraiment vous déconnecter ?</string>
+    <string name="label_bonjour">Bonjour, %1$s 👋</string>
+    <string name="label_role_livreur">🚚 Livreur</string>
+    <string name="label_role_controleur">📊 Contrôleur</string>
+</resources>

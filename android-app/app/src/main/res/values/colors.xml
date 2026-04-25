@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ══ Palette Principale ══════════════════════════════════════════════ -->
+    <!-- Bleu profond / Indigo -->
+    <color name="primary">#1A237E</color>
+    <color name="primary_variant">#283593</color>
+    <color name="primary_light">#3949AB</color>
+    <color name="primary_surface">#E8EAF6</color>
+
+    <!-- Accent Orange / Ambre -->
+    <color name="accent">#FF6F00</color>
+    <color name="accent_light">#FFA000</color>
+    <color name="accent_surface">#FFF8E1</color>
+
+    <!-- Surfaces -->
+    <color name="background">#F5F7FF</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#F0F2FF</color>
+    <color name="on_surface">#1A1A2E</color>
+    <color name="on_surface_variant">#5C5C7A</color>
+
+    <!-- Textes -->
+    <color name="text_primary">#1A1A2E</color>
+    <color name="text_secondary">#5C5C7A</color>
+    <color name="text_hint">#9E9EBF</color>
+    <color name="text_on_primary">#FFFFFF</color>
+
+    <!-- ══ Statuts Livraison ═══════════════════════════════════════════════ -->
+    <!-- EC - En Cours (Ambre) -->
+    <color name="status_ec">#FF8F00</color>
+    <color name="status_ec_bg">#FFF8E1</color>
+    <color name="status_ec_border">#FFB300</color>
+
+    <!-- LI - Livré (Vert Émeraude) -->
+    <color name="status_li">#1B5E20</color>
+    <color name="status_li_bg">#E8F5E9</color>
+    <color name="status_li_border">#4CAF50</color>
+
+    <!-- AL - Ajourné (Rouge Corail) -->
+    <color name="status_al">#B71C1C</color>
+    <color name="status_al_bg">#FFEBEE</color>
+    <color name="status_al_border">#EF5350</color>
+
+    <!-- ══ Rôles Utilisateurs ══════════════════════════════════════════════ -->
+    <!-- Livreur -->
+    <color name="role_livreur">#1565C0</color>
+    <color name="role_livreur_bg">#E3F2FD</color>
+
+    <!-- Contrôleur -->
+    <color name="role_controleur">#6A1B9A</color>
+    <color name="role_controleur_bg">#F3E5F5</color>
+
+    <!-- ══ Divers ═══════════════════════════════════════════════════════════ -->
+    <color name="divider">#E0E3F0</color>
+    <color name="ripple">#1A1A237E</color>
+    <color name="shadow">#1A000000</color>
+    <color name="error">#D32F2F</color>
+    <color name="success">#388E3C</color>
+    <color name="warning">#F57C00</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- Gradient start/end -->
+    <color name="gradient_start">#1A237E</color>
+    <color name="gradient_end">#3949AB</color>
+</resources>

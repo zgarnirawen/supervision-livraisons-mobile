@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="0dp">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            style="@style/AppToolbar" />
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/role_controleur"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="16dp">
+
+            <LinearLayout android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <LinearLayout android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView android:id="@+id/tv_bonjour"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="18sp" android:textStyle="bold"/>
+                    <TextView android:id="@+id/tv_role"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#C8B8E8" android:textSize="13sp"/>
+                    <TextView android:id="@+id/tv_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#C8B8E8" android:textSize="12sp"/>
+                </LinearLayout>
+
+                <!-- Taux succès -->
+                <LinearLayout android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_taux_chip"
+                    android:padding="10dp">
+                    <TextView android:id="@+id/tv_taux_succes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0%"
+                        android:textColor="@color/white"
+                        android:textSize="20sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Taux"
+                        android:textColor="#C8B8E8" android:textSize="10sp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Progress bar taux -->
+            <ProgressBar
+                android:id="@+id/progress_taux"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:max="100"
+                android:progress="0"
+                android:progressTint="@color/accent"
+                android:layout_marginTop="10dp" />
+
+            <!-- Mini stats -->
+            <LinearLayout android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="14dp">
+
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1"
+                    android:layout_height="wrap_content" android:orientation="vertical"
+                    android:gravity="center">
+                    <TextView android:id="@+id/tv_stat_total"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0" android:textColor="@color/white"
+                        android:textSize="22sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Total" android:textColor="#C8B8E8" android:textSize="11sp"/>
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1"
+                    android:layout_height="wrap_content" android:orientation="vertical"
+                    android:gravity="center">
+                    <TextView android:id="@+id/tv_stat_livrees"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0" android:textColor="#A5D6A7"
+                        android:textSize="22sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Livrées" android:textColor="#C8B8E8" android:textSize="11sp"/>
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1"
+                    android:layout_height="wrap_content" android:orientation="vertical"
+                    android:gravity="center">
+                    <TextView android:id="@+id/tv_stat_en_cours"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0" android:textColor="#FFD54F"
+                        android:textSize="22sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="En cours" android:textColor="#C8B8E8" android:textSize="11sp"/>
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1"
+                    android:layout_height="wrap_content" android:orientation="vertical"
+                    android:gravity="center">
+                    <TextView android:id="@+id/tv_stat_ajournees"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0" android:textColor="#EF9A9A"
+                        android:textSize="22sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Ajournées" android:textColor="#C8B8E8" android:textSize="11sp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Filtres chips -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:background="@color/surface"
+            android:paddingVertical="8dp">
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="12dp"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip android:id="@+id/chip_tous"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Tous" style="@style/StatutChip" android:checked="true"/>
+                <com.google.android.material.chip.Chip android:id="@+id/chip_en_cours"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="🟡 En Cours" style="@style/StatutChip"/>
+                <com.google.android.material.chip.Chip android:id="@+id/chip_livres"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="🟢 Livrés" style="@style/StatutChip"/>
+                <com.google.android.material.chip.Chip android:id="@+id/chip_ajournes"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="🔴 Ajournés" style="@style/StatutChip"/>
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+
+        <!-- Filtre ville -->
+        <LinearLayout android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/surface"
+            android:paddingHorizontal="12dp"
+            android:paddingBottom="8dp">
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp" android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:hint="Filtrer par ville"
+                style="@style/AppTextInput">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_filtre_ville"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionSearch"
+                    android:singleLine="true"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_filtrer_ville"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Filtrer"
+                style="@style/BtnPrimary"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmer_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp" android:visibility="gone">
+                <LinearLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:orientation="vertical">
+                    <include layout="@layout/item_shimmer"/>
+                    <include layout="@layout/item_shimmer"/>
+                    <include layout="@layout/item_shimmer"/>
+                    <include layout="@layout/item_shimmer"/>
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <TextView android:id="@+id/tv_count_results"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp" android:paddingTop="8dp"
+                android:textColor="@color/text_secondary" android:textSize="12sp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                android:paddingTop="32dp"
+                android:clipToPadding="false"/>
+
+            <LinearLayout android:id="@+id/tv_empty"
+                android:layout_width="match_parent" android:layout_height="match_parent"
+                android:gravity="center" android:orientation="vertical"
+                android:visibility="gone">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="📋" android:textSize="56sp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Aucune livraison trouvée"
+                    android:textColor="@color/text_secondary" android:textSize="16sp"
+                    android:layout_marginTop="16dp"/>
+            </LinearLayout>
+        </FrameLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
