@@ -29,6 +29,15 @@ public class HistoriqueLivraison {
     @Column(name = "remarque", columnDefinition = "TEXT")
     private String remarque;
 
+    @Column(name = "transition_source", length = 20)
+    private String transitionSource = "mobile";
+
+    @Column(name = "reason_code", length = 40)
+    private String reasonCode;
+
+    @Column(name = "request_id")
+    private java.util.UUID requestId;
+
     @PrePersist
     protected void onCreate() {
         dateModification = LocalDateTime.now();
@@ -67,4 +76,10 @@ public class HistoriqueLivraison {
 
     public String getRemarque() { return remarque; }
     public void setRemarque(String remarque) { this.remarque = remarque; }
+    public String getTransitionSource() { return transitionSource; }
+    public void setTransitionSource(String transitionSource) { this.transitionSource = transitionSource; }
+    public String getReasonCode() { return reasonCode; }
+    public void setReasonCode(String reasonCode) { this.reasonCode = reasonCode; }
+    public java.util.UUID getRequestId() { return requestId; }
+    public void setRequestId(java.util.UUID requestId) { this.requestId = requestId; }
 }

@@ -28,11 +28,14 @@ public class LivraisonDetailDTO {
     private String clientAdresse;
     private String clientVille;
     private String clientCodePostal;
+    private java.math.BigDecimal clientLatitude;
+    private java.math.BigDecimal clientLongitude;
 
     // Livraison
     private String etatliv;
     private String etatLibelle;
     private String modepay;
+    private String categorie;
     private String remarque;
     private String causeAjournement;
     private LocalDateTime dateTentativeRappel;
@@ -60,9 +63,12 @@ public class LivraisonDetailDTO {
         dto.clientAdresse = l.getClientAdresse();
         dto.clientVille = l.getClientVille();
         dto.clientCodePostal = l.getClientCodePostal();
+        dto.clientLatitude = l.getClientLatitude();
+        dto.clientLongitude = l.getClientLongitude();
         dto.etatliv = l.getEtatliv();
         dto.etatLibelle = getEtatLibelle(l.getEtatliv());
         dto.modepay = l.getModepay();
+        dto.categorie = l.getCategorie();
         dto.remarque = l.getRemarque();
         dto.causeAjournement = l.getCauseAjournement();
         dto.dateTentativeRappel = l.getDateTentativeRappel();
@@ -113,12 +119,18 @@ public class LivraisonDetailDTO {
     public void setClientVille(String clientVille) { this.clientVille = clientVille; }
     public String getClientCodePostal() { return clientCodePostal; }
     public void setClientCodePostal(String clientCodePostal) { this.clientCodePostal = clientCodePostal; }
+    public java.math.BigDecimal getClientLatitude() { return clientLatitude; }
+    public void setClientLatitude(java.math.BigDecimal clientLatitude) { this.clientLatitude = clientLatitude; }
+    public java.math.BigDecimal getClientLongitude() { return clientLongitude; }
+    public void setClientLongitude(java.math.BigDecimal clientLongitude) { this.clientLongitude = clientLongitude; }
     public String getEtatliv() { return etatliv; }
     public void setEtatliv(String etatliv) { this.etatliv = etatliv; }
     public String getEtatLibelle() { return etatLibelle; }
     public void setEtatLibelle(String etatLibelle) { this.etatLibelle = etatLibelle; }
     public String getModepay() { return modepay; }
     public void setModepay(String modepay) { this.modepay = modepay; }
+    public String getCategorie() { return categorie; }
+    public void setCategorie(String categorie) { this.categorie = categorie; }
     public String getRemarque() { return remarque; }
     public void setRemarque(String remarque) { this.remarque = remarque; }
     public String getCauseAjournement() { return causeAjournement; }

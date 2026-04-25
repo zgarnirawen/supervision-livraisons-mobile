@@ -22,7 +22,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         PersonnelMobile personnel = personnelRepository.findByLogin(login)
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur introuvable: " + login));
 
-        String role = "P001".equals(personnel.getCodeposte()) ? "ROLE_LIVREUR" : "ROLE_CONTROLEUR";
+        final String role;
+        if ("P001".equals(personnel.getCodeposte())) {
+            role = "ROLE_LIVREUR";
+        } else if ("P003".equals(personnel.getCodeposte())) {
+            role = "ROLE_CONTROLEUR";
+        } else {
+            throw new UsernameNotFoundException("Code poste non autorisé: " + personnel.getCodeposte());
+        }
 
         return User.builder()
                 .username(personnel.getLogin())

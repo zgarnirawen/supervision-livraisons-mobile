@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -40,6 +41,11 @@ public class GlobalExceptionHandler {
             return buildError(HttpStatus.NOT_FOUND, ex.getMessage());
         }
         return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur interne du serveur");
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException ex) {
+        return buildError(HttpStatus.FORBIDDEN, "Accès refusé");
     }
 
     private ResponseEntity<Map<String, Object>> buildError(HttpStatus status, String message) {

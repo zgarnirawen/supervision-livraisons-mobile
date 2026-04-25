@@ -34,7 +34,9 @@ public class LivreurDashboardActivity extends AppCompatActivity {
     private ActivityLivreurDashboardBinding binding;
     private SessionManager sessionManager;
     private LivraisonsAdapter adapter;
-    private List<LivraisonMobile> livraisonsList = new ArrayList<>();
+    private final List<LivraisonMobile> livraisonsList = new ArrayList<>();
+    private final List<LivraisonMobile> allLivraisons = new ArrayList<>();
+    private String currentFilter = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class LivreurDashboardActivity extends AppCompatActivity {
 
         setupHeader();
         setupRecyclerView();
+        setupStatsFilterClicks();
         setupSwipeRefresh();
         loadLivraisons();
     }
@@ -76,6 +79,13 @@ public class LivreurDashboardActivity extends AppCompatActivity {
         binding.swipeRefresh.setOnRefreshListener(this::loadLivraisons);
     }
 
+    private void setupStatsFilterClicks() {
+        binding.chipTotal.getRoot().setOnClickListener(v -> applyStatutFilter(null));
+        binding.chipLivrees.getRoot().setOnClickListener(v -> applyStatutFilter("LI"));
+        binding.chipEnCours.getRoot().setOnClickListener(v -> applyStatutFilter("EC"));
+        binding.chipAjournes.getRoot().setOnClickListener(v -> applyStatutFilter("AL"));
+    }
+
     private void loadLivraisons() {
         binding.shimmerLayout.startShimmer();
         UiUtils.setVisible(binding.shimmerLayout, true);
@@ -90,14 +100,10 @@ public class LivreurDashboardActivity extends AppCompatActivity {
                 UiUtils.setVisible(binding.shimmerLayout, false);
 
                 if (response.isSuccessful() && response.body() != null) {
-                    livraisonsList.clear();
-                    livraisonsList.addAll(response.body());
-                    adapter.notifyDataSetChanged();
+                    allLivraisons.clear();
+                    allLivraisons.addAll(response.body());
                     updateStats();
-
-                    boolean isEmpty = livraisonsList.isEmpty();
-                    UiUtils.setVisible(binding.recyclerView, !isEmpty);
-                    UiUtils.setVisible(binding.tvEmpty, isEmpty);
+                    applyStatutFilter(currentFilter);
                 }
             }
 
@@ -107,9 +113,22 @@ public class LivreurDashboardActivity extends AppCompatActivity {
                 binding.shimmerLayout.stopShimmer();
                 UiUtils.setVisible(binding.shimmerLayout, false);
                 UiUtils.setVisible(binding.tvEmpty, true);
-                binding.tvEmpty.setText(getString(R.string.error_network));
             }
         });
+    }
+
+    private void applyStatutFilter(String statut) {
+        currentFilter = statut;
+        livraisonsList.clear();
+        for (LivraisonMobile item : allLivraisons) {
+            if (statut == null || statut.equals(item.getEtatliv())) {
+                livraisonsList.add(item);
+            }
+        }
+        adapter.notifyDataSetChanged();
+        boolean isEmpty = livraisonsList.isEmpty();
+        UiUtils.setVisible(binding.recyclerView, !isEmpty);
+        UiUtils.setVisible(binding.tvEmpty, isEmpty);
     }
 
     private void updateStats() {

@@ -65,6 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // Public endpoint
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/actuator/health").permitAll()
+                .antMatchers("/ws-chat/**").permitAll()
                 // Contrôleur only
                 .antMatchers("/api/livraisons/all").hasRole("CONTROLEUR")
                 .antMatchers("/api/livraisons/stats").hasRole("CONTROLEUR")

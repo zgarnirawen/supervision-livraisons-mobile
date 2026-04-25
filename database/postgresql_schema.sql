@@ -8,6 +8,9 @@
 -- ============================================================
 
 -- Suppression des tables existantes (ordre de dépendances)
+DROP TABLE IF EXISTS chat_messages CASCADE;
+DROP TABLE IF EXISTS livraison_geopoints CASCADE;
+DROP TABLE IF EXISTS pod_assets CASCADE;
 DROP TABLE IF EXISTS historique_livraisons CASCADE;
 DROP TABLE IF EXISTS articles_commande CASCADE;
 DROP TABLE IF EXISTS livraisons_mobile CASCADE;
@@ -29,7 +32,7 @@ CREATE TABLE personnel_mobile (
     CONSTRAINT ck_poste CHECK (codeposte IN ('P001', 'P003'))
 );
 
--- Données de test (mots de passe = 'password123' en BCrypt)
+-- Données de test (mots de passe = 'password' en BCrypt)
 INSERT INTO personnel_mobile (idpers, nompers, prenompers, telpers, login, mot_passe, codeposte, actif)
 VALUES
 (1, 'Ben Ali',   'Sami',  '51112222', 'sami.b',  '$2a$12$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LnkJY7Pz0ki', 'P001', TRUE),
@@ -56,6 +59,9 @@ CREATE TABLE livraisons_mobile (
     client_adresse      VARCHAR(60),
     client_ville        VARCHAR(30),
     client_code_postal  VARCHAR(5),
+    client_latitude     NUMERIC(9,6),
+    client_longitude    NUMERIC(9,6),
+    categorie           VARCHAR(40),
 
     -- État de la livraison
     etatliv             VARCHAR(2) DEFAULT 'EC',
@@ -109,12 +115,81 @@ CREATE TABLE historique_livraisons (
     modifie_par         INTEGER,             -- idpers du modificateur
     date_modification   TIMESTAMP DEFAULT NOW(),
     remarque            TEXT,
+    transition_source   VARCHAR(20) DEFAULT 'mobile',
+    reason_code         VARCHAR(40),
+    request_id          UUID,
     FOREIGN KEY (nocde) REFERENCES livraisons_mobile(nocde) ON DELETE CASCADE,
     FOREIGN KEY (modifie_par) REFERENCES personnel_mobile(idpers)
 );
 
 CREATE INDEX idx_historique_nocde ON historique_livraisons(nocde);
 CREATE INDEX idx_historique_date  ON historique_livraisons(date_modification);
+CREATE INDEX idx_historique_actor_date ON historique_livraisons(modifie_par, date_modification DESC);
+CREATE INDEX idx_historique_status_date ON historique_livraisons(nouveau_statut, date_modification DESC);
+
+-- ============================================================
+-- TABLE : pod_assets (Preuve de livraison)
+-- ============================================================
+CREATE TABLE pod_assets (
+    id                  SERIAL PRIMARY KEY,
+    nocde               INTEGER NOT NULL,
+    asset_type          VARCHAR(16) NOT NULL,        -- photo/signature/document
+    storage_provider    VARCHAR(16) NOT NULL,        -- s3/minio/local
+    storage_key         TEXT NOT NULL,
+    mime_type           VARCHAR(64) NOT NULL,
+    size_bytes          BIGINT,
+    sha256              CHAR(64),
+    captured_at         TIMESTAMP DEFAULT NOW(),
+    captured_by         INTEGER,
+    is_primary          BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (nocde) REFERENCES livraisons_mobile(nocde) ON DELETE CASCADE,
+    FOREIGN KEY (captured_by) REFERENCES personnel_mobile(idpers),
+    CONSTRAINT ck_pod_asset_type CHECK (asset_type IN ('photo', 'signature', 'document'))
+);
+
+CREATE INDEX idx_pod_nocde_type_created ON pod_assets(nocde, asset_type, captured_at DESC);
+CREATE UNIQUE INDEX idx_pod_storage_key_unique ON pod_assets(storage_key);
+
+-- ============================================================
+-- TABLE : livraison_geopoints (Tracking GPS)
+-- ============================================================
+CREATE TABLE livraison_geopoints (
+    id              SERIAL PRIMARY KEY,
+    nocde           INTEGER NOT NULL,
+    livreur_id      INTEGER NOT NULL,
+    captured_at     TIMESTAMP DEFAULT NOW(),
+    latitude        NUMERIC(9,6) NOT NULL,
+    longitude       NUMERIC(9,6) NOT NULL,
+    accuracy_m      NUMERIC(6,2),
+    speed_mps       NUMERIC(6,2),
+    source          VARCHAR(16) DEFAULT 'mobile',
+    FOREIGN KEY (nocde) REFERENCES livraisons_mobile(nocde) ON DELETE CASCADE,
+    FOREIGN KEY (livreur_id) REFERENCES personnel_mobile(idpers)
+);
+
+CREATE INDEX idx_geo_nocde_captured ON livraison_geopoints(nocde, captured_at DESC);
+CREATE INDEX idx_geo_livreur_captured ON livraison_geopoints(livreur_id, captured_at DESC);
+
+-- ============================================================
+-- TABLE : chat_messages (Chat temps réel lié à livraison)
+-- ============================================================
+CREATE TABLE chat_messages (
+    id              SERIAL PRIMARY KEY,
+    nocde           INTEGER NOT NULL,
+    sender_id       INTEGER NOT NULL,
+    recipient_id    INTEGER,
+    message_text    TEXT NOT NULL,
+    sent_at         TIMESTAMP DEFAULT NOW(),
+    read_at         TIMESTAMP,
+    client_msg_id   UUID,
+    FOREIGN KEY (nocde) REFERENCES livraisons_mobile(nocde) ON DELETE CASCADE,
+    FOREIGN KEY (sender_id) REFERENCES personnel_mobile(idpers),
+    FOREIGN KEY (recipient_id) REFERENCES personnel_mobile(idpers)
+);
+
+CREATE INDEX idx_chat_nocde_sent ON chat_messages(nocde, sent_at DESC);
+CREATE INDEX idx_chat_recipient_unread ON chat_messages(recipient_id, read_at) WHERE read_at IS NULL;
+CREATE UNIQUE INDEX idx_chat_client_msg_id_unique ON chat_messages(client_msg_id);
 
 -- ============================================================
 -- DONNÉES DE TEST (Livraisons d'aujourd'hui)

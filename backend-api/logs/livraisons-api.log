@@ -1,0 +1,83 @@
+2026-04-25 16:39:04.322  INFO 19020 --- [main] c.s.livraisons.LivraisonsApiApplication  : Starting LivraisonsApiApplication using Java 1.8.0_202 on zgrawen with PID 19020 (C:\Users\ZGARNI\delivery-supervision\backend-api\target\classes started by ZGARNI in C:\Users\ZGARNI\delivery-supervision\backend-api)
+2026-04-25 16:39:04.328 DEBUG 19020 --- [main] c.s.livraisons.LivraisonsApiApplication  : Running with Spring Boot v2.7.18, Spring v5.3.31
+2026-04-25 16:39:04.331  INFO 19020 --- [main] c.s.livraisons.LivraisonsApiApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-04-25 16:39:06.337  INFO 19020 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-25 16:39:06.488  INFO 19020 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 124 ms. Found 4 JPA repository interfaces.
+2026-04-25 16:39:08.537  INFO 19020 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2026-04-25 16:39:08.565  INFO 19020 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-25 16:39:08.567  INFO 19020 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.83]
+2026-04-25 16:39:08.945  INFO 19020 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-25 16:39:08.946  INFO 19020 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 4508 ms
+2026-04-25 16:39:09.517  INFO 19020 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-25 16:39:09.638  INFO 19020 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.6.15.Final
+2026-04-25 16:39:10.176  INFO 19020 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2026-04-25 16:39:10.515  INFO 19020 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-25 16:39:12.109  INFO 19020 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-25 16:39:12.155  INFO 19020 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2026-04-25 16:39:14.035  INFO 19020 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2026-04-25 16:39:14.064  INFO 19020 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-25 16:39:14.857  WARN 19020 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-25 16:39:15.039 DEBUG 19020 --- [main] c.s.livraisons.security.JwtAuthFilter    : Filter 'jwtAuthFilter' configured for use
+2026-04-25 16:39:17.370  INFO 19020 --- [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 3 endpoint(s) beneath base path '/actuator'
+2026-04-25 16:39:17.494  INFO 19020 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2026-04-25 16:39:17.531  INFO 19020 --- [main] c.s.livraisons.LivraisonsApiApplication  : Started LivraisonsApiApplication in 14.179 seconds (JVM running for 15.225)
+2026-04-25 16:41:21.871  INFO 19020 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-25 16:41:21.874  INFO 19020 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-25 16:41:21.877  INFO 19020 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2026-04-25 18:00:01.138  WARN 19020 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m47s512ms864µs600ns).
+2026-04-25 18:23:12.933  INFO 19020 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-25 18:23:13.048  INFO 19020 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-04-25 18:23:13.063  INFO 19020 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-04-25 18:24:15.813  INFO 16064 --- [main] c.s.livraisons.LivraisonsApiApplication  : Starting LivraisonsApiApplication using Java 1.8.0_202 on zgrawen with PID 16064 (C:\Users\ZGARNI\delivery-supervision\backend-api\target\classes started by ZGARNI in C:\Users\ZGARNI\delivery-supervision\backend-api)
+2026-04-25 18:24:15.817 DEBUG 16064 --- [main] c.s.livraisons.LivraisonsApiApplication  : Running with Spring Boot v2.7.18, Spring v5.3.31
+2026-04-25 18:24:15.818  INFO 16064 --- [main] c.s.livraisons.LivraisonsApiApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-04-25 18:24:16.840  INFO 16064 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-25 18:24:16.919  INFO 16064 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 68 ms. Found 4 JPA repository interfaces.
+2026-04-25 18:24:18.300  INFO 16064 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2026-04-25 18:24:18.325  INFO 16064 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-25 18:24:18.328  INFO 16064 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.83]
+2026-04-25 18:24:18.583  INFO 16064 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-25 18:24:18.584  INFO 16064 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2704 ms
+2026-04-25 18:24:18.919  INFO 16064 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-25 18:24:19.024  INFO 16064 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.6.15.Final
+2026-04-25 18:24:19.368  INFO 16064 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2026-04-25 18:24:19.578  INFO 16064 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-25 18:24:20.575  INFO 16064 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-25 18:24:20.605  INFO 16064 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2026-04-25 18:24:21.637  INFO 16064 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2026-04-25 18:24:21.661  INFO 16064 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-25 18:24:22.118  WARN 16064 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-25 18:24:22.220 DEBUG 16064 --- [main] c.s.livraisons.security.JwtAuthFilter    : Filter 'jwtAuthFilter' configured for use
+2026-04-25 18:24:23.508  INFO 16064 --- [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 3 endpoint(s) beneath base path '/actuator'
+2026-04-25 18:24:23.594  INFO 16064 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2026-04-25 18:24:23.617  INFO 16064 --- [main] c.s.livraisons.LivraisonsApiApplication  : Started LivraisonsApiApplication in 8.357 seconds (JVM running for 8.952)
+2026-04-25 18:53:53.992  WARN 16064 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2m32s822ms391µs600ns).
+2026-04-25 19:05:35.431  INFO 16064 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-25 19:05:35.464  INFO 16064 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-04-25 19:05:35.479  INFO 16064 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-04-25 19:06:13.180  INFO 24688 --- [main] c.s.livraisons.LivraisonsApiApplication  : Starting LivraisonsApiApplication using Java 1.8.0_202 on zgrawen with PID 24688 (C:\Users\ZGARNI\delivery-supervision\backend-api\target\classes started by ZGARNI in C:\Users\ZGARNI\delivery-supervision\backend-api)
+2026-04-25 19:06:13.187 DEBUG 24688 --- [main] c.s.livraisons.LivraisonsApiApplication  : Running with Spring Boot v2.7.18, Spring v5.3.31
+2026-04-25 19:06:13.193  INFO 24688 --- [main] c.s.livraisons.LivraisonsApiApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-04-25 19:06:15.101  INFO 24688 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-25 19:06:15.236  INFO 24688 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 117 ms. Found 4 JPA repository interfaces.
+2026-04-25 19:06:17.500  INFO 24688 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2026-04-25 19:06:17.527  INFO 24688 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-25 19:06:17.529  INFO 24688 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.83]
+2026-04-25 19:06:17.905  INFO 24688 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-25 19:06:17.906  INFO 24688 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 4618 ms
+2026-04-25 19:06:18.520  INFO 24688 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-25 19:06:18.779  INFO 24688 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.6.15.Final
+2026-04-25 19:06:19.132  INFO 24688 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2026-04-25 19:06:19.400  INFO 24688 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-25 19:06:20.849  INFO 24688 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-25 19:06:20.884  INFO 24688 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2026-04-25 19:06:22.448  INFO 24688 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2026-04-25 19:06:22.474  INFO 24688 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-25 19:06:23.291  WARN 24688 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-25 19:06:23.451 DEBUG 24688 --- [main] c.s.livraisons.security.JwtAuthFilter    : Filter 'jwtAuthFilter' configured for use
+2026-04-25 19:06:25.557  INFO 24688 --- [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 3 endpoint(s) beneath base path '/actuator'
+2026-04-25 19:06:25.683  INFO 24688 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2026-04-25 19:06:25.718  INFO 24688 --- [main] c.s.livraisons.LivraisonsApiApplication  : Started LivraisonsApiApplication in 13.452 seconds (JVM running for 14.422)
+2026-04-25 19:07:35.361  INFO 24688 --- [http-nio-0.0.0.0-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-25 19:07:35.364  INFO 24688 --- [http-nio-0.0.0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-25 19:07:35.367  INFO 24688 --- [http-nio-0.0.0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms

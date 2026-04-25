@@ -47,6 +47,15 @@ public class LivraisonMobile {
     @Column(name = "client_code_postal", length = 5)
     private String clientCodePostal;
 
+    @Column(name = "client_latitude", precision = 9, scale = 6)
+    private java.math.BigDecimal clientLatitude;
+
+    @Column(name = "client_longitude", precision = 9, scale = 6)
+    private java.math.BigDecimal clientLongitude;
+
+    @Column(name = "categorie", length = 40)
+    private String categorie;
+
     // État livraison
     @Column(name = "etatliv", length = 2)
     private String etatliv = "EC";
@@ -124,6 +133,12 @@ public class LivraisonMobile {
 
     public String getClientCodePostal() { return clientCodePostal; }
     public void setClientCodePostal(String clientCodePostal) { this.clientCodePostal = clientCodePostal; }
+    public java.math.BigDecimal getClientLatitude() { return clientLatitude; }
+    public void setClientLatitude(java.math.BigDecimal clientLatitude) { this.clientLatitude = clientLatitude; }
+    public java.math.BigDecimal getClientLongitude() { return clientLongitude; }
+    public void setClientLongitude(java.math.BigDecimal clientLongitude) { this.clientLongitude = clientLongitude; }
+    public String getCategorie() { return categorie; }
+    public void setCategorie(String categorie) { this.categorie = categorie; }
 
     public String getEtatliv() { return etatliv; }
     public void setEtatliv(String etatliv) { this.etatliv = etatliv; }

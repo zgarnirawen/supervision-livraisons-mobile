@@ -2,8 +2,11 @@ package com.supervision.livraisons.api;
 
 import com.supervision.livraisons.model.LoginRequest;
 import com.supervision.livraisons.model.LoginResponse;
+import com.supervision.livraisons.model.ChatMessage;
 import com.supervision.livraisons.model.LivraisonDetail;
+import com.supervision.livraisons.model.LivraisonGeopoint;
 import com.supervision.livraisons.model.LivraisonMobile;
+import com.supervision.livraisons.model.PodAsset;
 import com.supervision.livraisons.model.StatsDuJour;
 import com.supervision.livraisons.model.HistoriqueLivraison;
 
@@ -63,4 +66,28 @@ public interface ApiService {
     // ── Historique ────────────────────────────────────────────────────────
     @GET("api/livraisons/{nocde}/historique")
     Call<List<HistoriqueLivraison>> getHistorique(@Path("nocde") int nocde);
+
+    @GET("api/livraisons/{nocde}/transitions")
+    Call<Map<String, List<String>>> getAllowedTransitions(@Path("nocde") int nocde);
+
+    @POST("api/livraisons/{nocde}/location")
+    Call<LivraisonGeopoint> publishLocation(@Path("nocde") int nocde, @Body LivraisonGeopoint point);
+
+    @GET("api/livraisons/{nocde}/location/latest")
+    Call<LivraisonGeopoint> getLatestLocation(@Path("nocde") int nocde);
+
+    @GET("api/livraisons/{nocde}/location/history")
+    Call<List<LivraisonGeopoint>> getLocationHistory(@Path("nocde") int nocde);
+
+    @POST("api/livraisons/{nocde}/proof")
+    Call<PodAsset> saveProof(@Path("nocde") int nocde, @Body PodAsset asset);
+
+    @GET("api/livraisons/{nocde}/proof")
+    Call<List<PodAsset>> getProofs(@Path("nocde") int nocde);
+
+    @GET("api/livraisons/{nocde}/chat")
+    Call<List<ChatMessage>> getChatMessages(@Path("nocde") int nocde);
+
+    @POST("api/livraisons/{nocde}/chat")
+    Call<ChatMessage> postChatMessage(@Path("nocde") int nocde, @Body ChatMessage message);
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LivraisonRepository extends JpaRepository<LivraisonMobile, Integer> {
@@ -47,4 +48,10 @@ public interface LivraisonRepository extends JpaRepository<LivraisonMobile, Inte
            "FROM LivraisonMobile l WHERE l.dateliv = :date " +
            "GROUP BY l.livreurId, l.livreurNom, l.livreurPrenom")
     List<Object[]> getStatsByLivreur(@Param("date") LocalDate date);
+
+    Optional<LivraisonMobile> findByNocdeAndLivreurId(Integer nocde, Integer livreurId);
+
+    @Query("SELECT l.categorie, COUNT(l) FROM LivraisonMobile l " +
+           "WHERE l.dateliv = :date GROUP BY l.categorie")
+    List<Object[]> getStatsByCategorie(@Param("date") LocalDate date);
 }

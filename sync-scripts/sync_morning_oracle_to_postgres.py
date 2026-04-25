@@ -126,6 +126,13 @@ ON CONFLICT (nocde) DO UPDATE SET
     livreur_id           = EXCLUDED.livreur_id,
     livreur_nom          = EXCLUDED.livreur_nom,
     livreur_prenom       = EXCLUDED.livreur_prenom,
+    livreur_tel          = EXCLUDED.livreur_tel,
+    client_nom           = EXCLUDED.client_nom,
+    client_prenom        = EXCLUDED.client_prenom,
+    client_tel           = EXCLUDED.client_tel,
+    client_adresse       = EXCLUDED.client_adresse,
+    client_ville         = EXCLUDED.client_ville,
+    client_code_postal   = EXCLUDED.client_code_postal,
     etatliv              = EXCLUDED.etatliv,
     modepay              = EXCLUDED.modepay,
     derniere_modification = NOW()

@@ -1,6 +1,7 @@
 package com.supervision.livraisons.ui.common;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -52,6 +53,14 @@ public class LivraisonDetailActivity extends AppCompatActivity {
     }
 
     private void setupButtons() {
+        binding.btnAppelerClient.setOnClickListener(v -> appelerClient());
+        binding.btnVoirCarte.setOnClickListener(v -> ouvrirCarte());
+        binding.btnChat.setOnClickListener(v -> {
+            Intent intent = new Intent(this, LivraisonChatActivity.class);
+            intent.putExtra("nocde", nocde);
+            startActivity(intent);
+        });
+
         if (isLivreur) {
             UiUtils.setVisible(binding.btnChangerStatut, true);
             UiUtils.setVisible(binding.btnRappel, false);
@@ -160,10 +169,16 @@ public class LivraisonDetailActivity extends AppCompatActivity {
             boolean canChange = "EC".equals(l.getEtatliv());
             binding.btnChangerStatut.setEnabled(canChange);
             binding.btnChangerStatut.setAlpha(canChange ? 1.0f : 0.5f);
+            binding.btnChangerStatut.setText(canChange
+                    ? "✏️ Choisir un nouveau statut"
+                    : "✅ Livraison finalisée");
         } else {
             boolean canRappel = "AL".equals(l.getEtatliv());
             binding.btnRappel.setEnabled(canRappel);
             binding.btnRappel.setAlpha(canRappel ? 1.0f : 0.5f);
+            binding.btnRappel.setText(canRappel
+                    ? "📞 Enregistrer une tentative de rappel"
+                    : "📞 Rappel non applicable");
         }
     }
 
@@ -197,6 +212,29 @@ public class LivraisonDetailActivity extends AppCompatActivity {
                         getString(R.string.error_network), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void appelerClient() {
+        if (currentLivraison == null || currentLivraison.getClientTel() == null) {
+            Toast.makeText(this, "Numéro client indisponible", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + currentLivraison.getClientTel()));
+        startActivity(intent);
+    }
+
+    private void ouvrirCarte() {
+        if (currentLivraison == null) return;
+        String query = currentLivraison.getClientAdresse() + ", " + currentLivraison.getClientVille();
+        Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + Uri.encode(query));
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        if (mapIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(mapIntent);
+        } else {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://www.google.com/maps/search/?api=1&query=" + Uri.encode(query))));
+        }
     }
 
     @Override

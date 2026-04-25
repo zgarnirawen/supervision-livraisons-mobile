@@ -39,6 +39,15 @@ public class LivraisonMobile {
     @SerializedName("clientCodePostal")
     private String clientCodePostal;
 
+    @SerializedName("clientLatitude")
+    private Double clientLatitude;
+
+    @SerializedName("clientLongitude")
+    private Double clientLongitude;
+
+    @SerializedName("categorie")
+    private String categorie;
+
     @SerializedName("etatliv")
     private String etatliv;
 
@@ -71,6 +80,9 @@ public class LivraisonMobile {
     public String getClientAdresse() { return clientAdresse; }
     public String getClientVille() { return clientVille; }
     public String getClientCodePostal() { return clientCodePostal; }
+    public Double getClientLatitude() { return clientLatitude; }
+    public Double getClientLongitude() { return clientLongitude; }
+    public String getCategorie() { return categorie; }
     public String getEtatliv() { return etatliv; }
     public String getModepay() { return modepay; }
     public String getRemarque() { return remarque; }

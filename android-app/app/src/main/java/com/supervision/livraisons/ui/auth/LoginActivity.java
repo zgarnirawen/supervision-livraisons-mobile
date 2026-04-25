@@ -71,11 +71,6 @@ public class LoginActivity extends AppCompatActivity {
 
             performLogin(login, password);
         });
-
-        // Toggle password visibility
-        binding.tilPassword.setEndIconOnClickListener(v -> {
-            // Géré automatiquement par passwordToggle dans le layout
-        });
     }
 
     private void performLogin(String login, String password) {
@@ -110,7 +105,12 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 setLoading(false);
-                showError(getString(R.string.error_network));
+                String details = t != null && t.getMessage() != null ? t.getMessage() : "";
+                if (!details.isEmpty()) {
+                    showError(getString(R.string.error_network) + " (" + details + ")");
+                } else {
+                    showError(getString(R.string.error_network));
+                }
             }
         });
     }

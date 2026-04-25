@@ -8,6 +8,7 @@ public class StatsDuJourDTO {
     private long ajournees;
     private double tauxSucces;
     private java.util.List<StatsLivreurDTO> parLivreur;
+    private java.util.List<StatsCategorieDTO> parCategorie;
 
     public StatsDuJourDTO() {}
 
@@ -44,6 +45,22 @@ public class StatsDuJourDTO {
         public void setAjournees(long ajournees) { this.ajournees = ajournees; }
     }
 
+    public static class StatsCategorieDTO {
+        private String categorie;
+        private long total;
+
+        public StatsCategorieDTO() {}
+        public StatsCategorieDTO(String categorie, long total) {
+            this.categorie = categorie;
+            this.total = total;
+        }
+
+        public String getCategorie() { return categorie; }
+        public void setCategorie(String categorie) { this.categorie = categorie; }
+        public long getTotal() { return total; }
+        public void setTotal(long total) { this.total = total; }
+    }
+
     // Getters & Setters
     public long getTotalLivraisons() { return totalLivraisons; }
     public void setTotalLivraisons(long totalLivraisons) { this.totalLivraisons = totalLivraisons; }
@@ -57,4 +74,6 @@ public class StatsDuJourDTO {
     public void setTauxSucces(double tauxSucces) { this.tauxSucces = tauxSucces; }
     public java.util.List<StatsLivreurDTO> getParLivreur() { return parLivreur; }
     public void setParLivreur(java.util.List<StatsLivreurDTO> parLivreur) { this.parLivreur = parLivreur; }
+    public java.util.List<StatsCategorieDTO> getParCategorie() { return parCategorie; }
+    public void setParCategorie(java.util.List<StatsCategorieDTO> parCategorie) { this.parCategorie = parCategorie; }
 }

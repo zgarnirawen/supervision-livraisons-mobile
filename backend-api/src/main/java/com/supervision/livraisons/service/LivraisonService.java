@@ -9,7 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -18,13 +21,22 @@ public class LivraisonService {
     private final LivraisonRepository livraisonRepo;
     private final ArticleCommandeRepository articleRepo;
     private final HistoriqueRepository historiqueRepo;
+    private final LivraisonGeopointRepository geopointRepo;
+    private final PodAssetRepository podAssetRepo;
+    private final ChatMessageRepository chatRepo;
 
     public LivraisonService(LivraisonRepository livraisonRepo,
                             ArticleCommandeRepository articleRepo,
-                            HistoriqueRepository historiqueRepo) {
+                            HistoriqueRepository historiqueRepo,
+                            LivraisonGeopointRepository geopointRepo,
+                            PodAssetRepository podAssetRepo,
+                            ChatMessageRepository chatRepo) {
         this.livraisonRepo = livraisonRepo;
         this.articleRepo = articleRepo;
         this.historiqueRepo = historiqueRepo;
+        this.geopointRepo = geopointRepo;
+        this.podAssetRepo = podAssetRepo;
+        this.chatRepo = chatRepo;
     }
 
     // ── Livreur: Ses livraisons du jour ───────────────────────────────────
@@ -62,6 +74,14 @@ public class LivraisonService {
         return LivraisonDetailDTO.from(livraison, articles);
     }
 
+    @Transactional(readOnly = true)
+    public LivraisonDetailDTO getDetailForLivreur(Integer nocde, Integer livreurId) {
+        LivraisonMobile livraison = livraisonRepo.findByNocdeAndLivreurId(nocde, livreurId)
+                .orElseThrow(() -> new RuntimeException("Livraison introuvable: " + nocde));
+        List<ArticleCommande> articles = articleRepo.findByNocde(nocde);
+        return LivraisonDetailDTO.from(livraison, articles);
+    }
+
     // ── Livreur: Changer statut (EC → LI ou AL) ──────────────────────────
     public LivraisonMobile changerStatut(Integer nocde, String nouveauStatut,
                                          String remarque, String causeAjournement,
@@ -92,6 +112,7 @@ public class LivraisonService {
         // Historique
         HistoriqueLivraison historique = new HistoriqueLivraison(
                 nocde, ancienStatut, nouveauStatut, idpersModificateur, remarque);
+        historique.setReasonCode("STATUT_CHANGE");
         historiqueRepo.save(historique);
 
         return livraisonRepo.save(livraison);
@@ -123,6 +144,7 @@ public class LivraisonService {
         HistoriqueLivraison historique = new HistoriqueLivraison(
                 nocde, livraison.getEtatliv(), livraison.getEtatliv(),
                 idpersModificateur, "Tentative de rappel enregistrée");
+        historique.setReasonCode("RAPPEL");
         historiqueRepo.save(historique);
 
         return livraisonRepo.save(livraison);
@@ -160,6 +182,15 @@ public class LivraisonService {
                     livreurId, nom + " " + prenom, tot, liv, enc, ajo));
         }
         stats.setParLivreur(parLivreur);
+
+        List<Object[]> rawCategories = livraisonRepo.getStatsByCategorie(today);
+        List<StatsDuJourDTO.StatsCategorieDTO> parCategorie = new ArrayList<>();
+        for (Object[] row : rawCategories) {
+            String categorie = row[0] != null ? row[0].toString() : "Non classée";
+            long count = ((Number) row[1]).longValue();
+            parCategorie.add(new StatsDuJourDTO.StatsCategorieDTO(categorie, count));
+        }
+        stats.setParCategorie(parCategorie);
         return stats;
     }
 
@@ -167,5 +198,63 @@ public class LivraisonService {
     @Transactional(readOnly = true)
     public List<HistoriqueLivraison> getHistorique(Integer nocde) {
         return historiqueRepo.findByNocdeOrderByDateModificationDesc(nocde);
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, List<String>> getAllowedTransitions(Integer nocde) {
+        LivraisonMobile livraison = livraisonRepo.findById(nocde)
+                .orElseThrow(() -> new RuntimeException("Livraison introuvable: " + nocde));
+        if ("EC".equals(livraison.getEtatliv())) {
+            return Collections.singletonMap("allowed", Arrays.asList("LI", "AL"));
+        }
+        if ("AL".equals(livraison.getEtatliv())) {
+            return Collections.singletonMap("allowed", Collections.singletonList("EC"));
+        }
+        return Collections.singletonMap("allowed", Collections.emptyList());
+    }
+
+    public LivraisonGeopoint publishGeopoint(Integer nocde, Integer livreurId, LivraisonGeopoint point) {
+        livraisonRepo.findByNocdeAndLivreurId(nocde, livreurId)
+                .orElseThrow(() -> new RuntimeException("Livraison introuvable: " + nocde));
+        point.setNocde(nocde);
+        point.setLivreurId(livreurId);
+        return geopointRepo.save(point);
+    }
+
+    @Transactional(readOnly = true)
+    public LivraisonGeopoint getLatestGeopoint(Integer nocde) {
+        return geopointRepo.findFirstByNocdeOrderByCapturedAtDesc(nocde)
+                .orElseThrow(() -> new RuntimeException("Aucun point GPS pour livraison: " + nocde));
+    }
+
+    @Transactional(readOnly = true)
+    public List<LivraisonGeopoint> getGeopointHistory(Integer nocde) {
+        return geopointRepo.findByNocdeOrderByCapturedAtDesc(nocde);
+    }
+
+    public PodAsset saveProof(Integer nocde, Integer actorId, PodAsset asset) {
+        livraisonRepo.findById(nocde)
+                .orElseThrow(() -> new RuntimeException("Livraison introuvable: " + nocde));
+        asset.setNocde(nocde);
+        asset.setCapturedBy(actorId);
+        return podAssetRepo.save(asset);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PodAsset> getProofs(Integer nocde) {
+        return podAssetRepo.findByNocdeOrderByCapturedAtDesc(nocde);
+    }
+
+    public ChatMessage postChatMessage(Integer nocde, Integer senderId, ChatMessage message) {
+        livraisonRepo.findById(nocde)
+                .orElseThrow(() -> new RuntimeException("Livraison introuvable: " + nocde));
+        message.setNocde(nocde);
+        message.setSenderId(senderId);
+        return chatRepo.save(message);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChatMessage> getChatMessages(Integer nocde) {
+        return chatRepo.findByNocdeOrderBySentAtAsc(nocde);
     }
 }

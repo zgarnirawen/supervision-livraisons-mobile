@@ -227,6 +227,30 @@
                 android:layout_marginTop="8dp"
                 android:visibility="gone"/>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_appeler_client"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="📲 Appeler le client"
+                style="@style/BtnOutline"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_voir_carte"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="🗺️ Voir sur la carte"
+                style="@style/BtnOutline"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_chat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="💬 Ouvrir le chat"
+                style="@style/BtnOutline"/>
+
             <View android:layout_width="match_parent" android:layout_height="24dp"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

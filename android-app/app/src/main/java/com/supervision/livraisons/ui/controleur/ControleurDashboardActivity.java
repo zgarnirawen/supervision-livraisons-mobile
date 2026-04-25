@@ -71,6 +71,10 @@ public class ControleurDashboardActivity extends AppCompatActivity {
         binding.chipEnCours.setOnClickListener(v -> { filterEtat = "EC"; loadAll(); });
         binding.chipLivres.setOnClickListener(v -> { filterEtat = "LI"; loadAll(); });
         binding.chipAjournes.setOnClickListener(v -> { filterEtat = "AL"; loadAll(); });
+        binding.tvStatTotal.setOnClickListener(v -> { filterEtat = null; loadAll(); });
+        binding.tvStatLivrees.setOnClickListener(v -> { filterEtat = "LI"; loadAll(); });
+        binding.tvStatEnCours.setOnClickListener(v -> { filterEtat = "EC"; loadAll(); });
+        binding.tvStatAjournees.setOnClickListener(v -> { filterEtat = "AL"; loadAll(); });
 
         // Filtre par ville
         binding.btnFiltrerVille.setOnClickListener(v -> {
