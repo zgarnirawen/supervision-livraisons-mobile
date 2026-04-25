@@ -197,48 +197,71 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <com.facebook.shimmer.ShimmerFrameLayout
-                android:id="@+id/shimmer_layout"
+            <TextView
+                android:id="@+id/tv_count_results"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="8dp" android:visibility="gone">
-                <LinearLayout android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:orientation="vertical">
-                    <include layout="@layout/item_shimmer"/>
-                    <include layout="@layout/item_shimmer"/>
-                    <include layout="@layout/item_shimmer"/>
-                    <include layout="@layout/item_shimmer"/>
+                android:paddingHorizontal="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="4dp"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmer_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:visibility="gone">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <include layout="@layout/item_shimmer" />
+                        <include layout="@layout/item_shimmer" />
+                        <include layout="@layout/item_shimmer" />
+                        <include layout="@layout/item_shimmer" />
+                    </LinearLayout>
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="8dp"
+                    android:clipToPadding="false" />
+
+                <LinearLayout
+                    android:id="@+id/tv_empty"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📋"
+                        android:textSize="56sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Aucune livraison trouvée"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="16sp" />
                 </LinearLayout>
-            </com.facebook.shimmer.ShimmerFrameLayout>
-
-            <TextView android:id="@+id/tv_count_results"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp" android:paddingTop="8dp"
-                android:textColor="@color/text_secondary" android:textSize="12sp"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="8dp"
-                android:paddingTop="32dp"
-                android:clipToPadding="false"/>
-
-            <LinearLayout android:id="@+id/tv_empty"
-                android:layout_width="match_parent" android:layout_height="match_parent"
-                android:gravity="center" android:orientation="vertical"
-                android:visibility="gone">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="📋" android:textSize="56sp"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Aucune livraison trouvée"
-                    android:textColor="@color/text_secondary" android:textSize="16sp"
-                    android:layout_marginTop="16dp"/>
-            </LinearLayout>
-        </FrameLayout>
+            </FrameLayout>
+        </LinearLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

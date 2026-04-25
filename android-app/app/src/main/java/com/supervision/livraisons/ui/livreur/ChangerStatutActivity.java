@@ -45,7 +45,7 @@ public class ChangerStatutActivity extends AppCompatActivity {
             selectedStatut = "LI";
             binding.btnLivre.setAlpha(1.0f);
             binding.btnAjourne.setAlpha(0.4f);
-            UiUtils.setVisible(binding.layoutCauseAjournement, false);
+            UiUtils.setVisible(binding.tilCauseAjournement, false);
             binding.btnConfirmer.setEnabled(true);
         });
 
@@ -53,7 +53,7 @@ public class ChangerStatutActivity extends AppCompatActivity {
             selectedStatut = "AL";
             binding.btnAjourne.setAlpha(1.0f);
             binding.btnLivre.setAlpha(0.4f);
-            UiUtils.setVisible(binding.layoutCauseAjournement, true);
+            UiUtils.setVisible(binding.tilCauseAjournement, true);
             binding.btnConfirmer.setEnabled(true);
         });
 

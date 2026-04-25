@@ -118,10 +118,17 @@ public class LivreurDashboardActivity extends AppCompatActivity {
         long enCours = livraisonsList.stream().filter(l -> "EC".equals(l.getEtatliv())).count();
         long ajournees = livraisonsList.stream().filter(l -> "AL".equals(l.getEtatliv())).count();
 
-        binding.tvStatTotal.setText(String.valueOf(total));
-        binding.tvStatLivrees.setText(String.valueOf(livrees));
-        binding.tvStatEnCours.setText(String.valueOf(enCours));
-        binding.tvStatAjournees.setText(String.valueOf(ajournees));
+        binding.chipTotal.tvStatValue.setText(String.valueOf(total));
+        binding.chipTotal.tvStatLabel.setText("Total");
+
+        binding.chipLivrees.tvStatValue.setText(String.valueOf(livrees));
+        binding.chipLivrees.tvStatLabel.setText("Livrées");
+
+        binding.chipEnCours.tvStatValue.setText(String.valueOf(enCours));
+        binding.chipEnCours.tvStatLabel.setText("En cours");
+
+        binding.chipAjournes.tvStatValue.setText(String.valueOf(ajournees));
+        binding.chipAjournes.tvStatLabel.setText("Ajournées");
     }
 
     @Override
