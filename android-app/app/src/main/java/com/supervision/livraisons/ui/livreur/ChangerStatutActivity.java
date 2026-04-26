@@ -1,32 +1,53 @@
 package com.supervision.livraisons.ui.livreur;
 
-import android.graphics.Bitmap;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.supervision.livraisons.R;
 import com.supervision.livraisons.api.ApiClient;
 import com.supervision.livraisons.databinding.ActivityChangerStatutBinding;
+import com.supervision.livraisons.model.ChatMessage;
 import com.supervision.livraisons.model.LivraisonMobile;
 import com.supervision.livraisons.model.PodAsset;
 import com.supervision.livraisons.utils.SessionManager;
 import com.supervision.livraisons.utils.UiUtils;
+
 import java.util.HashMap;
 import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ChangerStatutActivity extends AppCompatActivity {
     private static final int REQ_CAPTURE_PHOTO = 7001;
+    private static final int PERMISSION_CAMERA = 100;
 
     private ActivityChangerStatutBinding binding;
+    private SessionManager sessionManager;
     private int nocde;
+    private String clientNom;
     private String selectedStatut = null;
-    private Bitmap proofPhotoBitmap;
+    private Bitmap photoBitmap = null;
+    private String selectedCause = "";
+    private final String[] predefinedCauses = {
+        "Client absent",
+        "Adresse introuvable",
+        "Colis endommagé",
+        "Client a refusé la livraison",
+        "Problème de paiement",
+        "Autre"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,138 +56,95 @@ public class ChangerStatutActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         nocde = getIntent().getIntExtra("nocde", -1);
-        SessionManager session = new SessionManager(this);
-        ApiClient.init(session);
+        clientNom = getIntent().getStringExtra("clientNom");
+        sessionManager = new SessionManager(this);
+        ApiClient.init(sessionManager);
 
         setSupportActionBar(binding.toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("Livraison N°" + nocde);
         }
-        setupButtons();
+
+        setupCausesDropdown();
+        setupButtonListeners();
     }
 
-    private void setupButtons() {
-        binding.btnCapturePhoto.setOnClickListener(v -> {
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityForResult(intent, REQ_CAPTURE_PHOTO);
+    private void setupCausesDropdown() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this, android.R.layout.simple_dropdown_item_1line, predefinedCauses);
+        binding.etCauseAjournement.setAdapter(adapter);
+        binding.etCauseAjournement.setOnItemClickListener((parent, view, position, id) -> {
+            selectedCause = predefinedCauses[position];
+            boolean isOther = "Autre".equals(selectedCause);
+            UiUtils.setVisible(binding.tilCauseCustom, isOther);
+            updateConfirmButtonState();
         });
-        binding.btnClearSignature.setOnClickListener(v -> binding.signatureView.clear());
+    }
 
+    private void setupButtonListeners() {
+        // Bouton VERT - Livré (LI)
         binding.btnLivre.setOnClickListener(v -> {
             selectedStatut = "LI";
-            binding.btnLivre.setAlpha(1.0f);
-            binding.btnAjourne.setAlpha(0.4f);
-            UiUtils.setVisible(binding.tilCauseAjournement, false);
-            binding.btnConfirmer.setEnabled(true);
+            photoBitmap = null;
+            selectedCause = "";
+            binding.etCauseAjournement.setText("");
+            binding.etCauseCustom.setText("");
+            UiUtils.setVisible(binding.cardFluxLivre, true);
+            UiUtils.setVisible(binding.cardFluxAjourne, false);
+            updateConfirmButtonState();
+            resetPhotoUI();
         });
 
+        // Bouton ROUGE - Ajourné (AL)
         binding.btnAjourne.setOnClickListener(v -> {
             selectedStatut = "AL";
-            binding.btnAjourne.setAlpha(1.0f);
-            binding.btnLivre.setAlpha(0.4f);
-            UiUtils.setVisible(binding.tilCauseAjournement, true);
-            binding.btnConfirmer.setEnabled(true);
+            photoBitmap = null;
+            selectedCause = "";
+            binding.etCauseAjournement.setText("");
+            binding.etCauseCustom.setText("");
+            UiUtils.setVisible(binding.cardFluxAjourne, true);
+            UiUtils.setVisible(binding.cardFluxLivre, false);
+            updateConfirmButtonState();
         });
 
-        binding.btnConfirmer.setEnabled(false);
+        // Bouton Prendre une Photo
+        binding.btnCapturePhoto.setOnClickListener(v -> {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
+                    != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+            } else {
+                launchCamera();
+            }
+        });
+
+        // Bouton Effacer la Signature
+        binding.btnClearSignature.setOnClickListener(v -> {
+            binding.signatureView.clear();
+            Toast.makeText(this, "Signature effacée", Toast.LENGTH_SHORT).show();
+        });
+
+        // Bouton CONFIRMER
         binding.btnConfirmer.setOnClickListener(v -> {
-            if (selectedStatut == null) return;
-            String cause = binding.etCauseAjournement.getText().toString().trim();
-            if ("LI".equals(selectedStatut) && (proofPhotoBitmap == null || binding.signatureView.isEmpty())) {
-                Toast.makeText(this, "Photo et signature sont obligatoires pour finaliser en Livré", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if ("AL".equals(selectedStatut) && cause.isEmpty()) {
-                binding.tilCauseAjournement.setError(getString(R.string.error_cause_required));
-                return;
-            }
-            binding.tilCauseAjournement.setError(null);
-            submitStatut(selectedStatut, cause);
-        });
-    }
-
-    private void submitStatut(String statut, String cause) {
-        binding.btnConfirmer.setEnabled(false);
-        binding.progressBar.setVisibility(View.VISIBLE);
-
-        Map<String, String> body = new HashMap<>();
-        body.put("nouveauStatut", statut);
-        String remarque = binding.etRemarque.getText().toString().trim();
-        if (!remarque.isEmpty()) body.put("remarque", remarque);
-        if ("AL".equals(statut) && !cause.isEmpty()) body.put("causeAjournement", cause);
-
-        ApiClient.getApiService().changerStatut(nocde, body).enqueue(new Callback<LivraisonMobile>() {
-            @Override
-            public void onResponse(Call<LivraisonMobile> call, Response<LivraisonMobile> response) {
-                binding.progressBar.setVisibility(View.GONE);
-                if (response.isSuccessful()) {
-                    if ("LI".equals(statut) && proofPhotoBitmap != null && !binding.signatureView.isEmpty()) {
-                        uploadProofsThenFinish();
-                    } else {
-                        Toast.makeText(ChangerStatutActivity.this,
-                                getString(R.string.success_statut_changed), Toast.LENGTH_SHORT).show();
-                        setResult(RESULT_OK);
-                        finish();
-                    }
-                } else {
-                    binding.btnConfirmer.setEnabled(true);
-                    Toast.makeText(ChangerStatutActivity.this,
-                            "Erreur lors de la mise à jour", Toast.LENGTH_SHORT).show();
-                }
-            }
-            @Override
-            public void onFailure(Call<LivraisonMobile> call, Throwable t) {
-                binding.progressBar.setVisibility(View.GONE);
-                binding.btnConfirmer.setEnabled(true);
-                Toast.makeText(ChangerStatutActivity.this,
-                        getString(R.string.error_network), Toast.LENGTH_SHORT).show();
+            if ("LI".equals(selectedStatut)) {
+                confirmLivre();
+            } else if ("AL".equals(selectedStatut)) {
+                confirmAjourne();
             }
         });
     }
 
-    private void uploadProofsThenFinish() {
-        PodAsset photo = new PodAsset(
-                "photo",
-                "s3://livraisons-proof/" + nocde + "/photo_" + System.currentTimeMillis() + ".jpg",
-                "image/jpeg",
-                (long) (proofPhotoBitmap.getByteCount()));
-        PodAsset signature = new PodAsset(
-                "signature",
-                "s3://livraisons-proof/" + nocde + "/signature_" + System.currentTimeMillis() + ".png",
-                "image/png",
-                (long) (binding.signatureView.exportBitmap().getByteCount()));
+    private void resetPhotoUI() {
+        binding.imgPreuvePhoto.setImageBitmap(null);
+        UiUtils.setVisible(binding.imgPreuvePhoto, false);
+        binding.tvPhotoStatus.setText("Aucune photo prise");
+        binding.tvPhotoStatus.setTextColor(getResources().getColor(R.color.warning, getTheme()));
+    }
 
-        ApiClient.getApiService().saveProof(nocde, photo).enqueue(new Callback<PodAsset>() {
-            @Override
-            public void onResponse(Call<PodAsset> call, Response<PodAsset> response) {
-                ApiClient.getApiService().saveProof(nocde, signature).enqueue(new Callback<PodAsset>() {
-                    @Override
-                    public void onResponse(Call<PodAsset> call2, Response<PodAsset> response2) {
-                        Toast.makeText(ChangerStatutActivity.this,
-                                getString(R.string.success_statut_changed), Toast.LENGTH_SHORT).show();
-                        setResult(RESULT_OK);
-                        finish();
-                    }
-
-                    @Override
-                    public void onFailure(Call<PodAsset> call2, Throwable t) {
-                        Toast.makeText(ChangerStatutActivity.this,
-                                "Statut changé mais signature non enregistrée", Toast.LENGTH_SHORT).show();
-                        setResult(RESULT_OK);
-                        finish();
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(Call<PodAsset> call, Throwable t) {
-                Toast.makeText(ChangerStatutActivity.this,
-                        "Statut changé mais photo non enregistrée", Toast.LENGTH_SHORT).show();
-                setResult(RESULT_OK);
-                finish();
-            }
-        });
+    private void launchCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, REQ_CAPTURE_PHOTO);
     }
 
     @Override
@@ -174,14 +152,207 @@ public class ChangerStatutActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_CAPTURE_PHOTO && resultCode == RESULT_OK && data != null) {
             Bundle extras = data.getExtras();
-            if (extras != null && extras.get("data") instanceof Bitmap) {
-                proofPhotoBitmap = (Bitmap) extras.get("data");
-                binding.imgPreuvePhoto.setImageBitmap(proofPhotoBitmap);
+            if (extras != null && extras.get("data") != null) {
+                photoBitmap = (Bitmap) extras.get("data");
+                binding.imgPreuvePhoto.setImageBitmap(photoBitmap);
                 UiUtils.setVisible(binding.imgPreuvePhoto, true);
+                binding.tvPhotoStatus.setText("✓ Photo capturée");
+                binding.tvPhotoStatus.setTextColor(getResources().getColor(R.color.success, getTheme()));
+                updateConfirmButtonState();
             }
         }
     }
 
     @Override
-    public boolean onSupportNavigateUp() { onBackPressed(); return true; }
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_CAMERA) {
+            if (grantResults.length > 0 && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                launchCamera();
+            } else {
+                Toast.makeText(this, "Permission caméra refusée", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void updateConfirmButtonState() {
+        boolean canConfirm = false;
+        if ("LI".equals(selectedStatut)) {
+            canConfirm = photoBitmap != null;
+        } else if ("AL".equals(selectedStatut)) {
+            String cause = binding.etCauseAjournement.getText().toString().trim();
+            if ("Autre".equals(cause)) {
+                String customCause = binding.etCauseCustom.getText().toString().trim();
+                canConfirm = !customCause.isEmpty();
+            } else {
+                canConfirm = !cause.isEmpty();
+            }
+        }
+
+        binding.btnConfirmer.setEnabled(canConfirm);
+        binding.btnConfirmer.setAlpha(canConfirm ? 1.0f : 0.5f);
+    }
+
+    private void confirmLivre() {
+        if (photoBitmap == null) {
+            Toast.makeText(this, "Photo obligatoire", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.contentLayout.setVisibility(View.GONE);
+
+        Map<String, String> body = new HashMap<>();
+        body.put("nouveauStatut", "LI");
+
+        ApiClient.getApiService().changerStatut(nocde, body).enqueue(new Callback<LivraisonMobile>() {
+            @Override
+            public void onResponse(Call<LivraisonMobile> call, Response<LivraisonMobile> response) {
+                if (response.isSuccessful()) {
+                    uploadProofsThenFinish();
+                } else {
+                    showErrorAndReset("Erreur lors du changement de statut");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LivraisonMobile> call, Throwable t) {
+                showErrorAndReset("Erreur réseau: " + t.getMessage());
+            }
+        });
+    }
+
+    private void uploadProofsThenFinish() {
+        PodAsset photoAsset = new PodAsset(
+                "photo",
+                "s3://livraisons-proof/" + nocde + "/photo_" + System.currentTimeMillis() + ".jpg",
+                "image/jpeg",
+                (long) (photoBitmap.getByteCount())
+        );
+
+        ApiClient.getApiService().saveProof(nocde, photoAsset).enqueue(new Callback<PodAsset>() {
+            @Override
+            public void onResponse(Call<PodAsset> call, Response<PodAsset> response) {
+                // Photo uploaded successfully
+                if (!binding.signatureView.isEmpty()) {
+                    uploadSignatureThenFinish();
+                } else {
+                    finishSuccessfully();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PodAsset> call, Throwable t) {
+                Toast.makeText(ChangerStatutActivity.this,
+                        "Statut changé mais photo non enregistrée", Toast.LENGTH_SHORT).show();
+                finishSuccessfully();
+            }
+        });
+    }
+
+    private void uploadSignatureThenFinish() {
+        Bitmap signatureBitmap = binding.signatureView.exportBitmap();
+        PodAsset signatureAsset = new PodAsset(
+                "signature",
+                "s3://livraisons-proof/" + nocde + "/signature_" + System.currentTimeMillis() + ".png",
+                "image/png",
+                (long) (signatureBitmap.getByteCount())
+        );
+
+        ApiClient.getApiService().saveProof(nocde, signatureAsset).enqueue(new Callback<PodAsset>() {
+            @Override
+            public void onResponse(Call<PodAsset> call, Response<PodAsset> response) {
+                finishSuccessfully();
+            }
+
+            @Override
+            public void onFailure(Call<PodAsset> call, Throwable t) {
+                Toast.makeText(ChangerStatutActivity.this,
+                        "Photo enregistrée mais signature non sauvegardée", Toast.LENGTH_SHORT).show();
+                finishSuccessfully();
+            }
+        });
+    }
+
+    private void confirmAjourne() {
+        String cause = binding.etCauseAjournement.getText().toString().trim();
+        if (cause.isEmpty()) {
+            Toast.makeText(this, "Veuillez sélectionner une cause", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String finalCause = cause;
+        if ("Autre".equals(cause)) {
+            finalCause = binding.etCauseCustom.getText().toString().trim();
+            if (finalCause.isEmpty()) {
+                Toast.makeText(this, "Veuillez décrire la cause personnalisée", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
+        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.contentLayout.setVisibility(View.GONE);
+
+        Map<String, String> body = new HashMap<>();
+        body.put("nouveauStatut", "AL");
+        body.put("causeAjournement", finalCause);
+
+        final String causeForMessage = finalCause;
+        ApiClient.getApiService().changerStatut(nocde, body).enqueue(new Callback<LivraisonMobile>() {
+            @Override
+            public void onResponse(Call<LivraisonMobile> call, Response<LivraisonMobile> response) {
+                if (response.isSuccessful()) {
+                    sendAlertMessageThenFinish(causeForMessage);
+                } else {
+                    showErrorAndReset("Erreur lors du changement de statut");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LivraisonMobile> call, Throwable t) {
+                showErrorAndReset("Erreur réseau: " + t.getMessage());
+            }
+        });
+    }
+
+    private void sendAlertMessageThenFinish(String cause) {
+        String alertMessage = "🚨 ALERTE AJOURNEMENT - Commande N°" + nocde + "\n" +
+                "Client: " + (clientNom != null ? clientNom : "N/A") + "\n" +
+                "Cause: " + cause;
+
+        ChatMessage message = new ChatMessage(alertMessage);
+
+        ApiClient.getApiService().postChatMessage(nocde, message).enqueue(new Callback<ChatMessage>() {
+            @Override
+            public void onResponse(Call<ChatMessage> call, Response<ChatMessage> response) {
+                finishSuccessfully();
+            }
+
+            @Override
+            public void onFailure(Call<ChatMessage> call, Throwable t) {
+                Toast.makeText(ChangerStatutActivity.this,
+                        "Statut changé mais alerte non envoyée", Toast.LENGTH_SHORT).show();
+                finishSuccessfully();
+            }
+        });
+    }
+
+    private void finishSuccessfully() {
+        binding.progressBar.setVisibility(View.GONE);
+        Toast.makeText(this, "Livraison finalisée avec succès", Toast.LENGTH_SHORT).show();
+        setResult(RESULT_OK);
+        finish();
+    }
+
+    private void showErrorAndReset(String errorMessage) {
+        binding.progressBar.setVisibility(View.GONE);
+        binding.contentLayout.setVisibility(View.VISIBLE);
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 }

@@ -31,7 +31,14 @@ public class SessionManager {
     }
 
     public void clearSession() {
-        prefs.edit().clear().apply();
+        prefs.edit()
+                .remove(KEY_TOKEN)
+                .remove(KEY_IDPERS)
+                .remove(KEY_NOM_COMPLET)
+                .remove(KEY_LOGIN)
+                .remove(KEY_CODEPOSTE)
+                .remove(KEY_ROLE)
+                .apply();
     }
 
     public boolean isLoggedIn() {
@@ -47,4 +54,12 @@ public class SessionManager {
 
     public boolean isLivreur() { return "LIVREUR".equals(getRole()); }
     public boolean isControleur() { return "CONTROLEUR".equals(getRole()); }
+
+    public void setOnlineStatus(boolean online) {
+        prefs.edit().putBoolean("is_online", online).apply();
+    }
+
+    public boolean isOnline() {
+        return prefs.getBoolean("is_online", false);
+    }
 }

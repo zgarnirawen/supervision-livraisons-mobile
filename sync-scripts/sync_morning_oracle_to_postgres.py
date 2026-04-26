@@ -59,6 +59,7 @@ ORACLE_QUERY_LIVRAISONS = """
 SELECT
     lc.nocde,
     lc.dateliv,
+    cmd.noclt       AS client_id,
     lc.livreur      AS livreur_id,
     p.nompers       AS livreur_nom,
     p.prenompers    AS livreur_prenom,
@@ -69,6 +70,8 @@ SELECT
     c.adrclt        AS client_adresse,
     TRIM(c.villeclt) AS client_ville,
     TO_CHAR(c.code_postal) AS client_code_postal,
+    TO_CHAR(c.cinclt)      AS client_cin,
+    c.adrmail             AS client_email,
     lc.etatliv,
     lc.modepay
 FROM LivraisonCom lc
@@ -111,18 +114,20 @@ WHERE codeposte IN ('P001', 'P003')
 # ── Insertion PostgreSQL ──────────────────────────────────────────────────
 PG_UPSERT_LIVRAISON = """
 INSERT INTO livraisons_mobile (
-    nocde, dateliv, livreur_id, livreur_nom, livreur_prenom, livreur_tel,
+    nocde, dateliv, client_id, livreur_id, livreur_nom, livreur_prenom, livreur_tel,
     client_nom, client_prenom, client_tel, client_adresse,
-    client_ville, client_code_postal, etatliv, modepay,
+    client_ville, client_code_postal, client_cin, client_email, etatliv, modepay,
     date_chargement, derniere_modification, sync_to_oracle
 ) VALUES (
-    %s, %s, %s, %s, %s, %s,
+    %s, %s, %s, %s, %s, %s, %s,
     %s, %s, %s, %s,
     %s, %s, %s, %s,
+    %s, %s, %s, %s, %s,
     NOW(), NOW(), FALSE
 )
 ON CONFLICT (nocde) DO UPDATE SET
     dateliv              = EXCLUDED.dateliv,
+    client_id            = EXCLUDED.client_id,
     livreur_id           = EXCLUDED.livreur_id,
     livreur_nom          = EXCLUDED.livreur_nom,
     livreur_prenom       = EXCLUDED.livreur_prenom,
@@ -133,6 +138,8 @@ ON CONFLICT (nocde) DO UPDATE SET
     client_adresse       = EXCLUDED.client_adresse,
     client_ville         = EXCLUDED.client_ville,
     client_code_postal   = EXCLUDED.client_code_postal,
+    client_cin           = EXCLUDED.client_cin,
+    client_email         = EXCLUDED.client_email,
     etatliv              = EXCLUDED.etatliv,
     modepay              = EXCLUDED.modepay,
     derniere_modification = NOW()

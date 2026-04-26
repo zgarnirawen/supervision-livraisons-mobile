@@ -29,6 +29,9 @@ public class SignatureView extends View {
         canvas.drawPath(path, paint);
     }
 
+    private float lastX, lastY;
+    private static final float TOUCH_TOLERANCE = 4;
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
@@ -36,12 +39,23 @@ public class SignatureView extends View {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 path.moveTo(x, y);
+                lastX = x;
+                lastY = y;
                 break;
             case MotionEvent.ACTION_MOVE:
-                path.lineTo(x, y);
+                float dx = Math.abs(x - lastX);
+                float dy = Math.abs(y - lastY);
+                if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
+                    path.quadTo(lastX, lastY, (x + lastX) / 2, (y + lastY) / 2);
+                    lastX = x;
+                    lastY = y;
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                path.lineTo(lastX, lastY);
                 break;
             default:
-                break;
+                return false;
         }
         invalidate();
         return true;

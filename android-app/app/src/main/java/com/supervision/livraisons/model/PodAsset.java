@@ -26,4 +26,7 @@ public class PodAsset {
         this.mimeType = mimeType;
         this.sizeBytes = sizeBytes;
     }
+
+    public String getAssetType() { return assetType; }
+    public String getStorageKey() { return storageKey; }
 }

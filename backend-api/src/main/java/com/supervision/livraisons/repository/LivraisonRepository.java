@@ -18,6 +18,7 @@ public interface LivraisonRepository extends JpaRepository<LivraisonMobile, Inte
 
     // Toutes les livraisons d'une date (pour le contrôleur)
     List<LivraisonMobile> findByDateliv(LocalDate dateliv);
+    List<LivraisonMobile> findAllByDatelivOrderByDerniereModificationDesc(LocalDate dateliv);
 
     // Filtrer par état
     List<LivraisonMobile> findByDatelivAndEtatliv(LocalDate dateliv, String etatliv);
@@ -44,10 +45,24 @@ public interface LivraisonRepository extends JpaRepository<LivraisonMobile, Inte
            "COUNT(l), " +
            "SUM(CASE WHEN l.etatliv = 'LI' THEN 1 ELSE 0 END), " +
            "SUM(CASE WHEN l.etatliv = 'EC' THEN 1 ELSE 0 END), " +
-           "SUM(CASE WHEN l.etatliv = 'AL' THEN 1 ELSE 0 END) " +
-           "FROM LivraisonMobile l WHERE l.dateliv = :date " +
+           "SUM(CASE WHEN l.etatliv = 'AL' THEN 1 ELSE 0 END), " +
+           "MAX(COALESCE(l.livreurTel, '00000000')) " +
+           "FROM LivraisonMobile l " +
+           "WHERE l.dateliv = :date " +
            "GROUP BY l.livreurId, l.livreurNom, l.livreurPrenom")
     List<Object[]> getStatsByLivreur(@Param("date") LocalDate date);
+
+    @Query("SELECT DISTINCT l FROM LivraisonMobile l " +
+           "LEFT JOIN ChatMessage m ON l.nocde = m.nocde " +
+           "WHERE l.dateliv = :date OR m.id IS NOT NULL " +
+           "ORDER BY l.derniereModification DESC")
+    List<LivraisonMobile> findActiveConversations(@Param("date") LocalDate date);
+
+    @Query("SELECT DISTINCT l FROM LivraisonMobile l " +
+           "LEFT JOIN ChatMessage m ON l.nocde = m.nocde " +
+           "WHERE (l.dateliv = :date OR m.id IS NOT NULL) AND l.livreurId = :livreurId " +
+           "ORDER BY l.derniereModification DESC")
+    List<LivraisonMobile> findActiveConversationsLivreur(@Param("date") LocalDate date, @Param("livreurId") Integer livreurId);
 
     Optional<LivraisonMobile> findByNocdeAndLivreurId(Integer nocde, Integer livreurId);
 

@@ -45,4 +45,11 @@ public class AuthService {
                 personnel.getLogin(),
                 personnel.getCodeposte());
     }
+
+    public void updateFcmToken(Integer idpers, String fcmToken) {
+        PersonnelMobile personnel = personnelRepo.findById(idpers)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+        personnel.setFcmToken(fcmToken);
+        personnelRepo.save(personnel);
+    }
 }

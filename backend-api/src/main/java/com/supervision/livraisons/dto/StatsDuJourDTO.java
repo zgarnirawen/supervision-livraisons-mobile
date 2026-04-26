@@ -19,16 +19,18 @@ public class StatsDuJourDTO {
         private long livrees;
         private long enCours;
         private long ajournees;
+        private String livreurTel;
 
         public StatsLivreurDTO() {}
         public StatsLivreurDTO(Integer livreurId, String livreurNomComplet,
-                               long total, long livrees, long enCours, long ajournees) {
+                               long total, long livrees, long enCours, long ajournees, String livreurTel) {
             this.livreurId = livreurId;
             this.livreurNomComplet = livreurNomComplet;
             this.total = total;
             this.livrees = livrees;
             this.enCours = enCours;
             this.ajournees = ajournees;
+            this.livreurTel = livreurTel;
         }
 
         public Integer getLivreurId() { return livreurId; }
@@ -43,6 +45,8 @@ public class StatsDuJourDTO {
         public void setEnCours(long enCours) { this.enCours = enCours; }
         public long getAjournees() { return ajournees; }
         public void setAjournees(long ajournees) { this.ajournees = ajournees; }
+        public String getLivreurTel() { return livreurTel; }
+        public void setLivreurTel(String livreurTel) { this.livreurTel = livreurTel; }
     }
 
     public static class StatsCategorieDTO {

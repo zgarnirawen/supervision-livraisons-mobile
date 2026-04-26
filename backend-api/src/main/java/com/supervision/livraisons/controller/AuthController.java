@@ -27,4 +27,12 @@ public class AuthController {
         LoginResponse response = authService.login(request);
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/fcm-token")
+    public ResponseEntity<Void> updateFcmToken(
+            @RequestParam Integer idpers,
+            @RequestParam String fcmToken) {
+        authService.updateFcmToken(idpers, fcmToken);
+        return ResponseEntity.ok().build();
+    }
 }

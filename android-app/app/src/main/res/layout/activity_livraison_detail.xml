@@ -71,14 +71,48 @@
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:textColor="@color/text_primary" android:textSize="16sp"
                         android:textStyle="bold"/>
-                    <TextView android:id="@+id/tv_client_tel"
+                    <TextView android:id="@+id/tv_client_cin"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:textColor="@color/text_secondary" android:textSize="13sp"
-                        android:layout_marginTop="4dp"/>
+                        android:textStyle="bold"
+                        android:layout_marginBottom="4dp"
+                        android:visibility="gone"/>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                        <TextView android:id="@+id/tv_client_tel"
+                            android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                            android:textColor="@color/accent" android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:drawablePadding="8dp"
+                            app:drawableStartCompat="@drawable/ic_call"
+                            android:background="?attr/selectableItemBackground"
+                            android:clickable="true" android:focusable="true"/>
+                        <ImageView android:id="@+id/btn_sms_client"
+                            android:layout_width="32dp" android:layout_height="32dp"
+                            android:src="@drawable/ic_chat" app:tint="@color/accent"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:clickable="true" android:focusable="true"
+                            android:padding="4dp"
+                            android:layout_marginEnd="8dp"/>
+                        <ImageView android:id="@+id/btn_email_client"
+                            android:layout_width="32dp" android:layout_height="32dp"
+                            android:src="@drawable/ic_email" app:tint="@color/accent"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:clickable="true" android:focusable="true"
+                            android:padding="4dp"
+                            android:visibility="gone"/>
+                    </LinearLayout>
+                    <TextView android:id="@+id/tv_client_email"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:textColor="@color/text_secondary" android:textSize="13sp"
+                        android:layout_marginTop="4dp"
+                        android:drawablePadding="8dp"
+                        app:drawableStartCompat="@drawable/ic_email"
+                        app:drawableTint="@color/text_hint"
+                        android:visibility="gone"/>
                     <TextView android:id="@+id/tv_client_adresse"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:textColor="@color/text_secondary" android:textSize="13sp"
-                        android:layout_marginTop="4dp"/>
+                        android:layout_marginTop="8dp"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -99,10 +133,49 @@
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:textColor="@color/text_primary" android:textSize="16sp"
                         android:textStyle="bold"/>
-                    <TextView android:id="@+id/tv_livreur_tel"
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="4dp">
+                        <TextView android:id="@+id/tv_livreur_tel"
+                            android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                            android:textColor="@color/accent" android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:drawablePadding="8dp"
+                            app:drawableStartCompat="@drawable/ic_call"
+                            android:background="?attr/selectableItemBackground"
+                            android:clickable="true" android:focusable="true"/>
+                        <ImageView android:id="@+id/btn_chat_livreur"
+                            android:layout_width="32dp" android:layout_height="32dp"
+                            android:src="@drawable/ic_chat" app:tint="@color/accent"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:clickable="true" android:focusable="true"
+                            android:padding="4dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Position Livreur -->
+            <androidx.cardview.widget.CardView android:id="@+id/card_livreur_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone"
+                app:cardCornerRadius="14dp" app:cardElevation="2dp">
+                <LinearLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" android:padding="16dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="📍 Position du livreur"
+                        android:textColor="@color/primary" android:textSize="13sp"
+                        android:textStyle="bold" android:layout_marginBottom="8dp"/>
+                    <TextView android:id="@+id/tv_livreur_location"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:textColor="@color/text_secondary" android:textSize="13sp"
-                        android:layout_marginTop="4dp"/>
+                        android:textColor="@color/accent" android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:drawablePadding="8dp"
+                        app:drawableStartCompat="@drawable/ic_location"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true" android:focusable="true"
+                        android:padding="8dp"
+                        android:text="Chargement..."/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -210,6 +283,60 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- Preuves (Photo/Signature) -->
+            <androidx.cardview.widget.CardView android:id="@+id/card_proofs"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp" android:visibility="gone"
+                app:cardCornerRadius="14dp" app:cardElevation="2dp">
+                <LinearLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" android:padding="16dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="📸 Preuves de livraison"
+                        android:textColor="@color/primary" android:textSize="13sp"
+                        android:textStyle="bold" android:layout_marginBottom="12dp"/>
+                    
+                    <LinearLayout android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        
+                        <LinearLayout android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Photo" android:textSize="11sp" android:textColor="@color/text_secondary"
+                                android:layout_marginBottom="4dp"/>
+                            <ImageView android:id="@+id/img_proof_photo"
+                                android:layout_width="match_parent"
+                                android:layout_height="120dp"
+                                android:scaleType="centerCrop"
+                                android:background="#F5F5F5"
+                                android:contentDescription="Photo de confirmation"/>
+                        </LinearLayout>
+
+                        <View android:layout_width="12dp" android:layout_height="1dp"/>
+
+                        <LinearLayout android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Signature" android:textSize="11sp" android:textColor="@color/text_secondary"
+                                android:layout_marginBottom="4dp"/>
+                            <ImageView android:id="@+id/img_proof_signature"
+                                android:layout_width="match_parent"
+                                android:layout_height="120dp"
+                                android:scaleType="fitCenter"
+                                android:background="#F5F5F5"
+                                android:contentDescription="Signature client"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
             <!-- Boutons action -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_changer_statut"
@@ -227,29 +354,7 @@
                 android:layout_marginTop="8dp"
                 android:visibility="gone"/>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_appeler_client"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="📲 Appeler le client"
-                style="@style/BtnOutline"/>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_voir_carte"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="🗺️ Voir sur la carte"
-                style="@style/BtnOutline"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_chat"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="💬 Ouvrir le chat"
-                style="@style/BtnOutline"/>
 
             <View android:layout_width="match_parent" android:layout_height="24dp"/>
         </LinearLayout>

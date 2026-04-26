@@ -6,6 +6,7 @@ import com.supervision.livraisons.model.ChatMessage;
 import com.supervision.livraisons.model.LivraisonDetail;
 import com.supervision.livraisons.model.LivraisonGeopoint;
 import com.supervision.livraisons.model.LivraisonMobile;
+import com.supervision.livraisons.model.LivreurLocation;
 import com.supervision.livraisons.model.PodAsset;
 import com.supervision.livraisons.model.StatsDuJour;
 import com.supervision.livraisons.model.HistoriqueLivraison;
@@ -22,6 +23,12 @@ public interface ApiService {
     @POST("api/auth/login")
     Call<LoginResponse> login(@Body LoginRequest request);
 
+    @POST("api/auth/fcm-token")
+    Call<Void> updateFcmToken(
+            @Query("idpers") int idpers,
+            @Query("fcmToken") String fcmToken
+    );
+
     // ── Livreur : ses livraisons ──────────────────────────────────────────
     @GET("api/livraisons")
     Call<List<LivraisonMobile>> getMesLivraisons();
@@ -33,6 +40,12 @@ public interface ApiService {
             @Query("ville") String ville,
             @Query("livreurId") Integer livreurId
     );
+
+    @GET("api/livraisons/conversations")
+    Call<List<LivraisonMobile>> getConversations();
+
+    @GET("api/livraisons/conversations/mine")
+    Call<List<LivraisonMobile>> getMyConversations();
 
     // ── Détail livraison ──────────────────────────────────────────────────
     @GET("api/livraisons/{nocde}")
@@ -79,11 +92,26 @@ public interface ApiService {
     @GET("api/livraisons/{nocde}/location/history")
     Call<List<LivraisonGeopoint>> getLocationHistory(@Path("nocde") int nocde);
 
+    @GET("api/livraisons/locations/all")
+    Call<List<LivreurLocation>> getAllLocations();
+
+    @GET("api/livraisons/locations/livreur/{id}")
+    Call<LivreurLocation> getLivreurLocation(@Path("id") int id);
+
+    @GET("api/livraisons/locations/me")
+    Call<LivreurLocation> getMyLatestLocation();
+
+    @POST("api/livraisons/locations/update")
+    Call<Void> updateLocation(@Body Map<String, Double> coords);
+
     @POST("api/livraisons/{nocde}/proof")
     Call<PodAsset> saveProof(@Path("nocde") int nocde, @Body PodAsset asset);
 
     @GET("api/livraisons/{nocde}/proof")
     Call<List<PodAsset>> getProofs(@Path("nocde") int nocde);
+
+    @GET("api/livraisons/chat/channels")
+    Call<List<com.supervision.livraisons.model.ChatChannel>> getChatChannels();
 
     @GET("api/livraisons/{nocde}/chat")
     Call<List<ChatMessage>> getChatMessages(@Path("nocde") int nocde);

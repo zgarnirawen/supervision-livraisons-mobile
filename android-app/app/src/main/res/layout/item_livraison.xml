@@ -68,7 +68,8 @@
             <LinearLayout android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical">
 
                 <TextView android:id="@+id/tv_mode_pay"
                     android:layout_width="0dp" android:layout_weight="1"
@@ -76,20 +77,37 @@
                     android:textColor="@color/text_secondary"
                     android:textSize="11sp"/>
 
-                <TextView android:id="@+id/tv_livreur"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp"/>
+                <ImageButton android:id="@+id/btn_list_call"
+                    android:layout_width="36dp" android:layout_height="36dp"
+                    android:src="@drawable/ic_call"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="@color/primary"
+                    android:padding="8dp"
+                    android:layout_marginEnd="8dp"/>
+
+                <ImageButton android:id="@+id/btn_list_sms"
+                    android:layout_width="36dp" android:layout_height="36dp"
+                    android:src="@drawable/ic_sms"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="@color/primary"
+                    android:padding="8dp"
+                    android:layout_marginEnd="8dp"/>
+
+                <ImageButton android:id="@+id/btn_list_chat"
+                    android:layout_width="36dp" android:layout_height="36dp"
+                    android:src="@drawable/ic_warning"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="@color/warning"
+                    android:padding="8dp"/>
             </LinearLayout>
         </LinearLayout>
 
-        <ImageView android:layout_width="20dp"
+        <ImageView android:layout_width="16dp"
             android:layout_height="match_parent"
             android:src="@drawable/ic_chevron_right"
             android:layout_gravity="center_vertical"
-            android:layout_marginEnd="10dp"
-            android:tint="@color/text_hint"
+            android:layout_marginEnd="8dp"
+            app:tint="@color/text_hint"
             android:contentDescription="Voir"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -48,11 +48,15 @@ public class StatsDuJour {
         @SerializedName("ajournees")
         private long ajournees;
 
+        @SerializedName("livreurTel")
+        private String livreurTel;
+
         public int getLivreurId() { return livreurId; }
         public String getLivreurNomComplet() { return livreurNomComplet; }
         public long getTotal() { return total; }
         public long getLivrees() { return livrees; }
         public long getEnCours() { return enCours; }
         public long getAjournees() { return ajournees; }
+        public String getLivreurTel() { return livreurTel; }
     }
 }

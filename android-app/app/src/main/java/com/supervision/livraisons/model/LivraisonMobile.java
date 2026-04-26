@@ -21,6 +21,9 @@ public class LivraisonMobile {
     @SerializedName("livreurTel")
     private String livreurTel;
 
+    @SerializedName("clientId")
+    private Integer clientId;
+
     @SerializedName("clientNom")
     private String clientNom;
 
@@ -48,6 +51,12 @@ public class LivraisonMobile {
     @SerializedName("categorie")
     private String categorie;
 
+    @SerializedName("clientCin")
+    private String clientCin;
+
+    @SerializedName("clientEmail")
+    private String clientEmail;
+
     @SerializedName("etatliv")
     private String etatliv;
 
@@ -73,6 +82,7 @@ public class LivraisonMobile {
     public String getLivreurNom() { return livreurNom; }
     public String getLivreurPrenom() { return livreurPrenom; }
     public String getLivreurTel() { return livreurTel; }
+    public Integer getClientId() { return clientId; }
     public String getLivreurNomComplet() { return livreurNom + " " + livreurPrenom; }
     public String getClientNom() { return clientNom; }
     public String getClientPrenom() { return clientPrenom; }
@@ -83,6 +93,8 @@ public class LivraisonMobile {
     public Double getClientLatitude() { return clientLatitude; }
     public Double getClientLongitude() { return clientLongitude; }
     public String getCategorie() { return categorie; }
+    public String getClientCin() { return clientCin; }
+    public String getClientEmail() { return clientEmail; }
     public String getEtatliv() { return etatliv; }
     public String getModepay() { return modepay; }
     public String getRemarque() { return remarque; }

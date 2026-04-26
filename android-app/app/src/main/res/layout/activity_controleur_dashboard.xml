@@ -15,10 +15,20 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            style="@style/AppToolbar" />
+            style="@style/AppToolbar">
+            <ImageButton
+                android:id="@+id/btn_map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_location"
+                android:layout_marginEnd="16dp"
+                app:tint="@color/white" />
+        </androidx.appcompat.widget.Toolbar>
 
-        <!-- Header -->
-        <LinearLayout
+        <!-- Header Stats -->
+        <LinearLayout android:id="@+id/layout_header_stats"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/role_controleur"
@@ -81,60 +91,11 @@
                 android:progressTint="@color/accent"
                 android:layout_marginTop="10dp" />
 
-            <!-- Mini stats -->
-            <LinearLayout android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="14dp">
 
-                <LinearLayout android:layout_width="0dp" android:layout_weight="1"
-                    android:layout_height="wrap_content" android:orientation="vertical"
-                    android:gravity="center">
-                    <TextView android:id="@+id/tv_stat_total"
-                        android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="0" android:textColor="@color/white"
-                        android:textSize="22sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Total" android:textColor="#C8B8E8" android:textSize="11sp"/>
-                </LinearLayout>
-
-                <LinearLayout android:layout_width="0dp" android:layout_weight="1"
-                    android:layout_height="wrap_content" android:orientation="vertical"
-                    android:gravity="center">
-                    <TextView android:id="@+id/tv_stat_livrees"
-                        android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="0" android:textColor="#A5D6A7"
-                        android:textSize="22sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Livrées" android:textColor="#C8B8E8" android:textSize="11sp"/>
-                </LinearLayout>
-
-                <LinearLayout android:layout_width="0dp" android:layout_weight="1"
-                    android:layout_height="wrap_content" android:orientation="vertical"
-                    android:gravity="center">
-                    <TextView android:id="@+id/tv_stat_en_cours"
-                        android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="0" android:textColor="#FFD54F"
-                        android:textSize="22sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="En cours" android:textColor="#C8B8E8" android:textSize="11sp"/>
-                </LinearLayout>
-
-                <LinearLayout android:layout_width="0dp" android:layout_weight="1"
-                    android:layout_height="wrap_content" android:orientation="vertical"
-                    android:gravity="center">
-                    <TextView android:id="@+id/tv_stat_ajournees"
-                        android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="0" android:textColor="#EF9A9A"
-                        android:textSize="22sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Ajournées" android:textColor="#C8B8E8" android:textSize="11sp"/>
-                </LinearLayout>
-            </LinearLayout>
         </LinearLayout>
 
         <!-- Filtres chips -->
-        <HorizontalScrollView
+        <HorizontalScrollView android:id="@+id/layout_filters"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="none"
@@ -161,107 +122,177 @@
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
 
-        <!-- Filtre ville -->
-        <LinearLayout android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@color/surface"
-            android:paddingHorizontal="12dp"
-            android:paddingBottom="8dp">
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp" android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:hint="Filtrer par ville"
-                style="@style/AppTextInput">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_filtre_ville"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:imeOptions="actionSearch"
-                    android:singleLine="true"/>
-            </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_filtrer_ville"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Filtrer"
-                style="@style/BtnPrimary"
-                android:layout_marginStart="8dp"/>
-        </LinearLayout>
-
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh"
+    <!-- Conteneur global pour le contenu (avec padding bottom pour ne pas être caché par la bottom nav) -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="56dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <!-- Onglet 1: Livraisons -->
+        <LinearLayout android:id="@+id/layout_livraisons"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tv_count_results"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="4dp"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
-
-            <FrameLayout
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipe_refresh"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <com.facebook.shimmer.ShimmerFrameLayout
-                    android:id="@+id/shimmer_layout"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    android:visibility="gone">
-                    <LinearLayout
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_count_results"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <include layout="@layout/item_shimmer" />
-                        <include layout="@layout/item_shimmer" />
-                        <include layout="@layout/item_shimmer" />
-                        <include layout="@layout/item_shimmer" />
-                    </LinearLayout>
-                </com.facebook.shimmer.ShimmerFrameLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="8dp"
-                    android:clipToPadding="false" />
-
-                <LinearLayout
-                    android:id="@+id/tv_empty"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="📋"
-                        android:textSize="56sp" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="Aucune livraison trouvée"
+                        android:paddingHorizontal="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="4dp"
                         android:textColor="@color/text_secondary"
-                        android:textSize="16sp" />
+                        android:textSize="12sp" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/shimmer_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="8dp"
+                            android:visibility="gone">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+                                <include layout="@layout/item_shimmer" />
+                                <include layout="@layout/item_shimmer" />
+                                <include layout="@layout/item_shimmer" />
+                                <include layout="@layout/item_shimmer" />
+                            </LinearLayout>
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recycler_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="8dp"
+                            android:clipToPadding="false" />
+
+                        <LinearLayout
+                            android:id="@+id/tv_empty"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="📋"
+                                android:textSize="56sp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="Aucune livraison trouvée"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="16sp" />
+                        </LinearLayout>
+                    </FrameLayout>
                 </LinearLayout>
-            </FrameLayout>
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         </LinearLayout>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- Onglet 2: Livreurs -->
+        <LinearLayout android:id="@+id/layout_livreurs"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:padding="8dp">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Statistiques par Livreur" android:textColor="@color/text_primary"
+                android:textSize="16sp" android:textStyle="bold"
+                android:layout_margin="8dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_stats_livreurs"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:clipToPadding="false"/>
+        </LinearLayout>
+
+        <!-- Onglet 3: Chats -->
+        <LinearLayout android:id="@+id/layout_chats"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:padding="8dp">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Conversations Actives" android:textColor="@color/text_primary"
+                android:textSize="22sp" android:textStyle="bold"
+                android:layout_margin="8dp"/>
+
+            <!-- Barre de recherche style Messenger -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#F0F2FF">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="12dp">
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_search"
+                        app:tint="@color/text_secondary"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rechercher une conversation..."
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
+                        android:layout_marginLeft="8dp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_chats"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:clipToPadding="false"/>
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <!-- Bottom Navigation Bar -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:menu="@menu/menu_bottom_nav_controleur"
+        android:background="@color/surface"
+        app:itemIconTint="@color/primary"
+        app:itemTextColor="@color/primary" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

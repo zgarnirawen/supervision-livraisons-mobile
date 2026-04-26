@@ -11,8 +11,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -24,31 +26,46 @@ public class LivraisonService {
     private final LivraisonGeopointRepository geopointRepo;
     private final PodAssetRepository podAssetRepo;
     private final ChatMessageRepository chatRepo;
+    private final PersonnelRepository personnelRepo;
+    private final FirebaseService firebaseService;
 
     public LivraisonService(LivraisonRepository livraisonRepo,
                             ArticleCommandeRepository articleRepo,
                             HistoriqueRepository historiqueRepo,
                             LivraisonGeopointRepository geopointRepo,
                             PodAssetRepository podAssetRepo,
-                            ChatMessageRepository chatRepo) {
+                            ChatMessageRepository chatRepo,
+                            PersonnelRepository personnelRepo,
+                            FirebaseService firebaseService) {
         this.livraisonRepo = livraisonRepo;
         this.articleRepo = articleRepo;
         this.historiqueRepo = historiqueRepo;
         this.geopointRepo = geopointRepo;
         this.podAssetRepo = podAssetRepo;
         this.chatRepo = chatRepo;
+        this.personnelRepo = personnelRepo;
+        this.firebaseService = firebaseService;
+    }
+
+    private LocalDate getEffectiveDate() {
+        LocalDateTime now = LocalDateTime.now();
+        // Si on est entre minuit et 4h du matin, on considère encore la journée d'hier
+        if (now.getHour() < 4) {
+            return now.toLocalDate().minusDays(1);
+        }
+        return now.toLocalDate();
     }
 
     // ── Livreur: Ses livraisons du jour ───────────────────────────────────
     @Transactional(readOnly = true)
     public List<LivraisonMobile> getLivraisonsLivreur(Integer livreurId) {
-        return livraisonRepo.findByLivreurIdAndDateliv(livreurId, LocalDate.now());
+        return livraisonRepo.findByLivreurIdAndDateliv(livreurId, getEffectiveDate());
     }
 
     // ── Contrôleur: Toutes les livraisons du jour ─────────────────────────
     @Transactional(readOnly = true)
     public List<LivraisonMobile> getAllLivraisons(String etatliv, String ville, Integer livreurId) {
-        LocalDate today = LocalDate.now();
+        LocalDate today = getEffectiveDate();
 
         if (etatliv != null && !etatliv.isEmpty()) {
             if (livreurId != null) {
@@ -65,13 +82,25 @@ public class LivraisonService {
         return livraisonRepo.findByDateliv(today);
     }
 
+    @Transactional(readOnly = true)
+    public List<LivraisonMobile> getActiveConversations() {
+        // Retourne les livraisons d'aujourd'hui + celles ayant des messages (persistentes)
+        return livraisonRepo.findActiveConversations(getEffectiveDate());
+    }
+
+    @Transactional(readOnly = true)
+    public List<LivraisonMobile> getActiveConversationsForLivreur(Integer livreurId) {
+        return livraisonRepo.findActiveConversationsLivreur(getEffectiveDate(), livreurId);
+    }
+
     // ── Détail d'une livraison (avec articles) ────────────────────────────
     @Transactional(readOnly = true)
     public LivraisonDetailDTO getDetail(Integer nocde) {
         LivraisonMobile livraison = livraisonRepo.findById(nocde)
                 .orElseThrow(() -> new RuntimeException("Livraison introuvable: " + nocde));
         List<ArticleCommande> articles = articleRepo.findByNocde(nocde);
-        return LivraisonDetailDTO.from(livraison, articles);
+        List<PodAsset> proofs = podAssetRepo.findByNocdeOrderByCapturedAtDesc(nocde);
+        return LivraisonDetailDTO.from(livraison, articles, proofs);
     }
 
     @Transactional(readOnly = true)
@@ -79,7 +108,8 @@ public class LivraisonService {
         LivraisonMobile livraison = livraisonRepo.findByNocdeAndLivreurId(nocde, livreurId)
                 .orElseThrow(() -> new RuntimeException("Livraison introuvable: " + nocde));
         List<ArticleCommande> articles = articleRepo.findByNocde(nocde);
-        return LivraisonDetailDTO.from(livraison, articles);
+        List<PodAsset> proofs = podAssetRepo.findByNocdeOrderByCapturedAtDesc(nocde);
+        return LivraisonDetailDTO.from(livraison, articles, proofs);
     }
 
     // ── Livreur: Changer statut (EC → LI ou AL) ──────────────────────────
@@ -100,12 +130,15 @@ public class LivraisonService {
             throw new IllegalArgumentException(
                 "Statut invalide: " + nouveauStatut + ". Valeurs autorisées: LI, AL");
         }
+        if ("AL".equals(nouveauStatut) && (causeAjournement == null || causeAjournement.trim().isEmpty())) {
+            throw new IllegalArgumentException("La cause d'ajournement est obligatoire.");
+        }
 
         // Mise à jour
         livraison.setEtatliv(nouveauStatut);
         if (remarque != null) livraison.setRemarque(remarque);
-        if ("AL".equals(nouveauStatut) && causeAjournement != null) {
-            livraison.setCauseAjournement(causeAjournement);
+        if ("AL".equals(nouveauStatut)) {
+            livraison.setCauseAjournement(causeAjournement.trim());
         }
         livraison.setSyncToOracle(false);
 
@@ -114,6 +147,11 @@ public class LivraisonService {
                 nocde, ancienStatut, nouveauStatut, idpersModificateur, remarque);
         historique.setReasonCode("STATUT_CHANGE");
         historiqueRepo.save(historique);
+
+        // En cas d'ajournement: push urgent + message d'urgence automatique dans le chat commande
+        if ("AL".equals(nouveauStatut)) {
+            notifyAjournementAndCreateEmergencyMessage(livraison, causeAjournement.trim(), idpersModificateur);
+        }
 
         return livraisonRepo.save(livraison);
     }
@@ -153,7 +191,7 @@ public class LivraisonService {
     // ── Statistiques du jour (pour contrôleur) ───────────────────────────
     @Transactional(readOnly = true)
     public StatsDuJourDTO getStatsDuJour() {
-        LocalDate today = LocalDate.now();
+        LocalDate today = getEffectiveDate();
         StatsDuJourDTO stats = new StatsDuJourDTO();
 
         long total = livraisonRepo.countByDate(today);
@@ -178,8 +216,9 @@ public class LivraisonService {
             long liv = ((Number) row[4]).longValue();
             long enc = ((Number) row[5]).longValue();
             long ajo = ((Number) row[6]).longValue();
+            String tel = row[7] != null ? row[7].toString() : "";
             parLivreur.add(new StatsDuJourDTO.StatsLivreurDTO(
-                    livreurId, nom + " " + prenom, tot, liv, enc, ajo));
+                    livreurId, nom + " " + prenom, tot, liv, enc, ajo, tel));
         }
         stats.setParLivreur(parLivreur);
 
@@ -232,6 +271,23 @@ public class LivraisonService {
         return geopointRepo.findByNocdeOrderByCapturedAtDesc(nocde);
     }
 
+    @Transactional(readOnly = true)
+    public List<LivreurLocationDTO> getAllLivreurLocations() {
+        List<LivraisonGeopoint> latestPoints = geopointRepo.findAllLatestPerLivreur();
+        List<LivreurLocationDTO> result = new ArrayList<>();
+        
+        for (LivraisonGeopoint p : latestPoints) {
+            String nom = personnelRepo.findById(p.getLivreurId())
+                    .map(pers -> pers.getNompers() + " " + pers.getPrenompers())
+                    .orElse("Livreur #" + p.getLivreurId());
+                    
+            result.add(new LivreurLocationDTO(
+                    p.getLivreurId(), nom, p.getLatitude().doubleValue(), p.getLongitude().doubleValue(), p.getCapturedAt()
+            ));
+        }
+        return result;
+    }
+
     public PodAsset saveProof(Integer nocde, Integer actorId, PodAsset asset) {
         livraisonRepo.findById(nocde)
                 .orElseThrow(() -> new RuntimeException("Livraison introuvable: " + nocde));
@@ -245,16 +301,178 @@ public class LivraisonService {
         return podAssetRepo.findByNocdeOrderByCapturedAtDesc(nocde);
     }
 
-    public ChatMessage postChatMessage(Integer nocde, Integer senderId, ChatMessage message) {
-        livraisonRepo.findById(nocde)
-                .orElseThrow(() -> new RuntimeException("Livraison introuvable: " + nocde));
+    public ChatMessage postChatMessage(Integer nocde, Integer senderId, String senderCodeposte, ChatMessage message) {
+        if (message == null || message.getMessageText() == null || message.getMessageText().trim().isEmpty()) {
+            throw new IllegalArgumentException("Le message ne peut pas être vide.");
+        }
+
+        ChatContext context = resolveChatContext(nocde, senderId, senderCodeposte);
+
         message.setNocde(nocde);
         message.setSenderId(senderId);
-        return chatRepo.save(message);
+        message.setRecipientId(context.recipientId);
+        message.setMessageText(message.getMessageText().trim());
+
+        ChatMessage saved = chatRepo.save(message);
+        sendPushForNewMessage(saved, context, senderId, senderCodeposte);
+        return saved;
     }
 
     @Transactional(readOnly = true)
-    public List<ChatMessage> getChatMessages(Integer nocde) {
+    public List<ChatMessage> getChatMessages(Integer nocde, Integer actorId, String actorCodeposte) {
+        resolveChatContext(nocde, actorId, actorCodeposte);
         return chatRepo.findByNocdeOrderBySentAtAsc(nocde);
+    }
+
+    public void updateLivreurLocation(Integer livreurId, Double latitude, Double longitude) {
+        // Récupère une livraison active pour ce livreur aujourd'hui pour avoir un nocde de référence
+        List<LivraisonMobile> active = getLivraisonsLivreur(livreurId);
+        Integer nocde = active.isEmpty() ? 0 : active.get(0).getNocde();
+
+        LivraisonGeopoint point = new LivraisonGeopoint();
+        point.setLivreurId(livreurId);
+        point.setNocde(nocde);
+        point.setLatitude(new java.math.BigDecimal(latitude));
+        point.setLongitude(new java.math.BigDecimal(longitude));
+        geopointRepo.save(point);
+    }
+
+    @Transactional(readOnly = true)
+    public LivreurLocationDTO getLatestLivreurLocation(Integer livreurId) {
+        List<LivraisonGeopoint> all = geopointRepo.findByLivreurIdOrderByCapturedAtDesc(livreurId);
+        if (all.isEmpty()) {
+            return null;
+        }
+        LivraisonGeopoint latest = all.get(0);
+        String nom = personnelRepo.findById(livreurId)
+                .map(pers -> pers.getNompers() + " " + pers.getPrenompers())
+                .orElse("Livreur #" + livreurId);
+        return new LivreurLocationDTO(
+                livreurId, nom, latest.getLatitude().doubleValue(),
+                latest.getLongitude().doubleValue(), latest.getCapturedAt()
+        );
+    }
+    @Transactional(readOnly = true)
+    public List<com.supervision.livraisons.dto.ChatChannelDTO> getChatChannels(Integer userId, String userCodeposte) {
+        Set<Integer> channelIds = new LinkedHashSet<>();
+        
+        // Livreur: voir ses propres livraisons du jour + sa conversation privée
+        if ("P001".equals(userCodeposte)) {
+            livraisonRepo.findByLivreurIdAndDateliv(userId, getEffectiveDate()).forEach(l -> channelIds.add(l.getNocde()));
+            channelIds.add(-userId); // Ajouter sa conversation privée
+        }
+        // Contrôleur: voir toutes les livraisons du jour + toutes les conversations de support
+        else if ("P003".equals(userCodeposte)) {
+            livraisonRepo.findByDateliv(getEffectiveDate()).forEach(l -> channelIds.add(l.getNocde()));
+            personnelRepo.findByCodeposte("P001").forEach(p -> channelIds.add(-p.getIdpers()));
+        }
+        
+        // Inclure également les chans avec messages
+        channelIds.addAll(chatRepo.findDistinctNocde());
+
+        List<com.supervision.livraisons.dto.ChatChannelDTO> channels = new ArrayList<>();
+
+        for (Integer nocde : channelIds) {
+            String title;
+            boolean isSupport = false;
+            if (nocde > 0) {
+                title = livraisonRepo.findById(nocde)
+                        .map(l -> "Livraison #" + l.getNocde() + " - " + l.getClientNom())
+                        .orElse("Livraison #" + nocde);
+            } else {
+                int livreurId = -nocde;
+                title = personnelRepo.findById(livreurId)
+                        .map(p -> "Support: " + p.getNompers() + " " + p.getPrenompers())
+                        .orElse("Support Livreur #" + livreurId);
+                isSupport = true;
+            }
+            channels.add(new com.supervision.livraisons.dto.ChatChannelDTO(nocde, title, "Ouvrir la conversation", null, isSupport));
+        }
+        return channels;
+    }
+
+    private void notifyAjournementAndCreateEmergencyMessage(LivraisonMobile livraison, String causeAjournement, Integer senderId) {
+        String title = "Alerte Ajournement";
+        String body = "Commande #" + livraison.getNocde() + " ajournée: " + causeAjournement;
+
+        List<PersonnelMobile> controleurs = personnelRepo.findByCodeposte("P003");
+        for (PersonnelMobile c : controleurs) {
+            if (c.getFcmToken() != null && !c.getFcmToken().isEmpty()) {
+                firebaseService.sendNotification(c.getFcmToken(), title, body);
+            }
+        }
+
+        ChatMessage emergency = new ChatMessage();
+        emergency.setNocde(livraison.getNocde());
+        emergency.setSenderId(senderId);
+        emergency.setMessageText("[URGENT] Livraison ajournée. Cause: " + causeAjournement);
+        emergency.setRecipientId(controleurs.isEmpty() ? null : controleurs.get(0).getIdpers());
+        chatRepo.save(emergency);
+    }
+
+    private void sendPushForNewMessage(ChatMessage msg, ChatContext context, Integer senderId, String senderCodeposte) {
+        String title = context.supportChannel
+                ? "Nouveau message (Conversation générale)"
+                : "Nouveau message (Commande #" + msg.getNocde() + ")";
+        String body = msg.getMessageText();
+
+        if ("P001".equals(senderCodeposte)) {
+            personnelRepo.findByCodeposte("P003").stream()
+                    .filter(p -> !p.getIdpers().equals(senderId))
+                    .filter(p -> p.getFcmToken() != null && !p.getFcmToken().isEmpty())
+                    .forEach(p -> firebaseService.sendNotification(p.getFcmToken(), title, body));
+            return;
+        }
+
+        if (context.recipientId != null) {
+            personnelRepo.findById(context.recipientId)
+                    .filter(p -> p.getFcmToken() != null && !p.getFcmToken().isEmpty())
+                    .ifPresent(p -> firebaseService.sendNotification(p.getFcmToken(), title, body));
+        }
+    }
+
+    private ChatContext resolveChatContext(Integer nocde, Integer actorId, String actorCodeposte) {
+        if (nocde == null || nocde == 0) {
+            throw new IllegalArgumentException("Canal de chat invalide.");
+        }
+
+        if (nocde < 0) {
+            Integer livreurId = -nocde;
+            if (!"P003".equals(actorCodeposte) && !("P001".equals(actorCodeposte) && actorId.equals(livreurId))) {
+                throw new IllegalStateException("Accès non autorisé à cette conversation générale.");
+            }
+            Integer recipientId = "P003".equals(actorCodeposte) ? livreurId : firstControleurId();
+            return new ChatContext(true, recipientId);
+        }
+
+        LivraisonMobile livraison = livraisonRepo.findById(nocde)
+                .orElseThrow(() -> new RuntimeException("Livraison introuvable: " + nocde));
+
+        if ("P001".equals(actorCodeposte) && !actorId.equals(livraison.getLivreurId())) {
+            throw new IllegalStateException("Le livreur ne peut accéder qu'à ses propres commandes.");
+        }
+        if (!"P001".equals(actorCodeposte) && !"P003".equals(actorCodeposte)) {
+            throw new IllegalStateException("Rôle non autorisé pour le chat.");
+        }
+
+        Integer recipientId = "P003".equals(actorCodeposte) ? livraison.getLivreurId() : firstControleurId();
+        return new ChatContext(false, recipientId);
+    }
+
+    private Integer firstControleurId() {
+        return personnelRepo.findByCodeposte("P003").stream()
+                .map(PersonnelMobile::getIdpers)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private static class ChatContext {
+        private final boolean supportChannel;
+        private final Integer recipientId;
+
+        private ChatContext(boolean supportChannel, Integer recipientId) {
+            this.supportChannel = supportChannel;
+            this.recipientId = recipientId;
+        }
     }
 }

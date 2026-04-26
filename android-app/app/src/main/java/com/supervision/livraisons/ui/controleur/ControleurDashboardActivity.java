@@ -1,6 +1,7 @@
 package com.supervision.livraisons.ui.controleur;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -8,12 +9,14 @@ import android.widget.ArrayAdapter;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import android.widget.Toast;
 import com.supervision.livraisons.R;
 import com.supervision.livraisons.api.ApiClient;
 import com.supervision.livraisons.databinding.ActivityControleurDashboardBinding;
 import com.supervision.livraisons.model.LivraisonMobile;
 import com.supervision.livraisons.model.StatsDuJour;
 import com.supervision.livraisons.ui.auth.LoginActivity;
+import com.supervision.livraisons.ui.common.LivraisonChatActivity;
 import com.supervision.livraisons.ui.common.LivraisonDetailActivity;
 import com.supervision.livraisons.ui.common.LivraisonsAdapter;
 import com.supervision.livraisons.utils.SessionManager;
@@ -31,7 +34,7 @@ public class ControleurDashboardActivity extends AppCompatActivity {
     private LivraisonsAdapter adapter;
     private final List<LivraisonMobile> livraisonsList = new ArrayList<>();
     private String filterEtat = null;
-    private String filterVille = null;
+    private Integer filterLivreurId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,11 @@ public class ControleurDashboardActivity extends AppCompatActivity {
 
         setupRecyclerView();
         setupFilters();
+        
+        binding.btnMap.setOnClickListener(v -> {
+            startActivity(new Intent(this, ControleurMapActivity.class));
+        });
+        
         setupSwipeRefresh();
         loadStats();
         loadAll();
@@ -63,6 +71,35 @@ public class ControleurDashboardActivity extends AppCompatActivity {
         });
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerView.setAdapter(adapter);
+
+        // Configuration Bottom Navigation
+        binding.bottomNavigation.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.nav_dashboard) {
+                UiUtils.setVisible(binding.layoutLivraisons, true);
+                UiUtils.setVisible(binding.layoutLivreurs, false);
+                UiUtils.setVisible(binding.layoutChats, false);
+                UiUtils.setVisible(binding.layoutHeaderStats, true);
+                UiUtils.setVisible(binding.layoutFilters, true);
+                return true;
+            } else if (item.getItemId() == R.id.nav_livreurs) {
+                UiUtils.setVisible(binding.layoutLivraisons, false);
+                UiUtils.setVisible(binding.layoutLivreurs, true);
+                UiUtils.setVisible(binding.layoutChats, false);
+                UiUtils.setVisible(binding.layoutHeaderStats, false);
+                UiUtils.setVisible(binding.layoutFilters, false);
+                loadStats();
+                return true;
+            } else if (item.getItemId() == R.id.nav_chats) {
+                UiUtils.setVisible(binding.layoutLivraisons, false);
+                UiUtils.setVisible(binding.layoutLivreurs, false);
+                UiUtils.setVisible(binding.layoutChats, true);
+                UiUtils.setVisible(binding.layoutHeaderStats, false);
+                UiUtils.setVisible(binding.layoutFilters, false);
+                loadChats();
+                return true;
+            }
+            return false;
+        });
     }
 
     private void setupFilters() {
@@ -71,17 +108,6 @@ public class ControleurDashboardActivity extends AppCompatActivity {
         binding.chipEnCours.setOnClickListener(v -> { filterEtat = "EC"; loadAll(); });
         binding.chipLivres.setOnClickListener(v -> { filterEtat = "LI"; loadAll(); });
         binding.chipAjournes.setOnClickListener(v -> { filterEtat = "AL"; loadAll(); });
-        binding.tvStatTotal.setOnClickListener(v -> { filterEtat = null; loadAll(); });
-        binding.tvStatLivrees.setOnClickListener(v -> { filterEtat = "LI"; loadAll(); });
-        binding.tvStatEnCours.setOnClickListener(v -> { filterEtat = "EC"; loadAll(); });
-        binding.tvStatAjournees.setOnClickListener(v -> { filterEtat = "AL"; loadAll(); });
-
-        // Filtre par ville
-        binding.btnFiltrerVille.setOnClickListener(v -> {
-            String ville = binding.etFiltreVille.getText().toString().trim();
-            filterVille = ville.isEmpty() ? null : ville;
-            loadAll();
-        });
     }
 
     private void setupSwipeRefresh() {
@@ -95,17 +121,149 @@ public class ControleurDashboardActivity extends AppCompatActivity {
             public void onResponse(Call<StatsDuJour> call, Response<StatsDuJour> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     StatsDuJour s = response.body();
-                    binding.tvStatTotal.setText(String.valueOf(s.getTotalLivraisons()));
-                    binding.tvStatLivrees.setText(String.valueOf(s.getLivrees()));
-                    binding.tvStatEnCours.setText(String.valueOf(s.getEnCours()));
-                    binding.tvStatAjournees.setText(String.valueOf(s.getAjournees()));
                     binding.tvTauxSucces.setText(s.getTauxSucces() + "%");
-                    // Barre de progression
                     binding.progressTaux.setProgress((int) s.getTauxSucces());
+                    // Liste des livreurs
+                    if (s.getParLivreur() != null && !s.getParLivreur().isEmpty()) {
+                        StatsLivreursAdapter statsAdapter = new StatsLivreursAdapter(s.getParLivreur(), livreurId -> {
+                            // Trouver le livreur
+                            StatsDuJour.StatsLivreur clicked = null;
+                            for (StatsDuJour.StatsLivreur sl : s.getParLivreur()) {
+                                if (sl.getLivreurId() == livreurId) {
+                                    clicked = sl;
+                                    break;
+                                }
+                            }
+                            if (clicked != null) {
+                                StatsDuJour.StatsLivreur finalClicked = clicked;
+                                android.view.View dialogView = getLayoutInflater().inflate(R.layout.dialog_livreur_info, null);
+                                AlertDialog dialog = new AlertDialog.Builder(ControleurDashboardActivity.this)
+                                        .setView(dialogView)
+                                        .create();
+
+                                // Bind views
+                                ((android.widget.TextView) dialogView.findViewById(R.id.tv_dialog_nom)).setText(clicked.getLivreurNomComplet());
+                                ((android.widget.TextView) dialogView.findViewById(R.id.tv_dialog_livreur_id)).setText("ID: #" + String.format("%04d", livreurId));
+                                ((android.widget.TextView) dialogView.findViewById(R.id.tv_dialog_tel)).setText(clicked.getLivreurTel());
+                                ((android.widget.TextView) dialogView.findViewById(R.id.tv_dialog_total)).setText(String.valueOf(clicked.getTotal()));
+                                ((android.widget.TextView) dialogView.findViewById(R.id.tv_dialog_livrees)).setText(String.valueOf(clicked.getLivrees()));
+                                ((android.widget.TextView) dialogView.findViewById(R.id.tv_dialog_encours)).setText(String.valueOf(clicked.getEnCours()));
+                                ((android.widget.TextView) dialogView.findViewById(R.id.tv_dialog_ajournees)).setText(String.valueOf(clicked.getAjournees()));
+
+                                android.widget.TextView tvPos = dialogView.findViewById(R.id.tv_dialog_pos);
+                                final double[] currentCoords = new double[2]; // [lat, lng]
+
+                                ApiClient.getApiService().getLivreurLocation(livreurId).enqueue(new Callback<com.supervision.livraisons.model.LivreurLocation>() {
+                                    @Override
+                                    public void onResponse(Call<com.supervision.livraisons.model.LivreurLocation> call, Response<com.supervision.livraisons.model.LivreurLocation> response) {
+                                        if (response.isSuccessful() && response.body() != null) {
+                                            com.supervision.livraisons.model.LivreurLocation loc = response.body();
+                                            currentCoords[0] = loc.getLatitude();
+                                            currentCoords[1] = loc.getLongitude();
+                                            String time = (loc.getCapturedAt() != null && loc.getCapturedAt().length() >= 16) 
+                                                ? loc.getCapturedAt().substring(11, 16) : "--:--";
+                                            tvPos.setText(String.format("Position: %.5f, %.5f (le %s)", 
+                                                currentCoords[0], currentCoords[1], time));
+                                        }
+                                    }
+                                    @Override public void onFailure(Call<com.supervision.livraisons.model.LivreurLocation> call, Throwable t) {}
+                                });
+
+                                tvPos.setOnClickListener(v -> {
+                                    if (currentCoords[0] != 0) {
+                                        Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + currentCoords[0] + "," + currentCoords[1]);
+                                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                                        mapIntent.setPackage("com.google.android.apps.maps");
+                                        startActivity(mapIntent);
+                                    }
+                                });
+
+                                // Bind actions
+                                dialogView.findViewById(R.id.btn_dialog_call).setOnClickListener(v -> {
+                                    appelerLivreur(finalClicked.getLivreurTel());
+                                    dialog.dismiss();
+                                });
+
+                                dialogView.findViewById(R.id.btn_dialog_sms).setOnClickListener(v -> {
+                                    String tel = finalClicked.getLivreurTel();
+                                    if (tel != null && !tel.isEmpty() && !"00000000".equals(tel)) {
+                                        Intent intent = new Intent(Intent.ACTION_SENDTO);
+                                        intent.setData(android.net.Uri.parse("smsto:" + tel));
+                                        startActivity(intent);
+                                    }
+                                    dialog.dismiss();
+                                });
+
+                                dialogView.findViewById(R.id.btn_dialog_support).setOnClickListener(v -> {
+                                    Intent intent = new Intent(ControleurDashboardActivity.this, LivraisonChatActivity.class);
+                                    intent.putExtra("nocde", -livreurId); // Support privé hors commande
+                                    startActivity(intent);
+                                    dialog.dismiss();
+                                });
+
+                                dialogView.findViewById(R.id.btn_dialog_close).setOnClickListener(v -> dialog.dismiss());
+
+                                if (dialog.getWindow() != null) {
+                                    dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+                                }
+                                dialog.show();
+                            }
+                        });
+                        binding.recyclerStatsLivreurs.setAdapter(statsAdapter);
+                        UiUtils.setVisible(binding.recyclerStatsLivreurs, true);
+                    } else {
+                        UiUtils.setVisible(binding.recyclerStatsLivreurs, false);
+                    }
                 }
             }
             @Override
             public void onFailure(Call<StatsDuJour> call, Throwable t) {}
+        });
+    }
+
+    private void appelerLivreur(String tel) {
+        if (tel == null || tel.isEmpty() || "00000000".equals(tel)) {
+            android.widget.Toast.makeText(this, "Numéro indisponible pour ce livreur (vérifiez la base)", android.widget.Toast.LENGTH_LONG).show();
+            return;
+        }
+        try {
+            Intent intent = new Intent(Intent.ACTION_DIAL, android.net.Uri.parse("tel:" + tel));
+            startActivity(intent);
+        } catch (Exception e) {
+            android.widget.Toast.makeText(this, "Erreur lors de l'appel : " + e.getMessage(), android.widget.Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void envoyerSMSLivreur(String tel) {
+        if (tel == null || tel.isEmpty() || "00000000".equals(tel)) {
+            android.widget.Toast.makeText(this, "Numéro indisponible pour ce livreur (vérifiez la base)", android.widget.Toast.LENGTH_LONG).show();
+            return;
+        }
+        try {
+            Intent intent = new Intent(Intent.ACTION_SENDTO, android.net.Uri.parse("smsto:" + tel));
+            startActivity(intent);
+        } catch (Exception e) {
+            android.widget.Toast.makeText(this, "Erreur lors de l'envoi du message : " + e.getMessage(), android.widget.Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void loadChats() {
+        // Chargement des conversations (Livraisons + Support)
+        ApiClient.getApiService().getChatChannels().enqueue(new retrofit2.Callback<List<com.supervision.livraisons.model.ChatChannel>>() {
+            @Override
+            public void onResponse(retrofit2.Call<List<com.supervision.livraisons.model.ChatChannel>> call, retrofit2.Response<List<com.supervision.livraisons.model.ChatChannel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    com.supervision.livraisons.ui.common.ChannelsAdapter chatAdapter = new com.supervision.livraisons.ui.common.ChannelsAdapter(response.body(), nocde -> {
+                        Intent intent = new Intent(ControleurDashboardActivity.this, com.supervision.livraisons.ui.common.LivraisonChatActivity.class);
+                        intent.putExtra("nocde", nocde);
+                        startActivity(intent);
+                    });
+                    binding.recyclerChats.setLayoutManager(new LinearLayoutManager(ControleurDashboardActivity.this));
+                    binding.recyclerChats.setAdapter(chatAdapter);
+                }
+            }
+            @Override
+            public void onFailure(retrofit2.Call<List<com.supervision.livraisons.model.ChatChannel>> call, Throwable t) {}
         });
     }
 
@@ -114,7 +272,7 @@ public class ControleurDashboardActivity extends AppCompatActivity {
         UiUtils.setVisible(binding.shimmerLayout, true);
         UiUtils.setVisible(binding.recyclerView, false);
 
-        ApiClient.getApiService().getAllLivraisons(filterEtat, filterVille, null)
+        ApiClient.getApiService().getAllLivraisons(filterEtat, null, filterLivreurId)
                 .enqueue(new Callback<List<LivraisonMobile>>() {
             @Override
             public void onResponse(Call<List<LivraisonMobile>> call,

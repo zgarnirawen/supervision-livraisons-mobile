@@ -21,6 +21,7 @@ public class ChatWsController {
     public ChatMessage publish(@DestinationVariable Integer nocde, ChatMessage message) {
         // senderId should be set by the mobile client from JWT identity
         Integer senderId = message.getSenderId() != null ? message.getSenderId() : -1;
-        return livraisonService.postChatMessage(nocde, senderId, message);
+        // Assuming WebSocket sender is a livreur (P001)
+        return livraisonService.postChatMessage(nocde, senderId, "P001", message);
     }
 }

@@ -96,6 +96,20 @@ public class LoginActivity extends AppCompatActivity {
                     ApiClient.init(sessionManager);
 
                     navigateToDashboard();
+
+                    // Mise à jour du token FCM
+                    com.google.firebase.messaging.FirebaseMessaging.getInstance().getToken()
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    String fcmToken = task.getResult();
+                                    ApiClient.getApiService().updateFcmToken(data.getIdpers(), fcmToken).enqueue(new Callback<Void>() {
+                                        @Override
+                                        public void onResponse(Call<Void> call, Response<Void> response) {}
+                                        @Override
+                                        public void onFailure(Call<Void> call, Throwable t) {}
+                                    });
+                                }
+                            });
                 } else {
                     showError(getString(R.string.error_login_failed));
                     shakeButton();

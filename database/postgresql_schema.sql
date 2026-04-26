@@ -171,18 +171,20 @@ CREATE INDEX idx_geo_nocde_captured ON livraison_geopoints(nocde, captured_at DE
 CREATE INDEX idx_geo_livreur_captured ON livraison_geopoints(livreur_id, captured_at DESC);
 
 -- ============================================================
--- TABLE : chat_messages (Chat temps réel lié à livraison)
+-- TABLE : chat_messages (Chat lié commande + conversation générale)
 -- ============================================================
 CREATE TABLE chat_messages (
     id              SERIAL PRIMARY KEY,
-    nocde           INTEGER NOT NULL,
+    nocde           INTEGER NOT NULL,              -- >0: commande, <0: conversation générale livreur/contrôleur
     sender_id       INTEGER NOT NULL,
     recipient_id    INTEGER,
     message_text    TEXT NOT NULL,
     sent_at         TIMESTAMP DEFAULT NOW(),
     read_at         TIMESTAMP,
     client_msg_id   UUID,
-    FOREIGN KEY (nocde) REFERENCES livraisons_mobile(nocde) ON DELETE CASCADE,
+    CONSTRAINT ck_chat_channel CHECK (nocde <> 0),
+    -- REMARQUE: Pas de FK sur nocde car <0 pour conversations privées n'existent pas dans livraisons_mobile
+    -- La validation de nocde est faite dans LivraisonService.resolveChatContext()
     FOREIGN KEY (sender_id) REFERENCES personnel_mobile(idpers),
     FOREIGN KEY (recipient_id) REFERENCES personnel_mobile(idpers)
 );

@@ -16,139 +16,235 @@
             style="@style/AppToolbar"/>
     </com.google.android.material.appbar.AppBarLayout>
 
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
+
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/content_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="20dp">
 
             <!-- Titre -->
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Sélectionnez le nouveau statut"
-                android:textColor="@color/text_primary"
-                android:textSize="18sp" android:textStyle="bold"
-                android:layout_marginBottom="20dp"/>
-
-            <!-- Bouton LIVRÉ -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_livre"
-                android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:text="✅  Livré avec succès"
-                style="@style/BtnSuccess"
-                android:layout_marginBottom="12dp"
-                android:textSize="16sp"/>
-
-            <!-- Bouton AJOURNÉ -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_ajourne"
-                android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:text="❌  Ajourner la livraison"
-                style="@style/BtnDanger"
-                android:layout_marginBottom="24dp"
-                android:textSize="16sp"/>
-
-            <!-- Remarque -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_remarque"
-                style="@style/AppTextInput"
-                android:layout_marginBottom="16dp">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_remarque"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textMultiLine"
-                    android:minLines="2"
-                    android:maxLines="4"/>
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Cause ajournement (visible si AL) -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_cause_ajournement"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_cause_ajournement"
-                style="@style/AppTextInput"
-                android:layout_marginBottom="24dp"
-                android:visibility="gone">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_cause_ajournement"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textMultiLine"
-                    android:minLines="2"/>
-            </com.google.android.material.textfield.TextInputLayout>
-
             <TextView
-                android:id="@+id/tv_preuve_title"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Preuve de livraison (obligatoire pour Livré)"
+                android:text="Finaliser la livraison"
                 android:textColor="@color/text_primary"
-                android:textStyle="bold" />
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="24dp"/>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_capture_photo"
+            <!-- Deux boutons côte à côte -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:text="📷 Capturer une photo"
-                style="@style/BtnOutline" />
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginBottom="28dp"
+                android:gravity="center">
 
-            <ImageView
-                android:id="@+id/img_preuve_photo"
+                <!-- Bouton VERT - Livré -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_livre"
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="12dp"
+                    android:text="Livré"
+                    android:textSize="14sp"
+                    android:textColor="@color/white"
+                    app:icon="@drawable/ic_check"
+                    app:iconSize="28dp"
+                    app:iconGravity="top"
+                    app:backgroundTint="@color/success"
+                    style="@style/Widget.MaterialComponents.Button"/>
+
+                <!-- Bouton ROUGE - Ajourné -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_ajourne"
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:text="Ajourné"
+                    android:textSize="14sp"
+                    android:textColor="@color/white"
+                    app:icon="@drawable/ic_close"
+                    app:iconSize="28dp"
+                    app:iconGravity="top"
+                    app:backgroundTint="@color/error"
+                    style="@style/Widget.MaterialComponents.Button"/>
+
+            </LinearLayout>
+
+            <!-- FLUX VERT - Livraison réussie -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_flux_livre"
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/bg_card_rounded"
-                android:scaleType="centerCrop"
-                android:visibility="gone" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Signature client"
-                android:textColor="@color/text_primary"
-                android:textStyle="bold" />
-
-            <com.supervision.livraisons.ui.livreur.SignatureView
-                android:id="@+id/signature_view"
-                android:layout_width="match_parent"
-                android:layout_height="160dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:background="@drawable/bg_card_rounded" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_clear_signature"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:text="Effacer la signature"
-                style="@style/BtnOutline" />
+                android:visibility="gone"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- En-tête -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="📷 Preuve de livraison"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="12dp"/>
+
+                    <!-- Bouton Prendre Photo -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_capture_photo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Prendre une photo"
+                        app:icon="@drawable/ic_camera"
+                        style="@style/BtnOutline"/>
+
+                    <!-- Aperçu Photo -->
+                    <ImageView
+                        android:id="@+id/img_preuve_photo"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="8dp"
+                        android:scaleType="fitCenter"
+                        android:visibility="gone"/>
+
+                    <!-- Statut Photo -->
+                    <TextView
+                        android:id="@+id/tv_photo_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Aucune photo prise"
+                        android:textColor="@color/warning"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="12dp"/>
+
+                    <!-- Signature (Optionnelle) -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="✏️ Signature client (optionnelle)"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="8dp"/>
+
+                    <com.supervision.livraisons.ui.livreur.SignatureView
+                        android:id="@+id/signature_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/bg_card_rounded"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_clear_signature"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Effacer la signature"
+                        style="@style/BtnOutline"/>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- FLUX ROUGE - Ajournement -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_flux_ajourne"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#FFEBEE"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- En-tête -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="⚠️ Cause d'ajournement"
+                        android:textColor="@color/error"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="12dp"/>
+
+                    <!-- Dropdown Causes Prédéfinies -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_cause_ajournement"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Sélectionner une cause"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_marginBottom="16dp">
+                        <AutoCompleteTextView
+                            android:id="@+id/et_cause_ajournement"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Cause Personnalisée -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_cause_custom"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Décrire la cause personnalisée"
+                        style="@style/AppTextInput"
+                        android:layout_marginBottom="16dp"
+                        android:visibility="gone">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_cause_custom"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textCapSentences|textMultiLine"
+                            android:minLines="2"
+                            android:maxLines="4"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
             <!-- Bouton Confirmer -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_confirmer"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/btn_confirmer"
-                style="@style/BtnPrimary"/>
-
-            <ProgressBar android:id="@+id/progress_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="8dp"
-                android:visibility="gone"/>
+                android:layout_height="48dp"
+                android:text="✓ Confirmer"
+                android:textSize="16sp"
+                android:enabled="false"
+                android:alpha="0.5"
+                app:backgroundTint="@color/primary"
+                style="@style/Widget.MaterialComponents.Button"/>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

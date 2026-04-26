@@ -2,6 +2,7 @@ package com.supervision.livraisons.dto;
 
 import com.supervision.livraisons.model.ArticleCommande;
 import com.supervision.livraisons.model.LivraisonMobile;
+import com.supervision.livraisons.model.PodAsset;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -21,6 +22,7 @@ public class LivraisonDetailDTO {
     private String livreurNomComplet;
 
     // Client
+    private Integer clientId;
     private String clientNom;
     private String clientPrenom;
     private String clientNomComplet;
@@ -30,6 +32,8 @@ public class LivraisonDetailDTO {
     private String clientCodePostal;
     private java.math.BigDecimal clientLatitude;
     private java.math.BigDecimal clientLongitude;
+    private String clientCin;
+    private String clientEmail;
 
     // Livraison
     private String etatliv;
@@ -45,6 +49,9 @@ public class LivraisonDetailDTO {
     private List<ArticleCommande> articles;
     private BigDecimal montantTotal;
 
+    // Preuves (POD)
+    private List<PodAsset> proofs;
+
     public LivraisonDetailDTO() {}
 
     public static LivraisonDetailDTO from(LivraisonMobile l, List<ArticleCommande> articles) {
@@ -56,6 +63,7 @@ public class LivraisonDetailDTO {
         dto.livreurPrenom = l.getLivreurPrenom();
         dto.livreurTel = l.getLivreurTel();
         dto.livreurNomComplet = l.getLivreurNom() + " " + l.getLivreurPrenom();
+        dto.clientId = l.getClientId();
         dto.clientNom = l.getClientNom();
         dto.clientPrenom = l.getClientPrenom();
         dto.clientNomComplet = l.getClientNom() + (l.getClientPrenom() != null ? " " + l.getClientPrenom() : "");
@@ -65,6 +73,8 @@ public class LivraisonDetailDTO {
         dto.clientCodePostal = l.getClientCodePostal();
         dto.clientLatitude = l.getClientLatitude();
         dto.clientLongitude = l.getClientLongitude();
+        dto.clientCin = l.getClientCin();
+        dto.clientEmail = l.getClientEmail();
         dto.etatliv = l.getEtatliv();
         dto.etatLibelle = getEtatLibelle(l.getEtatliv());
         dto.modepay = l.getModepay();
@@ -77,6 +87,12 @@ public class LivraisonDetailDTO {
         dto.montantTotal = articles.stream()
                 .map(ArticleCommande::getMontantTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return dto;
+    }
+
+    public static LivraisonDetailDTO from(LivraisonMobile l, List<ArticleCommande> articles, List<PodAsset> proofs) {
+        LivraisonDetailDTO dto = from(l, articles);
+        dto.proofs = proofs;
         return dto;
     }
 
@@ -105,6 +121,8 @@ public class LivraisonDetailDTO {
     public void setLivreurTel(String livreurTel) { this.livreurTel = livreurTel; }
     public String getLivreurNomComplet() { return livreurNomComplet; }
     public void setLivreurNomComplet(String livreurNomComplet) { this.livreurNomComplet = livreurNomComplet; }
+    public Integer getClientId() { return clientId; }
+    public void setClientId(Integer clientId) { this.clientId = clientId; }
     public String getClientNom() { return clientNom; }
     public void setClientNom(String clientNom) { this.clientNom = clientNom; }
     public String getClientPrenom() { return clientPrenom; }
@@ -123,6 +141,10 @@ public class LivraisonDetailDTO {
     public void setClientLatitude(java.math.BigDecimal clientLatitude) { this.clientLatitude = clientLatitude; }
     public java.math.BigDecimal getClientLongitude() { return clientLongitude; }
     public void setClientLongitude(java.math.BigDecimal clientLongitude) { this.clientLongitude = clientLongitude; }
+    public String getClientCin() { return clientCin; }
+    public void setClientCin(String clientCin) { this.clientCin = clientCin; }
+    public String getClientEmail() { return clientEmail; }
+    public void setClientEmail(String clientEmail) { this.clientEmail = clientEmail; }
     public String getEtatliv() { return etatliv; }
     public void setEtatliv(String etatliv) { this.etatliv = etatliv; }
     public String getEtatLibelle() { return etatLibelle; }
@@ -143,4 +165,6 @@ public class LivraisonDetailDTO {
     public void setArticles(List<ArticleCommande> articles) { this.articles = articles; }
     public BigDecimal getMontantTotal() { return montantTotal; }
     public void setMontantTotal(BigDecimal montantTotal) { this.montantTotal = montantTotal; }
+    public List<PodAsset> getProofs() { return proofs; }
+    public void setProofs(List<PodAsset> proofs) { this.proofs = proofs; }
 }

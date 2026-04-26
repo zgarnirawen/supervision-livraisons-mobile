@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface PersonnelRepository extends JpaRepository<PersonnelMobile, Integer> {
     Optional<PersonnelMobile> findByLogin(String login);
     boolean existsByLogin(String login);
+    java.util.List<PersonnelMobile> findByCodeposte(String codeposte);
 }

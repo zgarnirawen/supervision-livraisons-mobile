@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <!-- AppBar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="0dp"
+        app:liftOnScroll="true">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            style="@style/AppToolbar" />
+
+        <!-- Header Info -->
+        <LinearLayout android:id="@+id/layout_header_livreur"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/primary"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="16dp">
+
+            <LinearLayout android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <LinearLayout android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView android:id="@+id/tv_bonjour"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="18sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/tv_role"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#B0C4F5" android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- Toggle Position -->
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switch_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="En ligne"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    app:useMaterialThemeColors="false"
+                    app:thumbTint="@color/white"
+                    app:trackTint="#7E9DF3"/>
+            </LinearLayout>
+
+            <TextView android:id="@+id/tv_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#B0C4F5" android:textSize="12sp"
+                android:layout_marginTop="4dp"/>
+
+            <!-- Stats bar -->
+            <LinearLayout android:id="@+id/layout_stats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+                <include layout="@layout/view_stat_chip" android:id="@+id/chip_total"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+                <include layout="@layout/view_stat_chip" android:id="@+id/chip_livrees"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+                <include layout="@layout/view_stat_chip" android:id="@+id/chip_en_cours"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+                <include layout="@layout/view_stat_chip" android:id="@+id/chip_ajournes"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Filtre ville -->
+        <LinearLayout android:id="@+id/layout_filters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/surface"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp">
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp" android:layout_weight="1"
+                android:layout_height="wrap_content" android:hint="Filtrer par ville"
+                style="@style/AppTextInput">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_filtre_ville"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:imeOptions="actionSearch" android:singleLine="true"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_filtrer_ville"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="OK" style="@style/BtnPrimary" android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Conteneur global avec padding bottom pour la nav bar -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="56dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- Onglet 1: Mes Livraisons -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/layout_livraisons"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmer_layout"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:padding="16dp" android:visibility="gone">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                        <include layout="@layout/item_shimmer" /><include layout="@layout/item_shimmer" />
+                    </LinearLayout>
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view"
+                    android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:padding="8dp" android:clipToPadding="false" />
+
+                <LinearLayout android:id="@+id/tv_empty"
+                    android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:gravity="center" android:orientation="vertical" android:visibility="gone">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📦" android:textSize="56sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/empty_livraisons"
+                        android:textColor="@color/text_secondary" android:textSize="16sp" android:layout_marginTop="16dp" />
+                </LinearLayout>
+            </FrameLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- Onglet 2: Chats -->
+        <LinearLayout android:id="@+id/layout_chats"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:padding="8dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Mes Conversations" android:textColor="@color/text_primary"
+                android:textSize="22sp" android:textStyle="bold" android:layout_margin="8dp"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_chats"
+                android:layout_width="match_parent" android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:clipToPadding="false"/>
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:menu="@menu/menu_bottom_nav_livreur"
+        android:background="@color/surface"
+        app:itemIconTint="@color/primary"
+        app:itemTextColor="@color/primary" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

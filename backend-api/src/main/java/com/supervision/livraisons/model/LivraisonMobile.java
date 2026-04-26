@@ -28,6 +28,9 @@ public class LivraisonMobile {
     @Column(name = "livreur_tel", length = 8)
     private String livreurTel;
 
+    @Column(name = "client_id")
+    private Integer clientId;
+
     // Client (dénormalisé)
     @Column(name = "client_nom", length = 60)
     private String clientNom;
@@ -55,6 +58,12 @@ public class LivraisonMobile {
 
     @Column(name = "categorie", length = 40)
     private String categorie;
+
+    @Column(name = "client_cin", length = 20)
+    private String clientCin;
+
+    @Column(name = "client_email", length = 100)
+    private String clientEmail;
 
     // État livraison
     @Column(name = "etatliv", length = 2)
@@ -106,6 +115,8 @@ public class LivraisonMobile {
 
     public Integer getLivreurId() { return livreurId; }
     public void setLivreurId(Integer livreurId) { this.livreurId = livreurId; }
+    public Integer getClientId() { return clientId; }
+    public void setClientId(Integer clientId) { this.clientId = clientId; }
 
     public String getLivreurNom() { return livreurNom; }
     public void setLivreurNom(String livreurNom) { this.livreurNom = livreurNom; }
@@ -139,6 +150,10 @@ public class LivraisonMobile {
     public void setClientLongitude(java.math.BigDecimal clientLongitude) { this.clientLongitude = clientLongitude; }
     public String getCategorie() { return categorie; }
     public void setCategorie(String categorie) { this.categorie = categorie; }
+    public String getClientCin() { return clientCin; }
+    public void setClientCin(String clientCin) { this.clientCin = clientCin; }
+    public String getClientEmail() { return clientEmail; }
+    public void setClientEmail(String clientEmail) { this.clientEmail = clientEmail; }
 
     public String getEtatliv() { return etatliv; }
     public void setEtatliv(String etatliv) { this.etatliv = etatliv; }

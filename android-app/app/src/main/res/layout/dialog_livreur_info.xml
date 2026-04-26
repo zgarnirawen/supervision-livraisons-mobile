@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="8dp"
+    android:layout_margin="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:background="@color/surface">
+
+        <!-- Header with name and close button -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:id="@+id/tv_dialog_nom"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Nom Livreur"
+                android:textColor="@color/primary"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/btn_dialog_close"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_close"
+                android:background="@drawable/bg_action_circle"
+                android:backgroundTint="#FFEBEE"
+                app:tint="#D32F2F"
+                android:elevation="2dp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_dialog_livreur_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ID: #0000"
+            android:textColor="@color/text_hint"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:layout_marginTop="2dp" />
+
+        <TextView
+            android:id="@+id/tv_dialog_tel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="71 000 000"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/tv_dialog_pos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Position: --, --"
+            android:textColor="@color/accent"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:layout_marginTop="2dp"
+            android:textStyle="italic"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#EEEEEE"
+            android:layout_marginVertical="16dp" />
+
+        <!-- Stats Grid -->
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:rowCount="2"
+            android:alignmentMode="alignMargins"
+            android:columnOrderPreserved="false">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Total" android:textSize="12sp" android:textColor="@color/text_secondary"/>
+                <TextView android:id="@+id/tv_dialog_total" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="0" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/text_primary"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Livrées" android:textSize="12sp" android:textColor="@color/text_secondary"/>
+                <TextView android:id="@+id/tv_dialog_livrees" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="0" android:textSize="18sp" android:textStyle="bold" android:textColor="#2E7D32"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="En cours" android:textSize="12sp" android:textColor="@color/text_secondary"/>
+                <TextView android:id="@+id/tv_dialog_encours" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="0" android:textSize="18sp" android:textStyle="bold" android:textColor="#F57C00"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Ajournées" android:textSize="12sp" android:textColor="@color/text_secondary"/>
+                <TextView android:id="@+id/tv_dialog_ajournees" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="0" android:textSize="18sp" android:textStyle="bold" android:textColor="#C62828"/>
+            </LinearLayout>
+
+        </GridLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#EEEEEE"
+            android:layout_marginVertical="16dp" />
+
+        <!-- Actions -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/btn_dialog_call"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_call"
+                android:background="@drawable/bg_action_circle"
+                android:backgroundTint="#E3F2FD"
+                app:tint="#1976D2"
+                android:layout_marginHorizontal="6dp"
+                android:elevation="2dp" />
+
+            <ImageButton
+                android:id="@+id/btn_dialog_sms"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_sms"
+                android:background="@drawable/bg_action_circle"
+                android:backgroundTint="#FFF3E0"
+                app:tint="#EF6C00"
+                android:layout_marginHorizontal="6dp"
+                android:elevation="2dp" />
+
+            <ImageButton
+                android:id="@+id/btn_dialog_support"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:src="@drawable/ic_chat"
+                android:background="@drawable/bg_action_circle"
+                android:backgroundTint="#E0F7FA"
+                app:tint="#00838F"
+                android:layout_marginHorizontal="4dp"
+                android:elevation="2dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -1,6 +1,7 @@
 package com.supervision.livraisons.controller;
 
 import com.supervision.livraisons.dto.LivraisonDetailDTO;
+import com.supervision.livraisons.dto.LivreurLocationDTO;
 import com.supervision.livraisons.dto.StatsDuJourDTO;
 import com.supervision.livraisons.model.ChatMessage;
 import com.supervision.livraisons.model.HistoriqueLivraison;
@@ -56,6 +57,19 @@ public class LivraisonController {
             @RequestParam(required = false) Integer livreurId) {
         List<LivraisonMobile> livraisons = livraisonService.getAllLivraisons(etatliv, ville, livreurId);
         return ResponseEntity.ok(livraisons);
+    }
+
+    @GetMapping("/conversations")
+    @PreAuthorize("hasRole('CONTROLEUR')")
+    public ResponseEntity<List<LivraisonMobile>> getConversations() {
+        return ResponseEntity.ok(livraisonService.getActiveConversations());
+    }
+
+    @GetMapping("/conversations/mine")
+    @PreAuthorize("hasRole('LIVREUR')")
+    public ResponseEntity<List<LivraisonMobile>> getMyConversations(HttpServletRequest request) {
+        Integer livreurId = extractIdpers(request);
+        return ResponseEntity.ok(livraisonService.getActiveConversationsForLivreur(livreurId));
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -187,6 +201,38 @@ public class LivraisonController {
         return ResponseEntity.ok(livraisonService.getGeopointHistory(nocde));
     }
 
+    @GetMapping("/locations/all")
+    @PreAuthorize("hasRole('CONTROLEUR')")
+    public ResponseEntity<List<LivreurLocationDTO>> getAllLocations() {
+        return ResponseEntity.ok(livraisonService.getAllLivreurLocations());
+    }
+
+    @GetMapping("/locations/livreur/{id}")
+    @PreAuthorize("hasRole('CONTROLEUR')")
+    public ResponseEntity<LivreurLocationDTO> getLivreurLocation(@PathVariable Integer id) {
+        return livraisonService.getAllLivreurLocations().stream()
+                .filter(l -> l.getLivreurId().equals(id))
+                .findFirst()
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/locations/update")
+    @PreAuthorize("hasRole('LIVREUR')")
+    public ResponseEntity<Void> updateLocation(@RequestBody Map<String, Double> coords, HttpServletRequest request) {
+        Integer idpers = extractIdpers(request);
+        livraisonService.updateLivreurLocation(idpers, coords.get("latitude"), coords.get("longitude"));
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/locations/me")
+    @PreAuthorize("hasRole('LIVREUR')")
+    public ResponseEntity<LivreurLocationDTO> getMyLatestLocation(HttpServletRequest request) {
+        Integer idpers = extractIdpers(request);
+        LivreurLocationDTO location = livraisonService.getLatestLivreurLocation(idpers);
+        return location != null ? ResponseEntity.ok(location) : ResponseEntity.notFound().build();
+    }
+
     @PostMapping("/{nocde}/proof")
     @PreAuthorize("hasAnyRole('LIVREUR','CONTROLEUR')")
     public ResponseEntity<PodAsset> saveProof(
@@ -203,10 +249,22 @@ public class LivraisonController {
         return ResponseEntity.ok(livraisonService.getProofs(nocde));
     }
 
+    @GetMapping("/chat/channels")
+    @PreAuthorize("hasAnyRole('LIVREUR','CONTROLEUR')")
+    public ResponseEntity<List<com.supervision.livraisons.dto.ChatChannelDTO>> getChatChannels(HttpServletRequest request) {
+        Integer idpers = extractIdpers(request);
+        String codeposte = extractCodeposte(request);
+        return ResponseEntity.ok(livraisonService.getChatChannels(idpers, codeposte));
+    }
+
     @GetMapping("/{nocde}/chat")
     @PreAuthorize("hasAnyRole('LIVREUR','CONTROLEUR')")
-    public ResponseEntity<List<ChatMessage>> getChatMessages(@PathVariable Integer nocde) {
-        return ResponseEntity.ok(livraisonService.getChatMessages(nocde));
+    public ResponseEntity<List<ChatMessage>> getChatMessages(
+            @PathVariable Integer nocde,
+            HttpServletRequest request) {
+        Integer idpers = extractIdpers(request);
+        String codeposte = extractCodeposte(request);
+        return ResponseEntity.ok(livraisonService.getChatMessages(nocde, idpers, codeposte));
     }
 
     @PostMapping("/{nocde}/chat")
@@ -216,7 +274,8 @@ public class LivraisonController {
             @RequestBody ChatMessage message,
             HttpServletRequest request) {
         Integer idpers = extractIdpers(request);
-        ChatMessage created = livraisonService.postChatMessage(nocde, idpers, message);
+        String codeposte = extractCodeposte(request);
+        ChatMessage created = livraisonService.postChatMessage(nocde, idpers, codeposte, message);
         return ResponseEntity.ok(created);
     }
 
@@ -225,6 +284,14 @@ public class LivraisonController {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
             return jwtUtils.getIdpersFromToken(header.substring(7));
+        }
+        throw new RuntimeException("Token JWT manquant");
+    }
+
+    private String extractCodeposte(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            return jwtUtils.getCodeposteFromToken(header.substring(7));
         }
         throw new RuntimeException("Token JWT manquant");
     }

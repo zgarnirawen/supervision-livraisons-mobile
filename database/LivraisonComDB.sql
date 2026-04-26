@@ -89,6 +89,9 @@ CREATE TABLE clients(
     villeclt CHAR(30) NOT NULL,
     telclt NUMBER(8) NOT NULL,
     adrmail VARCHAR2(60),
+    cinclt NUMBER(8),
+    
+    CONSTRAINT clients_cin_ck CHECK (cinclt BETWEEN 10000000 AND 99999999 OR cinclt IS NULL),
     
     CONSTRAINT clients_code_postal_ck CHECK (code_postal BETWEEN 1000 AND 9999),
     CONSTRAINT clients_tel_ck CHECK (telclt BETWEEN 10000000 AND 99999999)

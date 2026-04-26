@@ -1,10 +1,13 @@
 package com.supervision.livraisons.ui.common;
 
-import android.graphics.Color;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -49,13 +52,8 @@ public class LivraisonsAdapter extends RecyclerView.Adapter<LivraisonsAdapter.Vi
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         private final CardView card;
-        private final TextView tvNoCde;
-        private final TextView tvClient;
-        private final TextView tvAdresse;
-        private final TextView tvVille;
-        private final TextView tvStatut;
-        private final TextView tvModePay;
-        private final TextView tvLivreur;
+        private final TextView tvNoCde, tvClient, tvAdresse, tvVille, tvStatut, tvModePay;
+        private final ImageButton btnCall, btnSms, btnChat;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -66,36 +64,40 @@ public class LivraisonsAdapter extends RecyclerView.Adapter<LivraisonsAdapter.Vi
             tvVille = itemView.findViewById(R.id.tv_ville);
             tvStatut = itemView.findViewById(R.id.tv_statut);
             tvModePay = itemView.findViewById(R.id.tv_mode_pay);
-            tvLivreur = itemView.findViewById(R.id.tv_livreur);
+            btnCall = itemView.findViewById(R.id.btn_list_call);
+            btnSms = itemView.findViewById(R.id.btn_list_sms);
+            btnChat = itemView.findViewById(R.id.btn_list_chat);
         }
 
         public void bind(LivraisonMobile l, OnItemClickListener listener) {
             tvNoCde.setText("Commande N°" + l.getNocde());
             tvClient.setText(l.getClientNomComplet());
             tvAdresse.setText(l.getClientAdresse());
-            tvVille.setText("📍 " + l.getClientVille() + " " + l.getClientCodePostal());
+            tvVille.setText("📍 " + l.getClientVille());
             tvModePay.setText(UiUtils.formatModePay(l.getModepay()));
-            tvLivreur.setText("🚚 " + l.getLivreurNomComplet());
-
             UiUtils.applyStatutStyle(itemView.getContext(), tvStatut, l.getEtatliv());
-
-            // Accentuer la bordure gauche selon statut
-            int borderColor;
-            switch (l.getEtatliv() != null ? l.getEtatliv() : "") {
-                case "LI": borderColor = itemView.getContext()
-                        .getColor(R.color.status_li_border); break;
-                case "AL": borderColor = itemView.getContext()
-                        .getColor(R.color.status_al_border); break;
-                default:   borderColor = itemView.getContext()
-                        .getColor(R.color.status_ec_border); break;
-            }
-            itemView.findViewById(R.id.view_status_bar).setBackgroundColor(borderColor);
 
             card.setOnClickListener(v -> listener.onItemClick(l.getNocde()));
 
-            // Ripple animation
-            card.setClickable(true);
-            card.setFocusable(true);
+            btnCall.setOnClickListener(v -> {
+                if (l.getClientTel() != null) {
+                    Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + l.getClientTel()));
+                    itemView.getContext().startActivity(intent);
+                }
+            });
+
+            btnSms.setOnClickListener(v -> {
+                if (l.getClientTel() != null) {
+                    Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + l.getClientTel()));
+                    itemView.getContext().startActivity(intent);
+                }
+            });
+
+            btnChat.setOnClickListener(v -> {
+                Intent intent = new Intent(itemView.getContext(), LivraisonChatActivity.class);
+                intent.putExtra("nocde", l.getNocde());
+                itemView.getContext().startActivity(intent);
+            });
         }
     }
 }
