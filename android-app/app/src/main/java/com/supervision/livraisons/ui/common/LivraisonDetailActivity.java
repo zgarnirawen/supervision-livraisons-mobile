@@ -309,23 +309,44 @@ public class LivraisonDetailActivity extends AppCompatActivity {
     }
 
     private void loadProofImage(String storageKey, android.widget.ImageView imageView) {
-        if (storageKey == null) return;
+        if (storageKey == null || storageKey.isEmpty()) return;
         
-        // Simulation: Si c'est une URL S3 fictive, on affiche une image par défaut/mockup
-        if (storageKey.startsWith("s3://")) {
-            if (storageKey.contains("photo")) {
+        // Cas 1 : Données Base64 (Nouveau système)
+        if (storageKey.startsWith("data:image")) {
+            try {
+                String base64Data = storageKey.substring(storageKey.indexOf(",") + 1);
+                byte[] decodedString = android.util.Base64.decode(base64Data, android.util.Base64.DEFAULT);
+                
                 Glide.with(this)
-                    .load("https://images.unsplash.com/photo-1586769852836-bc069f19e1b6?q=80&w=400") // Mock delivery photo
-                    .placeholder(R.color.background)
+                    .asBitmap()
+                    .load(decodedString)
+                    .placeholder(R.drawable.bg_circle_surface)
+                    .error(R.drawable.ic_warning)
                     .into(imageView);
-            } else {
-                Glide.with(this)
-                    .load("https://www.pngarts.com/files/10/Signature-PNG-Transparent-Image.png") // Mock signature
-                    .placeholder(R.color.background)
-                    .into(imageView);
+            } catch (Exception e) {
+                e.printStackTrace();
+                imageView.setImageResource(R.drawable.ic_warning);
             }
+            return;
+        }
+
+        // Cas 2 : Simulation S3 (Ancien système ou fallback)
+        if (storageKey.startsWith("s3://")) {
+            String mockUrl = storageKey.contains("photo") 
+                ? "https://images.unsplash.com/photo-1586769852836-bc069f19e1b6?q=80&w=400"
+                : "https://www.pngarts.com/files/10/Signature-PNG-Transparent-Image.png";
+                
+            Glide.with(this)
+                .load(mockUrl)
+                .placeholder(R.drawable.bg_circle_surface)
+                .into(imageView);
         } else {
-            Glide.with(this).load(storageKey).into(imageView);
+            // Cas 3 : URL directe ou autre
+            Glide.with(this)
+                .load(storageKey)
+                .placeholder(R.drawable.bg_circle_surface)
+                .error(R.drawable.ic_warning)
+                .into(imageView);
         }
     }
 

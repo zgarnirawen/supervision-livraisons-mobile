@@ -29,4 +29,5 @@ public class PodAsset {
 
     public String getAssetType() { return assetType; }
     public String getStorageKey() { return storageKey; }
+    public void setStorageProvider(String storageProvider) { this.storageProvider = storageProvider; }
 }

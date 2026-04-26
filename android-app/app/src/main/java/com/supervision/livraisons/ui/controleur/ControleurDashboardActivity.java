@@ -78,6 +78,7 @@ public class ControleurDashboardActivity extends AppCompatActivity {
                 UiUtils.setVisible(binding.layoutLivraisons, true);
                 UiUtils.setVisible(binding.layoutLivreurs, false);
                 UiUtils.setVisible(binding.layoutChats, false);
+                UiUtils.setVisible(binding.layoutClients, false);
                 UiUtils.setVisible(binding.layoutHeaderStats, true);
                 UiUtils.setVisible(binding.layoutFilters, true);
                 return true;
@@ -85,6 +86,7 @@ public class ControleurDashboardActivity extends AppCompatActivity {
                 UiUtils.setVisible(binding.layoutLivraisons, false);
                 UiUtils.setVisible(binding.layoutLivreurs, true);
                 UiUtils.setVisible(binding.layoutChats, false);
+                UiUtils.setVisible(binding.layoutClients, false);
                 UiUtils.setVisible(binding.layoutHeaderStats, false);
                 UiUtils.setVisible(binding.layoutFilters, false);
                 loadStats();
@@ -93,9 +95,19 @@ public class ControleurDashboardActivity extends AppCompatActivity {
                 UiUtils.setVisible(binding.layoutLivraisons, false);
                 UiUtils.setVisible(binding.layoutLivreurs, false);
                 UiUtils.setVisible(binding.layoutChats, true);
+                UiUtils.setVisible(binding.layoutClients, false);
                 UiUtils.setVisible(binding.layoutHeaderStats, false);
                 UiUtils.setVisible(binding.layoutFilters, false);
                 loadChats();
+                return true;
+            } else if (item.getItemId() == R.id.nav_clients) {
+                UiUtils.setVisible(binding.layoutLivraisons, false);
+                UiUtils.setVisible(binding.layoutLivreurs, false);
+                UiUtils.setVisible(binding.layoutChats, false);
+                UiUtils.setVisible(binding.layoutClients, true);
+                UiUtils.setVisible(binding.layoutHeaderStats, false);
+                UiUtils.setVisible(binding.layoutFilters, false);
+                loadClients();
                 return true;
             }
             return false;
@@ -299,8 +311,43 @@ public class ControleurDashboardActivity extends AppCompatActivity {
         });
     }
 
+    private void loadClients() {
+        UiUtils.setVisible(binding.recyclerClients, false);
+
+        ApiClient.getApiService().getClientsStats().enqueue(new Callback<List<com.supervision.livraisons.model.ClientStats>>() {
+            @Override
+            public void onResponse(Call<List<com.supervision.livraisons.model.ClientStats>> call, Response<List<com.supervision.livraisons.model.ClientStats>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<com.supervision.livraisons.model.ClientStats> stats = response.body();
+                    ClientsAdapter clientsAdapter = new ClientsAdapter(ControleurDashboardActivity.this, stats);
+                    binding.recyclerClients.setAdapter(clientsAdapter);
+                    UiUtils.setVisible(binding.recyclerClients, true);
+                } else {
+                    Toast.makeText(ControleurDashboardActivity.this, "Veuillez redémarrer le Backend", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<com.supervision.livraisons.model.ClientStats>> call, Throwable t) {
+                Toast.makeText(ControleurDashboardActivity.this, "Erreur réseau: le backend est-il lancé ?", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     @Override
-    protected void onResume() { super.onResume(); loadStats(); loadAll(); }
+    protected void onResume() {
+        super.onResume();
+        if (binding.bottomNavigation.getSelectedItemId() == R.id.nav_chats) {
+            loadChats();
+        } else if (binding.bottomNavigation.getSelectedItemId() == R.id.nav_livreurs) {
+            loadStats();
+        } else if (binding.bottomNavigation.getSelectedItemId() == R.id.nav_clients) {
+            loadClients();
+        } else {
+            loadStats();
+            loadAll();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

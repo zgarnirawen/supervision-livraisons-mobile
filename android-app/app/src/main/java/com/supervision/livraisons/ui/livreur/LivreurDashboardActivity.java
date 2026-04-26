@@ -368,7 +368,11 @@ public class LivreurDashboardActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        loadLivraisons();
+        if (binding.bottomNavigation.getSelectedItemId() == R.id.nav_chats) {
+            loadChats();
+        } else {
+            loadLivraisons();
+        }
     }
 
     @Override

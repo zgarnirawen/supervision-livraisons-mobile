@@ -18,7 +18,7 @@ public class PodAsset {
     private String assetType;
 
     @Column(name = "storage_provider", nullable = false, length = 16)
-    private String storageProvider;
+    private String storageProvider = "base64";
 
     @Column(name = "storage_key", nullable = false, columnDefinition = "TEXT")
     private String storageKey;

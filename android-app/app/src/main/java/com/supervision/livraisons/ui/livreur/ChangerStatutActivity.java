@@ -80,6 +80,17 @@ public class ChangerStatutActivity extends AppCompatActivity {
             UiUtils.setVisible(binding.tilCauseCustom, isOther);
             updateConfirmButtonState();
         });
+
+        binding.etCauseCustom.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+                updateConfirmButtonState();
+            }
+        });
     }
 
     private void setupButtonListeners() {
@@ -222,13 +233,22 @@ public class ChangerStatutActivity extends AppCompatActivity {
         });
     }
 
+    private String bitmapToBase64(Bitmap bitmap) {
+        java.io.ByteArrayOutputStream byteArrayOutputStream = new java.io.ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        return "data:image/jpeg;base64," + android.util.Base64.encodeToString(byteArray, android.util.Base64.NO_WRAP);
+    }
+
     private void uploadProofsThenFinish() {
+        String base64Photo = bitmapToBase64(photoBitmap);
         PodAsset photoAsset = new PodAsset(
                 "photo",
-                "s3://livraisons-proof/" + nocde + "/photo_" + System.currentTimeMillis() + ".jpg",
+                base64Photo,
                 "image/jpeg",
-                (long) (photoBitmap.getByteCount())
+                (long) (base64Photo.length())
         );
+        photoAsset.setStorageProvider("base64");
 
         ApiClient.getApiService().saveProof(nocde, photoAsset).enqueue(new Callback<PodAsset>() {
             @Override
@@ -252,12 +272,14 @@ public class ChangerStatutActivity extends AppCompatActivity {
 
     private void uploadSignatureThenFinish() {
         Bitmap signatureBitmap = binding.signatureView.exportBitmap();
+        String base64Sig = bitmapToBase64(signatureBitmap);
         PodAsset signatureAsset = new PodAsset(
                 "signature",
-                "s3://livraisons-proof/" + nocde + "/signature_" + System.currentTimeMillis() + ".png",
+                base64Sig,
                 "image/png",
-                (long) (signatureBitmap.getByteCount())
+                (long) (base64Sig.length())
         );
+        signatureAsset.setStorageProvider("base64");
 
         ApiClient.getApiService().saveProof(nocde, signatureAsset).enqueue(new Callback<PodAsset>() {
             @Override

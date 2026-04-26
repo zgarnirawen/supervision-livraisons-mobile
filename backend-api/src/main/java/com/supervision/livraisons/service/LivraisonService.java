@@ -89,6 +89,38 @@ public class LivraisonService {
     }
 
     @Transactional(readOnly = true)
+    public List<ClientStatsDTO> getClientsStats() {
+        LocalDate today = getEffectiveDate();
+        List<LivraisonMobile> all = livraisonRepo.findByDateliv(today);
+        Map<String, ClientStatsDTO> map = new java.util.HashMap<>();
+
+        for (LivraisonMobile l : all) {
+            String key = l.getClientTel() != null ? l.getClientTel() : l.getClientNom();
+            if (key == null) key = "Inconnu";
+            
+            ClientStatsDTO stats = map.computeIfAbsent(key, k -> {
+                ClientStatsDTO dto = new ClientStatsDTO();
+                dto.setNom(l.getClientNom());
+                dto.setPrenom(l.getClientPrenom());
+                dto.setTel(l.getClientTel());
+                dto.setAdresse(l.getClientAdresse());
+                dto.setVille(l.getClientVille());
+                dto.setLatitude(l.getClientLatitude() != null ? l.getClientLatitude().doubleValue() : null);
+                dto.setLongitude(l.getClientLongitude() != null ? l.getClientLongitude().doubleValue() : null);
+                dto.setCategorie(l.getCategorie());
+                return dto;
+            });
+            
+            stats.setTotalLivraisons(stats.getTotalLivraisons() + 1);
+            if ("LI".equals(l.getEtatliv())) stats.setLivrees(stats.getLivrees() + 1);
+            else if ("AL".equals(l.getEtatliv())) stats.setAjournees(stats.getAjournees() + 1);
+            else stats.setEnCours(stats.getEnCours() + 1);
+        }
+        
+        return new ArrayList<>(map.values());
+    }
+
+    @Transactional(readOnly = true)
     public List<LivraisonMobile> getActiveConversationsForLivreur(Integer livreurId) {
         return livraisonRepo.findActiveConversationsLivreur(getEffectiveDate(), livreurId);
     }
@@ -367,8 +399,13 @@ public class LivraisonService {
             personnelRepo.findByCodeposte("P001").forEach(p -> channelIds.add(-p.getIdpers()));
         }
         
-        // Inclure également les chans avec messages
-        channelIds.addAll(chatRepo.findDistinctNocde());
+        // Inclure également les chans avec messages liés à cet utilisateur
+        if ("P001".equals(userCodeposte)) {
+            channelIds.addAll(chatRepo.findDistinctNocdeByUserId(userId));
+        } else {
+            // Le contrôleur voit tout l'historique
+            chatRepo.findAll().forEach(m -> channelIds.add(m.getNocde()));
+        }
 
         List<com.supervision.livraisons.dto.ChatChannelDTO> channels = new ArrayList<>();
 
@@ -386,7 +423,18 @@ public class LivraisonService {
                         .orElse("Support Livreur #" + livreurId);
                 isSupport = true;
             }
-            channels.add(new com.supervision.livraisons.dto.ChatChannelDTO(nocde, title, "Ouvrir la conversation", null, isSupport));
+            
+            String lastMessage = "Ouvrir la conversation";
+            LocalDateTime lastDate = null;
+            
+            List<ChatMessage> msgs = chatRepo.findByNocdeOrderBySentAtAsc(nocde);
+            if (!msgs.isEmpty()) {
+                ChatMessage last = msgs.get(msgs.size() - 1);
+                lastMessage = last.getMessageText();
+                lastDate = last.getSentAt();
+            }
+
+            channels.add(new com.supervision.livraisons.dto.ChatChannelDTO(nocde, title, lastMessage, lastDate, isSupport));
         }
         return channels;
     }

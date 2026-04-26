@@ -76,6 +76,10 @@ public interface ApiService {
     @GET("api/livraisons/stats")
     Call<StatsDuJour> getStats();
 
+    // ── Stats Clients (Contrôleur) ────────────────────────────────────────
+    @GET("api/livraisons/clients")
+    Call<List<com.supervision.livraisons.model.ClientStats>> getClientsStats();
+
     // ── Historique ────────────────────────────────────────────────────────
     @GET("api/livraisons/{nocde}/historique")
     Call<List<HistoriqueLivraison>> getHistorique(@Path("nocde") int nocde);

@@ -8,6 +8,6 @@ import java.util.List;
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
     List<ChatMessage> findByNocdeOrderBySentAtAsc(Integer nocde);
 
-    @Query("SELECT DISTINCT m.nocde FROM ChatMessage m")
-    List<Integer> findDistinctNocde();
+    @Query("SELECT DISTINCT m.nocde FROM ChatMessage m WHERE m.senderId = :userId OR m.recipientId = :userId")
+    List<Integer> findDistinctNocdeByUserId(Integer userId);
 }

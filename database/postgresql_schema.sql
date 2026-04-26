@@ -35,9 +35,9 @@ CREATE TABLE personnel_mobile (
 -- Données de test (mots de passe = 'password' en BCrypt)
 INSERT INTO personnel_mobile (idpers, nompers, prenompers, telpers, login, mot_passe, codeposte, actif)
 VALUES
-(1, 'Ben Ali',   'Sami',  '51112222', 'sami.b',  '$2a$12$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LnkJY7Pz0ki', 'P001', TRUE),
-(2, 'Trabelsi',  'Leila', '22334455', 'leila.t', '$2a$12$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LnkJY7Pz0ki', 'P001', TRUE),
-(3, 'Ben Salah', 'Ali',   '93445566', 'ali.bs',  '$2a$12$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LnkJY7Pz0ki', 'P003', TRUE);
+(1, 'Ben Ali',   'Sami',  '51112222', 'sami.b',  '$2b$12$DmS/u0K0ar7Esu5oBINSueBPRYIylnJRNr/94ebaQMJEu5BUfjbFS', 'P001', TRUE),
+(2, 'Trabelsi',  'Leila', '22334455', 'leila.t', '$2b$12$DmS/u0K0ar7Esu5oBINSueBPRYIylnJRNr/94ebaQMJEu5BUfjbFS', 'P001', TRUE),
+(3, 'Ben Salah', 'Ali',   '93445566', 'ali.bs',  '$2b$12$DmS/u0K0ar7Esu5oBINSueBPRYIylnJRNr/94ebaQMJEu5BUfjbFS', 'P003', TRUE);
 
 -- ============================================================
 -- TABLE : livraisons_mobile (Cache journalier principal)

@@ -223,3 +223,174 @@ Identify and stop the process that's listening on port 8080 or configure this ap
 2026-04-26 10:09:18.312  WARN 38572 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=5m53s958ms640µs200ns).
 2026-04-26 10:28:26.036  INFO 38572 --- [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 2, active threads = 1, queued tasks = 0, completed tasks = 1]
 2026-04-26 10:38:33.942  WARN 38572 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=8m45s287ms879µs300ns).
+2026-04-26 11:48:16.589  INFO 53720 --- [main] c.s.livraisons.LivraisonsApiApplication  : Starting LivraisonsApiApplication v1.0.0 using Java 17.0.12 on zgrawen with PID 53720 (C:\Users\ZGARNI\delivery-supervision\backend-api\target\livraisons-api-1.0.0.jar started by ZGARNI in C:\Users\ZGARNI\delivery-supervision\backend-api)
+2026-04-26 11:48:16.592 DEBUG 53720 --- [main] c.s.livraisons.LivraisonsApiApplication  : Running with Spring Boot v2.7.18, Spring v5.3.31
+2026-04-26 11:48:16.594  INFO 53720 --- [main] c.s.livraisons.LivraisonsApiApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-04-26 11:48:17.901  INFO 53720 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-26 11:48:18.025  INFO 53720 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 110 ms. Found 7 JPA repository interfaces.
+2026-04-26 11:48:19.675  INFO 53720 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2026-04-26 11:48:19.699  INFO 53720 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-26 11:48:19.702  INFO 53720 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.83]
+2026-04-26 11:48:19.868  INFO 53720 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-26 11:48:19.869  INFO 53720 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3217 ms
+2026-04-26 11:48:20.929  INFO 53720 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-26 11:48:21.069  INFO 53720 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.6.15.Final
+2026-04-26 11:48:21.336  INFO 53720 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2026-04-26 11:48:21.685  INFO 53720 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-26 11:48:22.469  INFO 53720 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-26 11:48:22.494  INFO 53720 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2026-04-26 11:48:23.457  INFO 53720 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2026-04-26 11:48:23.477  INFO 53720 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-26 11:48:24.022  WARN 53720 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-26 11:48:24.139 DEBUG 53720 --- [main] c.s.livraisons.security.JwtAuthFilter    : Filter 'jwtAuthFilter' configured for use
+2026-04-26 11:48:26.418  INFO 53720 --- [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 3 endpoint(s) beneath base path '/actuator'
+2026-04-26 11:48:26.527  INFO 53720 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2026-04-26 11:48:26.532  INFO 53720 --- [main] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-04-26 11:48:26.533  INFO 53720 --- [main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@50110971]]
+2026-04-26 11:48:26.535  INFO 53720 --- [main] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-04-26 11:48:26.550  INFO 53720 --- [main] c.s.livraisons.LivraisonsApiApplication  : Started LivraisonsApiApplication in 10.679 seconds (JVM running for 11.313)
+2026-04-26 11:49:25.638  INFO 53720 --- [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 1, active threads = 1, queued tasks = 0, completed tasks = 0]
+2026-04-26 11:52:50.407  INFO 53720 --- [http-nio-0.0.0.0-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-26 11:52:50.410  INFO 53720 --- [http-nio-0.0.0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-26 11:52:50.414  INFO 53720 --- [http-nio-0.0.0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-04-26 12:08:03.956  INFO 45316 --- [main] c.s.livraisons.LivraisonsApiApplication  : Starting LivraisonsApiApplication v1.0.0 using Java 17.0.12 on zgrawen with PID 45316 (C:\Users\ZGARNI\delivery-supervision\backend-api\target\livraisons-api-1.0.0.jar started by ZGARNI in C:\Users\ZGARNI\delivery-supervision\backend-api)
+2026-04-26 12:08:03.959 DEBUG 45316 --- [main] c.s.livraisons.LivraisonsApiApplication  : Running with Spring Boot v2.7.18, Spring v5.3.31
+2026-04-26 12:08:03.959  INFO 45316 --- [main] c.s.livraisons.LivraisonsApiApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-04-26 12:08:05.485  INFO 45316 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-26 12:08:05.648  INFO 45316 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 142 ms. Found 7 JPA repository interfaces.
+2026-04-26 12:08:07.182  INFO 45316 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2026-04-26 12:08:07.230  INFO 45316 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-26 12:08:07.233  INFO 45316 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.83]
+2026-04-26 12:08:07.439  INFO 45316 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-26 12:08:07.439  INFO 45316 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3413 ms
+2026-04-26 12:08:08.101  INFO 45316 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-26 12:08:08.310  INFO 45316 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.6.15.Final
+2026-04-26 12:08:08.617  INFO 45316 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2026-04-26 12:08:08.871  INFO 45316 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-26 12:08:09.212  INFO 45316 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-26 12:08:09.241  INFO 45316 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2026-04-26 12:08:10.348  INFO 45316 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2026-04-26 12:08:10.359  INFO 45316 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-26 12:08:10.939  WARN 45316 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-26 12:08:11.049 DEBUG 45316 --- [main] c.s.livraisons.security.JwtAuthFilter    : Filter 'jwtAuthFilter' configured for use
+2026-04-26 12:08:12.739  INFO 45316 --- [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 3 endpoint(s) beneath base path '/actuator'
+2026-04-26 12:08:12.815  INFO 45316 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2026-04-26 12:08:12.819  INFO 45316 --- [main] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-04-26 12:08:12.820  INFO 45316 --- [main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@6b2dd3df]]
+2026-04-26 12:08:12.821  INFO 45316 --- [main] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-04-26 12:08:12.834  INFO 45316 --- [main] c.s.livraisons.LivraisonsApiApplication  : Started LivraisonsApiApplication in 9.645 seconds (JVM running for 10.311)
+2026-04-26 12:08:24.422  INFO 45316 --- [http-nio-0.0.0.0-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-26 12:08:24.423  INFO 45316 --- [http-nio-0.0.0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-26 12:08:24.425  INFO 45316 --- [http-nio-0.0.0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-04-26 12:09:12.077  INFO 45316 --- [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 1, active threads = 1, queued tasks = 0, completed tasks = 0]
+2026-04-26 12:39:12.102  INFO 45316 --- [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 2, active threads = 1, queued tasks = 0, completed tasks = 1]
+2026-04-26 13:09:12.130  INFO 45316 --- [MessageBroker-2] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 3, active threads = 1, queued tasks = 0, completed tasks = 2]
+2026-04-26 13:39:12.150  INFO 45316 --- [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 4, active threads = 1, queued tasks = 0, completed tasks = 3]
+2026-04-26 13:45:01.321  INFO 53040 --- [main] c.s.livraisons.LivraisonsApiApplication  : Starting LivraisonsApiApplication using Java 1.8.0_202 on zgrawen with PID 53040 (C:\Users\ZGARNI\delivery-supervision\backend-api\target\classes started by ZGARNI in C:\Users\ZGARNI\delivery-supervision\backend-api)
+2026-04-26 13:45:01.324 DEBUG 53040 --- [main] c.s.livraisons.LivraisonsApiApplication  : Running with Spring Boot v2.7.18, Spring v5.3.31
+2026-04-26 13:45:01.324  INFO 53040 --- [main] c.s.livraisons.LivraisonsApiApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-04-26 13:45:02.262  INFO 53040 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-26 13:45:02.340  INFO 53040 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 63 ms. Found 7 JPA repository interfaces.
+2026-04-26 13:45:03.285  INFO 53040 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2026-04-26 13:45:03.294  INFO 53040 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-26 13:45:03.296  INFO 53040 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.83]
+2026-04-26 13:45:03.462  INFO 53040 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-26 13:45:03.463  INFO 53040 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2101 ms
+2026-04-26 13:45:03.677  INFO 53040 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-26 13:45:03.806  INFO 53040 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.6.15.Final
+2026-04-26 13:45:04.072  INFO 53040 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2026-04-26 13:45:04.170  INFO 53040 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-26 13:45:04.852  INFO 53040 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-26 13:45:04.868  INFO 53040 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2026-04-26 13:45:05.668  INFO 53040 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2026-04-26 13:45:05.679  INFO 53040 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-26 13:45:06.090  WARN 53040 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-26 13:45:06.158 DEBUG 53040 --- [main] c.s.livraisons.security.JwtAuthFilter    : Filter 'jwtAuthFilter' configured for use
+2026-04-26 13:45:07.471  INFO 53040 --- [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 3 endpoint(s) beneath base path '/actuator'
+2026-04-26 13:45:07.521  WARN 53040 --- [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'; nested exception is org.springframework.boot.web.server.PortInUseException: Port 8080 is already in use
+2026-04-26 13:45:07.530  INFO 53040 --- [main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-26 13:45:07.533  INFO 53040 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-04-26 13:45:07.540  INFO 53040 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-04-26 13:45:07.544  INFO 53040 --- [main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2026-04-26 13:45:07.560  INFO 53040 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2026-04-26 13:45:07.582 ERROR 53040 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+2026-04-26 13:47:15.011  INFO 49404 --- [main] c.s.livraisons.LivraisonsApiApplication  : Starting LivraisonsApiApplication using Java 1.8.0_202 on zgrawen with PID 49404 (C:\Users\ZGARNI\delivery-supervision\backend-api\target\classes started by ZGARNI in C:\Users\ZGARNI\delivery-supervision\backend-api)
+2026-04-26 13:47:15.013 DEBUG 49404 --- [main] c.s.livraisons.LivraisonsApiApplication  : Running with Spring Boot v2.7.18, Spring v5.3.31
+2026-04-26 13:47:15.014  INFO 49404 --- [main] c.s.livraisons.LivraisonsApiApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-04-26 13:47:15.734  INFO 49404 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-26 13:47:15.808  INFO 49404 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 65 ms. Found 7 JPA repository interfaces.
+2026-04-26 13:47:16.724  INFO 49404 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2026-04-26 13:47:16.731  INFO 49404 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-26 13:47:16.732  INFO 49404 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.83]
+2026-04-26 13:47:16.893  INFO 49404 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-26 13:47:16.893  INFO 49404 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1847 ms
+2026-04-26 13:47:17.132  INFO 49404 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-26 13:47:17.327  INFO 49404 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.6.15.Final
+2026-04-26 13:47:17.433  INFO 49404 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2026-04-26 13:47:17.515  INFO 49404 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-26 13:47:18.634  INFO 49404 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-26 13:47:18.647  INFO 49404 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2026-04-26 13:47:19.202  INFO 49404 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2026-04-26 13:47:19.220  INFO 49404 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-26 13:47:19.517  WARN 49404 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-26 13:47:19.601 DEBUG 49404 --- [main] c.s.livraisons.security.JwtAuthFilter    : Filter 'jwtAuthFilter' configured for use
+2026-04-26 13:47:20.985  INFO 49404 --- [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 3 endpoint(s) beneath base path '/actuator'
+2026-04-26 13:47:21.045  INFO 49404 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2026-04-26 13:47:21.050  INFO 49404 --- [main] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-04-26 13:47:21.051  INFO 49404 --- [main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@47f0e078]]
+2026-04-26 13:47:21.052  INFO 49404 --- [main] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-04-26 13:47:21.079  INFO 49404 --- [main] c.s.livraisons.LivraisonsApiApplication  : Started LivraisonsApiApplication in 6.372 seconds (JVM running for 6.85)
+2026-04-26 13:48:20.282  INFO 49404 --- [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 1, active threads = 1, queued tasks = 0, completed tasks = 0]
+2026-04-26 13:48:40.008  INFO 49404 --- [http-nio-0.0.0.0-8080-exec-3] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-26 13:48:40.009  INFO 49404 --- [http-nio-0.0.0.0-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-26 13:48:40.014  INFO 49404 --- [http-nio-0.0.0.0-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2026-04-26 14:00:19.331  INFO 49404 --- [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2026-04-26 14:00:19.332  INFO 49404 --- [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@47f0e078]]
+2026-04-26 14:00:19.335  INFO 49404 --- [SpringApplicationShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2026-04-26 14:00:19.635  INFO 49404 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-26 14:00:19.640  INFO 49404 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-04-26 14:00:19.644  INFO 49404 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-04-26 14:00:37.052  INFO 41392 --- [main] c.s.livraisons.LivraisonsApiApplication  : Starting LivraisonsApiApplication using Java 1.8.0_202 on zgrawen with PID 41392 (C:\Users\ZGARNI\delivery-supervision\backend-api\target\classes started by ZGARNI in C:\Users\ZGARNI\delivery-supervision\backend-api)
+2026-04-26 14:00:37.055 DEBUG 41392 --- [main] c.s.livraisons.LivraisonsApiApplication  : Running with Spring Boot v2.7.18, Spring v5.3.31
+2026-04-26 14:00:37.056  INFO 41392 --- [main] c.s.livraisons.LivraisonsApiApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-04-26 14:00:37.733  INFO 41392 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-26 14:00:37.803  INFO 41392 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 61 ms. Found 7 JPA repository interfaces.
+2026-04-26 14:00:38.691  INFO 41392 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2026-04-26 14:00:38.701  INFO 41392 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-26 14:00:38.705  INFO 41392 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.83]
+2026-04-26 14:00:39.005  INFO 41392 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-26 14:00:39.005  INFO 41392 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1918 ms
+2026-04-26 14:00:39.229  INFO 41392 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-26 14:00:39.361  INFO 41392 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.6.15.Final
+2026-04-26 14:00:39.538  INFO 41392 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2026-04-26 14:00:39.659  INFO 41392 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-26 14:00:40.350  INFO 41392 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-26 14:00:40.371  INFO 41392 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2026-04-26 14:00:41.081  INFO 41392 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2026-04-26 14:00:41.091  INFO 41392 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-26 14:00:41.373  WARN 41392 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-26 14:00:41.453 DEBUG 41392 --- [main] c.s.livraisons.security.JwtAuthFilter    : Filter 'jwtAuthFilter' configured for use
+2026-04-26 14:00:42.898  INFO 41392 --- [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 3 endpoint(s) beneath base path '/actuator'
+2026-04-26 14:00:42.963  INFO 41392 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2026-04-26 14:00:42.967  INFO 41392 --- [main] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-04-26 14:00:42.969  INFO 41392 --- [main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@58b03029]]
+2026-04-26 14:00:42.973  INFO 41392 --- [main] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-04-26 14:00:42.990  INFO 41392 --- [main] c.s.livraisons.LivraisonsApiApplication  : Started LivraisonsApiApplication in 6.23 seconds (JVM running for 6.689)
+2026-04-26 14:01:06.122  INFO 41392 --- [http-nio-0.0.0.0-8080-exec-5] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-26 14:01:06.124  INFO 41392 --- [http-nio-0.0.0.0-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-26 14:01:06.129  INFO 41392 --- [http-nio-0.0.0.0-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms

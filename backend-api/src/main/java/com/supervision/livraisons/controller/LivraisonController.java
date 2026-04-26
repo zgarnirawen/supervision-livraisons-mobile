@@ -163,6 +163,12 @@ public class LivraisonController {
         return ResponseEntity.ok(stats);
     }
 
+    @GetMapping("/clients")
+    @PreAuthorize("hasRole('CONTROLEUR')")
+    public ResponseEntity<List<com.supervision.livraisons.dto.ClientStatsDTO>> getClientsStats() {
+        return ResponseEntity.ok(livraisonService.getClientsStats());
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // GET /api/livraisons/{nocde}/historique
     // Audit trail de la livraison

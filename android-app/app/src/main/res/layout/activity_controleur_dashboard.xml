@@ -31,7 +31,7 @@
         <LinearLayout android:id="@+id/layout_header_stats"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/role_controleur"
+            android:background="@color/primary"
             android:orientation="vertical"
             android:paddingHorizontal="20dp"
             android:paddingBottom="16dp">
@@ -53,11 +53,11 @@
                     <TextView android:id="@+id/tv_role"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#C8B8E8" android:textSize="13sp"/>
+                        android:textColor="#B0C4F5" android:textSize="13sp"/>
                     <TextView android:id="@+id/tv_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#C8B8E8" android:textSize="12sp"/>
+                        android:textColor="#B0C4F5" android:textSize="12sp"/>
                 </LinearLayout>
 
                 <!-- Taux succès -->
@@ -276,6 +276,27 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_chats"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:clipToPadding="false"/>
+        </LinearLayout>
+
+        <!-- Onglet 4: Clients -->
+        <LinearLayout android:id="@+id/layout_clients"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:padding="8dp">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Statistiques par Client" android:textColor="@color/text_primary"
+                android:textSize="22sp" android:textStyle="bold"
+                android:layout_margin="8dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_clients"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
