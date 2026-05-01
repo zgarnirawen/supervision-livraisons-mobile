@@ -33,7 +33,7 @@ log = logging.getLogger(__name__)
 
 # ── Connexions DB ─────────────────────────────────────────────────────────
 def get_oracle_conn():
-    import cx_Oracle
+    import oracledb as cx_Oracle
     dsn = cx_Oracle.makedsn(
         os.getenv("ORACLE_HOST", "localhost"),
         int(os.getenv("ORACLE_PORT", 1521)),

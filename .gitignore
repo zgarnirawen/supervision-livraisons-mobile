@@ -21,3 +21,7 @@ venv/
 !.env.example
 
 android-app/app/google-services.json
+# Logs
+backend-api/logs/
+android-app/crash*.txt
+backend-api/src/main/resources/firebase-service-account.json

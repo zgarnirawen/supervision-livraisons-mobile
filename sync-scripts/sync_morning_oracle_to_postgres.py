@@ -32,7 +32,7 @@ log = logging.getLogger(__name__)
 
 # ── Connexions DB ─────────────────────────────────────────────────────────
 def get_oracle_conn():
-    import cx_Oracle
+    import oracledb as cx_Oracle
     dsn = cx_Oracle.makedsn(
         os.getenv("ORACLE_HOST", "localhost"),
         int(os.getenv("ORACLE_PORT", 1521)),
@@ -59,26 +59,26 @@ ORACLE_QUERY_LIVRAISONS = """
 SELECT
     lc.nocde,
     lc.dateliv,
-    cmd.noclt       AS client_id,
-    lc.livreur      AS livreur_id,
-    p.nompers       AS livreur_nom,
-    p.prenompers    AS livreur_prenom,
-    TO_CHAR(p.telpers) AS livreur_tel,
-    c.nomclt        AS client_nom,
-    c.prenomclt     AS client_prenom,
-    TO_CHAR(c.telclt) AS client_tel,
-    c.adrclt        AS client_adresse,
+    cmd.noclt AS client_id,
+    lc.livreur AS livreur_id,
+    p.nompers AS livreur_nom,
+    p.prenompers AS livreur_prenom,
+    p.telpers AS livreur_tel,
+    c.nomclt AS client_nom,
+    c.prenomclt AS client_prenom,
+    c.telclt AS client_tel,
+    c.adrclt AS client_adresse,
     TRIM(c.villeclt) AS client_ville,
-    TO_CHAR(c.code_postal) AS client_code_postal,
-    TO_CHAR(c.cinclt)      AS client_cin,
-    c.adrmail             AS client_email,
+    c.code_postal AS client_code_postal,
+    c.cinclt AS client_cin,
+    c.adrmail AS client_email,
     lc.etatliv,
     lc.modepay
 FROM LivraisonCom lc
-JOIN personnel  p  ON lc.livreur = p.idpers
-JOIN commandes  cmd ON lc.nocde  = cmd.nocde
-JOIN clients    c   ON cmd.noclt = c.noclt
-WHERE TRUNC(lc.dateliv) = TRUNC(SYSDATE)
+JOIN personnel p ON lc.livreur = p.idpers
+JOIN commandes cmd ON lc.nocde = cmd.nocde
+JOIN clients c ON cmd.noclt = c.noclt
+WHERE TRUNC(lc.dateliv) = TO_DATE('29-04-2026','DD-MM-YYYY')
 """
 
 # ── Requête Oracle : Articles des commandes du jour ───────────────────────
